@@ -5,7 +5,7 @@
 场景**不决定**怎么画——那是画风(../styles/)。每个场景有一个默认画风,也可以换。
 
 ![scenes](thumbs/_all.jpg)
-*11 个场景的示范帧:同一个中性题目、各自的默认画风。重出:`node engine/vc/scene-gallery.mjs zh`(英文版 `en`)。*
+*11 个场景的成片截图(作者已发布的视频)。同一个中性题目(天为什么是蓝的)的示范帧在 [demo/](demo/_all.jpg),由 `node engine/vc/scene-gallery.mjs zh` 生成。*
 
 | id | 场景 | 画面世界 | 默认画风 | 适配片型 | 状态 |
 |---|---|---|---|---|---|

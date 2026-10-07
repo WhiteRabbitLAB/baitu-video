@@ -1,7 +1,7 @@
 # 剪辑台(id: editing-desk)
 
 ![editing-desk](thumbs/editing-desk.jpg)
-*示范帧(同一个中性题目「天为什么是蓝的」,默认画风;由 `engine/vc/scene-gallery.html` 生成)*
+*成片截图(作者用这个场景做的已发布视频)。同一个中性题目的示范帧见 [demo/](demo/)。*
 
 ## 画面世界
 一个卡通剪辑软件界面(借一条推特作品的布局和动画风格):米白纸底、马卡龙排线填色;

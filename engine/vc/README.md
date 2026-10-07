@@ -10,7 +10,7 @@
 | `thumbs.html` / `thumbs.mjs` | 画风缩略图:同一场景只换画风;`node engine/vc/thumbs.mjs` → `.claude/skills/explainer-video/styles/thumbs/` |
 | `transitions.html` / `measure-tx.mjs` | 转场演示(morph、zoom-through、slide-push、blur-push)与量转场(带线性淡化阳性对照):`node engine/vc/measure-tx.mjs paper-skeuo` |
 | 字体 | `fonts.css` + `fonts/`:引擎自带的子集字体(画风表用到的全部字体,按演示页的字切);重切:`node <engine>/cli.mjs fonts-demo`。每期正片用 `fonts <期>` |
-| `scene-gallery.html` / `scene-gallery.mjs` | 场景示范图:11 个场景各一帧,同一个中性题目;`node engine/vc/scene-gallery.mjs zh`(或 `en`)→ skill 的 `scenes/thumbs/` |
+| `scene-gallery.html` / `scene-gallery.mjs` | 场景示范图:11 个场景各一帧,同一个中性题目;`node engine/vc/scene-gallery.mjs zh`(或 `en`)→ skill 的 `scenes/demo/`(场景卡顶部用的是成片截图 `scenes/thumbs/`,这里不覆盖它)|
 | `shot.mjs` | 演示页截图:`node engine/vc/shot.mjs <目录> paper-skeuo,zh,7.5 tech-ui,en,2.4` |
 
 ## 在新一期里用

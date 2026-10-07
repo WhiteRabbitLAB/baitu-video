@@ -1,7 +1,7 @@
 # 横版风景(id: landscape-scroll)
 
 ![landscape-scroll](thumbs/landscape-scroll.jpg)
-*示范帧(同一个中性题目「天为什么是蓝的」,默认画风;由 `engine/vc/scene-gallery.html` 生成)*
+*成片截图(作者用这个场景做的已发布视频)。同一个中性题目的示范帧见 [demo/](demo/)。*
 
 ## 画面世界
 Kurzgesagt 一路的扁平插画:黄昏山谷,横版卷轴。多层视差(天空 → 远山两排 + 山脚雾带 → 山丘村庄 → 湖 → 岸边树 → 地面小路 → 前景草),

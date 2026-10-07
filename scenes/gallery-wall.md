@@ -1,7 +1,7 @@
 # 画作与展签(id: gallery-wall)
 
 ![gallery-wall](thumbs/gallery-wall.jpg)
-*示范帧(同一个中性题目「天为什么是蓝的」,默认画风;由 `engine/vc/scene-gallery.html` 生成)*
+*成片截图(作者用这个场景做的已发布视频)。同一个中性题目的示范帧见 [demo/](demo/)。*
 
 ## 画面世界
 像在美术馆看画:公版名作满版或挂在墙上,旁边是展签式的说明;拆构图时在画上叠辅助线;

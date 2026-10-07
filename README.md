@@ -26,11 +26,11 @@ The same scene and content with only the style layer swapped — switching style
 paper skeuomorphic · game UI · flat geometric · flat illustration · cartoon UI · dark tech · whiteboard · dark math · chalkboard · kinetic type — details in [styles/INDEX.en.md](styles/INDEX.en.md).
 
 ## Scene templates
-Eleven ready-made visual worlds, each with its own writing sources, components and signature moves (shown here on one neutral topic, each in its default style):
+Eleven ready-made visual worlds, each with its own writing sources, components and signature moves. Below: screenshots from finished videos the author made with them (most are Chinese-language videos):
 
 ![Eleven scene templates](scenes/thumbs/_all.en.jpg)
 
-case files · 1944 lab desk · data dashboard · strategy game · anatomy diagram · editing desk · info cards · side-scrolling landscape · tech terminal · paper lab notes + screen dialog · paintings and labels — details in [scenes/INDEX.en.md](scenes/INDEX.en.md). Narrative formats (true-experiment story, scenario guide, concept lesson, versus, list…) are in [formats/INDEX.en.md](formats/INDEX.en.md).
+case files · 1944 lab desk · data dashboard · strategy game · anatomy diagram · editing desk · info cards · side-scrolling landscape · tech terminal · paper lab notes + screen dialog · paintings and labels — details in [scenes/INDEX.en.md](scenes/INDEX.en.md); simpler demo frames on one neutral topic are in [scenes/demo/](scenes/demo/_all.en.jpg). Narrative formats (true-experiment story, scenario guide, concept lesson, versus, list…) are in [formats/INDEX.en.md](formats/INDEX.en.md).
 
 ## How it works
 A video is chosen by four questions — **what** (explainer, true story, tutorial, comparison…), **which field**, **what feel**, **which platforms** — and built from four independent layers:

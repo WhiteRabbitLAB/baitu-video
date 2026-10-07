@@ -1,4 +1,4 @@
-// 场景示范图:node .claude/skills/explainer-video/engine/vc/scene-gallery.mjs [zh|en] → skill 的 scenes/thumbs/<id>[.en].jpg(960×540)+ _all[.en].jpg(4×3 拼图)
+// 场景示范图:node .claude/skills/explainer-video/engine/vc/scene-gallery.mjs [zh|en] → skill 的 scenes/demo/<id>[.en].jpg(960×540)+ _all[.en].jpg(4×3 拼图)
 // 每张 = scene-gallery.html?scene=<id> 的 1920×1080 整帧;字体没加载上就报错退出,不出带替代字体的图。
 import { chromium } from 'playwright';
 import { execFileSync } from 'node:child_process';
@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { PROJECT as ROOT, SKILL, ENGINE } from '../lib/paths.mjs';
 const HERE = path.dirname(new URL(import.meta.url).pathname);
-const OUT = path.join(SKILL, 'scenes/thumbs'), TMP = path.join(ROOT, 'cache/vc-scenes');
+const OUT = path.join(SKILL, 'scenes/demo'), TMP = path.join(ROOT, 'cache/vc-scenes');
 fs.mkdirSync(OUT, { recursive: true }); fs.mkdirSync(TMP, { recursive: true });
 const LANG = process.argv[2] === 'en' ? 'en' : 'zh', SUF = LANG === 'en' ? '.en' : '';
 const ids = ['case-file', 'lab-desk-1944', 'lab-dashboard', 'strategy-game', 'anatomy-diagram', 'editing-desk', 'info-cards', 'landscape-scroll', 'terminal-tech', 'field-notebook', 'gallery-wall'];   // = scenes/INDEX.md 的顺序

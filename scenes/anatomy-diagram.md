@@ -1,7 +1,7 @@
 # 解剖图解(id: anatomy-diagram)
 
 ![anatomy-diagram](thumbs/anatomy-diagram.jpg)
-*示范帧(同一个中性题目「天为什么是蓝的」,默认画风;由 `engine/vc/scene-gallery.html` 生成)*
+*成片截图(作者用这个场景做的已发布视频)。同一个中性题目的示范帧见 [demo/](demo/)。*
 
 ## 画面世界
 一套干净的扁平科普图解:深蓝底、无描边、双色块明暗、黄色点缀。参考图是决策者从三张静帧里选的 A。

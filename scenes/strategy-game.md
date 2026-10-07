@@ -1,7 +1,7 @@
 # 文明式策略游戏(id: strategy-game)
 
 ![strategy-game](thumbs/strategy-game.jpg)
-*示范帧(同一个中性题目「天为什么是蓝的」,默认画风;由 `engine/vc/scene-gallery.html` 生成)*
+*成片截图(作者用这个场景做的已发布视频)。同一个中性题目的示范帧见 [demo/](demo/)。*
 
 ## 画面世界
 整片 = 一局六边形格子策略游戏的录屏(决策者:既然用文明的感觉就**别做得太粗糙**,地图、界面、材质要有游戏级精致度)。

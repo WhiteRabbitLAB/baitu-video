@@ -12,7 +12,7 @@ Visual components shared by every channel. Components only know text roles R1–
 | `thumbs.html` / `thumbs.mjs` | Style thumbnails: the same scene, only the style changes; `node engine/vc/thumbs.mjs` → `.claude/skills/explainer-video/styles/thumbs/` |
 | `transitions.html` / `measure-tx.mjs` | Transition demos (morph, zoom-through, slide-push, blur-push…) and transition measurement (with a linear-fade positive control): `node engine/vc/measure-tx.mjs paper-skeuo` |
 | Fonts | `fonts.css` + `fonts/`: the engine's bundled subset fonts (every font the styles use, cut to the demo pages' characters); re-cut with `node <engine>/cli.mjs fonts-demo`. Finished episodes use `fonts <ep>` |
-| `scene-gallery.html` / `scene-gallery.mjs` | Scene demo frames: one frame per scene (11), one neutral topic; `node engine/vc/scene-gallery.mjs en` (or `zh`) → the skill's `scenes/thumbs/` |
+| `scene-gallery.html` / `scene-gallery.mjs` | Scene demo frames: one frame per scene (11), one neutral topic; `node engine/vc/scene-gallery.mjs en` (or `zh`) → the skill's `scenes/demo/` (scene cards show published-video screenshots in `scenes/thumbs/`; this doesn't overwrite them) |
 | `shot.mjs` | Demo-page screenshots: `node engine/vc/shot.mjs <dir> paper-skeuo,zh,7.5 tech-ui,en,2.4` |
 
 ## Using them in a new episode

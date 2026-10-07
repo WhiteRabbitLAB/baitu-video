@@ -4,6 +4,7 @@
 |---|---|
 | 代码与文档(除下面两项外的全部内容)/ Code and docs (everything except the two items below) | MIT,见 / see [LICENSE](LICENSE) |
 | `profiles/example/`(兔子吉祥物、决策者偏好)/ (the rabbit mascot, decision-maker preferences) | **保留所有权利,不授权任何使用 / All rights reserved, no license granted** —— 见 / see [profiles/example/LICENSE.md](profiles/example/LICENSE.md) |
+| `scenes/thumbs/`(成片截图 / screenshots of published videos) | 版权归作者,只作展示;画面里的兔子同 `profiles/example/` 保留所有权利 / © the author, shown for illustration only; the rabbit in them is all rights reserved as in `profiles/example/` |
 | `engine/vc/fonts/`(子集字体 / subset fonts) | 各字体自己的许可(SIL OFL 1.1 / Apache 2.0),原文在 / each font's own license (SIL OFL 1.1 / Apache 2.0), texts in [engine/vc/fonts/LICENSES/](engine/vc/fonts/LICENSES/README.md) |
 
 ## 第三方服务 / Third-party services
