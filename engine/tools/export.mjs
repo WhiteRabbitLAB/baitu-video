@@ -45,7 +45,9 @@ for (const rel of files) {
 }
 if (hits.length) { console.error(`❌ 门禁不过:${hits.length} 处\n` + hits.join('\n')); process.exit(1); }
 
-fs.rmSync(DEST, { recursive: true, force: true });
+// 目标已是 git 仓库(开源仓库的工作区)⇒ 只清空 .git 以外的东西,保留提交历史
+if (fs.existsSync(path.join(DEST, '.git'))) { for (const e of fs.readdirSync(DEST)) if (e !== '.git') fs.rmSync(path.join(DEST, e), { recursive: true, force: true }); }
+else fs.rmSync(DEST, { recursive: true, force: true });
 for (const rel of files) { const to = path.join(DEST, rel); fs.mkdirSync(path.dirname(to), { recursive: true }); fs.copyFileSync(path.join(SKILL, rel), to); }
 
 // 导出后:Markdown 相对链接都要能打开
