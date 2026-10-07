@@ -1,0 +1,19 @@
+{
+  "channels": {
+    "my-channel": {
+      "profile": "my-channel",
+      "paths": {
+        "brief": "brief/{ep}",
+        "out": "out/{ep}",
+        "page": "video/{ep}.html"
+      },
+      "subtitles": {
+        "maxChars": {
+          "zh": 20,
+          "en": 42
+        }
+      },
+      "bannedWords": []
+    }
+  }
+}

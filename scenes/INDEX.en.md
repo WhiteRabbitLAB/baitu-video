@@ -1,0 +1,37 @@
+# Scene library
+
+中文:[INDEX.md](INDEX.md)
+
+Scene = **what world the picture is**: is the viewer looking at a case-file desk, a game, a monitor, or a landscape?
+A scene decides which **writing sources** exist (and so which text roles and fonts), which components, what runs through the whole video, and how the camera moves.
+A scene does **not** decide how things are drawn — that's the style (../styles/). Every scene has a default style and can switch.
+
+![scenes](thumbs/_all.en.jpg)
+*Demo frames of all 11 scenes: one neutral topic, each in its default style. Regenerate: `node engine/vc/scene-gallery.mjs en` (Chinese: `zh`).*
+
+| id | Scene | Visual world | Default style | Suitable formats | Status |
+|---|---|---|---|---|---|
+| [case-file](case-file.en.md) | Case files | Kraft-paper case folders, exhibits, red stamps | paper-skeuo | case-file, experiment | full video |
+| [lab-desk-1944](lab-desk-1944.en.md) | Old lab desk | Top-down wooden desk, typewriter, Isotype, graph paper | paper-skeuo | experiment, case-file | full video |
+| [lab-dashboard](lab-dashboard.en.md) | Data dashboard | A ward bench + an ever-present monitor | paper-skeuo + instrument screen | experiment | full video |
+| [strategy-game](strategy-game.en.md) | Strategy game | Hex map + game UI | game-ui | spread-history | full video ×2 |
+| [anatomy-diagram](anatomy-diagram.en.md) | Anatomy diagram | A schematic body + causal chain | flat-geometric | mechanism | full video |
+| [editing-desk](editing-desk.en.md) | Editing desk | Video-editor UI + multi-track year timeline | cartoon-ui | evolution | full video |
+| [info-cards](info-cards.en.md) | Info cards | Cards + charts + a host character | cartoon-ui | evolution | full video ×2 |
+| [landscape-scroll](landscape-scroll.en.md) | Side-scrolling landscape | Multi-layer parallax landscape, a character walking a path | flat-illustration | character-acting segments | sample |
+| [terminal-tech](terminal-tech.en.md) | Tech terminal | Dark UI, terminal windows, data panels | tech-ui | product-review, howto-guide | full video ×2 |
+| [field-notebook](field-notebook.en.md) | Paper lab notes + screen dialog | Paper is what people wrote; the screen is what the machine said | paper-skeuo | story-method-test | full video (zh + en) |
+| [gallery-wall](gallery-wall.en.md) | Paintings and labels | Public-domain masterpieces + wall labels + comparison wall | paper-skeuo | story-method-test | full video (zh + en; page deleted) |
+
+## Adding a scene
+1. Copy [_template.md](_template.en.md).
+2. Required: the visual world, the **writing-source table** (who writes what, on what, with what, in this world → text roles R1–R10, with a reason for any that don't appear), through-line elements, components, signature moves.
+3. Pick fonts from ../design/fonts.md; if nothing fits, add a row to the design library first.
+4. Validate with a sample, then register.
+
+## Choosing a scene
+- Find the format's "core metaphor" first: an investigation ⇒ case files; spreading ⇒ a game map; an experiment's result ⇒ an instrument screen; versions of a guideline ⇒ an editing timeline.
+- The scene should carry the whole video (the same desk, the same screen) so paragraphs can join (../transitions.md).
+- Before drawing, show the decision-maker 1–3 stills.
+
+> Where a card says "past videos", it only tells you the rule came from a published video; the rule itself is the card's content, implemented with the shared `engine/vc` components.

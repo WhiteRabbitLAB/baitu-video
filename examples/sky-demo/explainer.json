@@ -1,0 +1,9 @@
+{
+  "channels": {
+    "demo": {
+      "profile": "demo",
+      "paths": { "brief": "brief/{ep}", "out": "out/{ep}", "page": "video/{ep}.html" },
+      "subtitles": { "maxChars": { "zh": 20, "en": 42 } }
+    }
+  }
+}

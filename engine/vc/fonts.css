@@ -1,0 +1,26 @@
+/* 由引擎 fonts 生成;子集字体,授权见 engine/fonts.json */
+@font-face{font-family:'Anton';src:url(./fonts/vc-Anton-400.woff2) format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'Caveat Brush';src:url(./fonts/vc-CaveatBrush-400.woff2) format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'Jason Handwriting 1';src:url(./fonts/vc-JasonHandwriting1-400.woff2) format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'JetBrains Mono';src:url(./fonts/vc-JetBrainsMono-400.woff2) format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'JetBrains Mono';src:url(./fonts/vc-JetBrainsMono-700.woff2) format('woff2');font-weight:700;font-display:block}
+@font-face{font-family:'Kalam';src:url(./fonts/vc-Kalam-400.woff2) format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'LXGW Marker Gothic';src:url(./fonts/vc-LXGWMarkerGothic-400.woff2) format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'Ma Shan Zheng';src:url(./fonts/vc-MaShanZheng-400.woff2) format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'Noto Sans SC';src:url(./fonts/vc-NotoSansSC-500.woff2) format('woff2');font-weight:500;font-display:block}
+@font-face{font-family:'Noto Sans SC';src:url(./fonts/vc-NotoSansSC-900.woff2) format('woff2');font-weight:900;font-display:block}
+@font-face{font-family:'Noto Serif SC';src:url(./fonts/vc-NotoSerifSC-500.woff2) format('woff2');font-weight:500;font-display:block}
+@font-face{font-family:'Noto Serif SC';src:url(./fonts/vc-NotoSerifSC-900.woff2) format('woff2');font-weight:900;font-display:block}
+@font-face{font-family:'Quicksand';src:url(./fonts/vc-Quicksand-700.woff2) format('woff2');font-weight:700;font-display:block}
+@font-face{font-family:'STIX Two Text';src:url(./fonts/vc-STIXTwoText-400.woff2) format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'STIX Two Text';src:url(./fonts/vc-STIXTwoText-500.woff2) format('woff2');font-weight:500;font-display:block}
+@font-face{font-family:'Smiley Sans';src:url(./fonts/vc-SmileySans-400.woff2) format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'Space Grotesk';src:url(./fonts/vc-SpaceGrotesk-500.woff2) format('woff2');font-weight:500;font-display:block}
+@font-face{font-family:'Space Grotesk';src:url(./fonts/vc-SpaceGrotesk-700.woff2) format('woff2');font-weight:700;font-display:block}
+@font-face{font-family:'Space Mono';src:url(./fonts/vc-SpaceMono-400.woff2) format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'Space Mono';src:url(./fonts/vc-SpaceMono-700.woff2) format('woff2');font-weight:700;font-display:block}
+@font-face{font-family:'Special Elite';src:url(./fonts/vc-SpecialElite-400.woff2) format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'Xiaolai';src:url(./fonts/vc-Xiaolai-400.woff2) format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'ZCOOL KuaiLe';src:url(./fonts/vc-ZCOOLKuaiLe-400.woff2) format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'ZCOOL XiaoWei';src:url(./fonts/vc-ZCOOLXiaoWei-400.woff2) format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'Zhi Mang Xing';src:url(./fonts/vc-ZhiMangXing-400.woff2) format('woff2');font-weight:400;font-display:block}

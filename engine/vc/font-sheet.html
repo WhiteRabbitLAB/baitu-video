@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>字体样张</title>
+<!-- 新书写来源的候选字体样张(TODO 第 7 条)。每行 = 一个书写来源,按它在画面里的样子画(粉笔、报纸、像素、霓虹、古籍竖排),
+     下面一行是易错字检查。字体由 font-sheet.mjs 子集化到 cache/vc-font-sheet/(不进仓库)。 -->
+<link rel="stylesheet" href="../../../../../cache/vc-font-sheet/fonts.css">
+<link rel="stylesheet" href="fonts.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#EDEAE3;color:#1F1C1A;font-family:"Noto Sans SC",sans-serif;width:1920px}
+h1{font-size:34px;margin:0;padding:28px 40px 6px;font-weight:900}
+.lead{padding:0 40px 18px;font-size:20px;color:#6B6355}
+.row{display:grid;grid-template-columns:300px 1fr;border-top:1px solid #CFC8BA;min-height:300px}
+.meta{padding:28px 24px 24px 40px;font-size:18px;color:#6B6355;line-height:1.5}
+.meta b{display:block;font-size:28px;color:#1F1C1A;margin-bottom:8px}
+.stage{position:relative;overflow:hidden;padding:30px 44px;display:flex;flex-direction:column;justify-content:center;gap:14px}
+.check{font-size:22px;color:#6B6355;font-family:"Noto Sans SC";margin-top:6px}
+.check span{font-size:40px;color:inherit;margin-left:10px}
+.tag{font:500 15px "Noto Sans SC";color:#8a8273;letter-spacing:1px}
+/* 粉笔黑板 */
+.chalk{background:#2F4A3C;color:#F1EFE6;background-image:radial-gradient(circle at 30% 40%,rgba(255,255,255,.06),transparent 60%)}
+.chalk .t{filter:url(#chalk);text-shadow:0 0 1px rgba(255,255,255,.4)}
+.chalk .tag,.chalk .check{color:#A9BDB1}
+/* 报纸 */
+.paper{background:#F3EFE4}
+.paper .mast{font-family:"UnifrakturMaguntia";font-size:64px;text-align:center;border-bottom:3px double #1F1C1A;padding-bottom:6px}
+/* 像素 */
+.pixel{background:#14121F;color:#FFE66D}
+.pixel .t{-webkit-font-smoothing:none;font-smooth:never}
+.pixel .tag,.pixel .check{color:#8F8AA8}
+/* 霓虹 */
+.neon{background:#120E14;background-image:linear-gradient(0deg,rgba(255,255,255,.02) 50%,transparent 50%);background-size:100% 40px;color:#fff}
+.neon .t{color:#FFF4FB;text-shadow:0 0 4px #fff,0 0 12px #FF4FB8,0 0 28px #FF4FB8,0 0 60px #FF2D95}
+.neon .t.b{text-shadow:0 0 4px #fff,0 0 12px #3DE8FF,0 0 28px #3DE8FF,0 0 60px #00B8FF}
+.neon .tag,.neon .check{color:#9E8FA3}
+/* 古籍 */
+.book{background:#EFE4C8;flex-direction:row;align-items:flex-start;gap:60px}
+.book .v{writing-mode:vertical-rl;height:400px;letter-spacing:6px;color:#2A2118}
+.book .cols{display:flex;flex-direction:row-reverse;gap:28px;margin-top:10px}   /* 竖排从右往左读 */
+.book .v.r{color:#A3281E}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><filter id="chalk" x="-2%" y="-10%" width="104%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="4" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.6 2.1" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter></svg>
+<h1>字体样张 · 新书写来源候选(2026-10-07)</h1>
+<div class="lead">全部可商用。每行按它在画面里的样子画;灰字一行是易错字检查(「回」「宋」轮廓方向、标点、数字)。最像素 Zpix 商用要付费,已排除。</div>
+
+<div class="row"><div class="meta"><b>粉笔黑板</b>老师在黑板上写的字;粉笔质感靠颗粒遮罩,字体管笔形</div>
+<div class="stage chalk">
+  <div class="tag">中文 · 霞鹜漫黑 LXGW Marker Gothic(OFL)</div>
+  <div class="t" style="font:64px 'LXGW Marker Gothic'">今天学导数:速度 = 路程 ÷ 时间</div>
+  <div class="tag">英文 · Fredericka the Great / Cabin Sketch(OFL)</div>
+  <div class="t" style="font:58px 'Fredericka the Great'">Today: speed = distance ÷ time</div>
+  <div class="t" style="font:700 52px 'Cabin Sketch'">Homework: page 42, questions 1–3</div>
+  <div class="check" style="font-family:'LXGW Marker Gothic'">易错字<span>回宋骨直真面角 0123456789 ,。、「」“”?!</span></div>
+</div></div>
+
+<div class="row"><div class="meta"><b>粉笔 · 手写对比</b>同一句话,每个字按 R8 手写的规矩随机歪一点(角度 ±2°、上下 ±3%、大小 ±4%),加粉笔颗粒。看哪款最像人写的</div>
+<div class="stage chalk" id="chalkcmp">
+  <div class="tag">① 霞鹜漫黑(上一版)</div><div class="t jit" data-f="LXGW Marker Gothic" data-s="60">今天学导数:速度 = 路程 ÷ 时间</div>
+  <div class="tag">② 小赖 Xiaolai(已有,OFL)</div><div class="t jit" data-f="Xiaolai" data-s="64">今天学导数:速度 = 路程 ÷ 时间</div>
+  <div class="tag">③ 龙藏体 Long Cang(已有,OFL)</div><div class="t jit" data-f="Long Cang" data-s="68">今天学导数:速度 = 路程 ÷ 时间</div>
+  <div class="tag">④ 清松手写体 1 Jason Handwriting(OFL;简体一级字缺 35 个生僻字)</div><div class="t jit" data-f="Jason Handwriting 1" data-s="64">今天学导数:速度 = 路程 ÷ 时间</div>
+  <div class="tag">英文 · Gochi Hand / Patrick Hand / Architects Daughter(OFL)</div>
+  <div class="t jit" data-f="Gochi Hand" data-s="60">Today: speed = distance ÷ time</div>
+  <div class="t jit" data-f="Patrick Hand" data-s="60">Today: speed = distance ÷ time</div>
+  <div class="t jit" data-f="Architects Daughter" data-s="54">Today: speed = distance ÷ time</div>
+</div></div>
+
+<div class="row"><div class="meta"><b>报纸标题</b>铅印报纸的刊头与大标题</div>
+<div class="stage paper">
+  <div class="mast">The Daily Explainer</div>
+  <div class="tag">中文 · 思源宋体 900(已有,OFL) 英文 · Playfair Display 900 / UnifrakturMaguntia 刊头(OFL)</div>
+  <div style="font:900 76px 'Noto Serif SC'">土豆何时登上中国餐桌</div>
+  <div style="font:900 60px 'Playfair Display'">Chili Peppers Reach the Chinese Table</div>
+  <div class="check" style="font-family:'Noto Serif SC';font-weight:900">易错字<span>回宋骨直真面角 0123456789 ,。、「」“”?!</span></div>
+</div></div>
+
+<div class="row"><div class="meta"><b>像素游戏</b>8-bit 游戏界面;字号用 12 的整数倍(48 = 4 倍)才不糊</div>
+<div class="stage pixel">
+  <div class="tag">中文 · 缝合像素 Fusion Pixel 12px(OFL)</div>
+  <div class="t" style="font:48px 'Fusion Pixel 12'">第 3 关 · 获得土豆 ×12  生命 ♥♥♥</div>
+  <div class="tag">英文 · Press Start 2P / Silkscreen(OFL)</div>
+  <div class="t" style="font:32px 'Press Start 2P'">LEVEL 3  CHILI x12  PRESS START</div>
+  <div class="t" style="font:48px 'Silkscreen';color:#7CF0C4">GAME OVER - CONTINUE? 9</div>
+  <div class="check" style="font-family:'Fusion Pixel 12';font-size:24px">易错字<span style="font-size:48px">回宋骨直真面角 0123456789 ,。、「」“”?!</span></div>
+</div></div>
+
+<div class="row"><div class="meta"><b>霓虹招牌</b>街边灯管招牌;发光靠多层投影,字体要笔画粗细均匀</div>
+<div class="stage neon">
+  <div class="tag">中文 · 站酷快乐体(已有,OFL)/ 霞鹜漫黑(OFL)</div>
+  <div class="t" style="font:80px 'ZCOOL KuaiLe'">深夜食堂 营业中</div>
+  <div class="t b" style="font:72px 'LXGW Marker Gothic'">今晚供应 酸辣土豆丝</div>
+  <div class="tag">英文 · Monoton / Neonderthaw(OFL)</div>
+  <div class="t b" style="font:80px 'Monoton'">OPEN 24H</div>
+  <div class="t" style="font:96px 'Neonderthaw'">Late Night Kitchen</div>
+  <div class="check" style="font-family:'ZCOOL KuaiLe'">易错字<span>回宋骨直真面角 0123456789 ,。、「」“”?!</span></div>
+</div></div>
+
+<div class="row"><div class="meta"><b>古籍繁体</b>刻本、线装书;竖排,朱笔圈点<br><br>一点明体是 IPA 开放字型授权(可商用,但不是 OFL;改字体文件再分发要改名)</div>
+<div class="stage book">
+  <div><div class="tag">思源宋体繁 Noto Serif TC 900 / 500(OFL)</div>
+    <div class="cols"><div class="v" style="font:900 52px 'Noto Serif TC'">番椒叢生白花</div><div class="v" style="font:500 52px 'Noto Serif TC'">子儼似禿筆頭</div><div class="v r" style="font:500 52px 'Noto Serif TC'">味辣色紅</div></div></div>
+  <div><div class="tag">一点明体 I.Ming(IPA 授权)</div>
+    <div class="cols"><div class="v" style="font:52px 'I.Ming'">番椒叢生白花</div><div class="v" style="font:52px 'I.Ming'">子儼似禿筆頭</div><div class="v r" style="font:52px 'I.Ming'">味辣色紅</div></div></div>
+  <div style="flex:1"><div class="tag">英文 · IM Fell English(OFL)</div>
+    <div style="font:52px 'IM Fell English';margin-top:16px;line-height:1.3">Of the Guinie Pepper,<br>called in Latine <i>Capsicum</i>.</div>
+    <div class="check" style="font-family:'Noto Serif TC'">易错字<span>回宋骨直真面角 0123456789 ,。、「」</span></div>
+    <div class="check" style="font-family:'I.Ming'">易错字<span>回宋骨直真面角 0123456789 ,。、「」</span></div></div>
+</div></div>
+<div class="row"><div class="meta"><b>检查器对照</b>未修的站酷小薇:「回」应是实心块(证明这一行的检查能看出缺陷);右边把检查器报过的字放大</div>
+<div class="stage paper" style="flex-direction:row;align-items:center;gap:60px">
+  <div><div class="tag">站酷小薇 原版(阳性对照)</div><div style="font:140px 'XiaoWei Raw'">回国</div></div>
+  <div><div class="tag">思源宋体繁 900 / 500</div><div style="font:900 140px 'Noto Serif TC'">直真面回</div><div style="font:500 140px 'Noto Serif TC'">直真面回</div></div>
+</div></div>
+<script>
+// 逐字歪斜(固定种子,和 engine/vc 的 R8 手写同一套幅度)
+const h2 = (x, y, s) => { let h = (Math.imul(x | 0, 374761393) + Math.imul(y | 0, 668265263) + Math.imul(s | 0, 1442695041)) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16; return (h >>> 0) / 4294967296; };
+document.querySelectorAll('.jit').forEach((el, r) => {
+  const f = el.dataset.f, sz = +el.dataset.s;
+  el.style.font = `${sz}px "${f}"`;
+  el.innerHTML = [...el.textContent].map((c, i) => c === ' ' ? ' ' : `<span style="display:inline-block;transform:translateY(${((h2(i, r, 3) - .5) * sz * .06).toFixed(1)}px) rotate(${((h2(i, r, 2) - .5) * 4).toFixed(2)}deg) scale(${(1 + (h2(i, r, 1) - .5) * .08).toFixed(3)});opacity:${(.85 + (h2(i, r, 4) - .5) * .3).toFixed(2)}">${c}</span>`).join('');
+});
+window.sheetReady = (async () => { await document.fonts.ready; const fams = ['LXGW Marker Gothic','Fredericka the Great','Cabin Sketch','Playfair Display','UnifrakturMaguntia','Fusion Pixel 12','Press Start 2P','Silkscreen','Monoton','Neonderthaw','Noto Serif TC','I.Ming','IM Fell English','ZCOOL KuaiLe','Noto Serif SC','XiaoWei Raw','Xiaolai','Long Cang','Jason Handwriting 1','Gochi Hand','Patrick Hand','Architects Daughter'];
+  const txt = document.body.innerText; const r = {}; for (const f of fams) r[f] = (await document.fonts.load(`40px "${f}"`, txt)).length; return r; })();
+</script>
+</body>
+</html>

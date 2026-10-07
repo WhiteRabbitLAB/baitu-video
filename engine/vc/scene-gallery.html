@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>场景示范图 · Scene gallery</title>
+<!-- 场景库的示范帧:每个场景用它的默认画风、同一个中性题目(为什么天是蓝的)画一张「讲到一半」的画面。
+     ?scene=<id>&lang=zh|en。出图:node engine/vc/scene-gallery.mjs → skill 的 scenes/thumbs/。
+     Demo frames for the scene library: each scene in its default style, all on one neutral topic ("why is the sky blue?"). -->
+<link rel="stylesheet" href="fonts.css">
+<style>html,body{margin:0;background:#222}svg{display:block}</style>
+</head>
+<body>
+<svg id="stage" width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="vc.js"></script>
+<script src="styles.js"></script>
+<script>
+const Q = new URLSearchParams(location.search), ID = Q.get('scene') || 'case-file', EN = Q.get('lang') === 'en';
+const tr = (zh, en) => EN ? en : zh;
+const T = 99;   // 全部画完的那一刻
+const STYLE = { 'case-file': 'paper-skeuo', 'lab-desk-1944': 'paper-skeuo', 'lab-dashboard': 'paper-skeuo', 'strategy-game': 'game-ui', 'anatomy-diagram': 'flat-geometric',
+  'editing-desk': 'cartoon-ui', 'info-cards': 'cartoon-ui', 'landscape-scroll': 'flat-illustration', 'terminal-tech': 'tech-ui', 'field-notebook': 'paper-skeuo', 'gallery-wall': 'paper-skeuo' }[ID];
+const k = VC.kit(STYLE, EN ? 'en' : 'zh'), C = k.S.c;
+const txt = (role, s, x, y, o = {}) => k.text(role, s, x, y, T, -1, { entrance: 'static', ...o });
+const fitT = (role, s, x, y, w, o = {}) => k.textFit(role, s, x, y, w, T, -1, { entrance: 'static', ...o });
+const shadow = (x, y, w, h, r = 4) => `<rect x="${x + 8}" y="${y + 12}" width="${w}" height="${h}" rx="${r}" fill="#000" opacity=".18"/>`;
+const paper = (x, y, w, h, fill = '#F7F1E3', rot = 0) => `<g transform="rotate(${rot},${x + w / 2},${y + h / 2})">${shadow(x, y, w, h, 3)}<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="${fill}"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-grain)" opacity=".25" style="mix-blend-mode:multiply"/></g>`;
+const skyGrad = (id, top = '#3E7CC9', bot = '#BFDDF5') => `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${top}"/><stop offset="1" stop-color="${bot}"/></linearGradient>`;
+const curve = (x, y, w, h, f, n = 80) => 'M' + Array.from({ length: n + 1 }, (_, i) => `${(x + w * i / n).toFixed(1)},${(y + h - h * f(i / n)).toFixed(1)}`).join(' L');
+const RAINBOW = ['#D2352B', '#F08A24', '#E0B400', '#1F8A4C', '#2457C5', '#7A3DB8'];
+
+const SCENES = {
+  // 档案案卷:一份结案卷宗
+  'case-file': () => `<rect width="1920" height="1080" fill="#5C4632"/><rect width="1920" height="1080" fill="url(#vc-grain)" opacity=".25" style="mix-blend-mode:multiply"/>`
+    + paper(140, 120, 760, 860, '#C9A46A', -2) + `<rect x="150" y="96" width="260" height="60" rx="8" fill="#C9A46A" transform="rotate(-2,280,126)"/>`
+    + txt('R2', tr('档案 No.042', 'FILE No.042'), 210, 240, { size: 44, fill: '#9E3B2C' }) + txt('R3', tr('案由:天为什么是蓝的', 'Case: why is the sky blue?'), 210, 320, { size: 38 })
+    + paper(280, 380, 560, 520, '#F7F1E3', 1.5) + txt('R5', tr('1871 年 · 瑞利', 'Rayleigh, 1871'), 330, 470, { size: 36 })
+    + fitT('R3', tr('散射强度与波长的四次方成反比', 'scattering ∝ 1 / wavelength⁴'), 330, 540, 470, { size: 32 })
+    + k.mark(326, 500, 480, 52, T, -1) + txt('R6', tr('蓝光 ≈ 红光 × 5', 'blue ≈ 5 × red'), 360, 650, { size: 44 })
+    + k.stamp([tr('已结案', 'CLOSED')], 640, 800, T, -1, { rot: -8 })
+    + paper(1040, 160, 420, 500, '#FFFFFF', 4) + `<rect x="1070" y="190" width="360" height="360" fill="url(#gSky)" transform="rotate(4,1250,410)"/>`
+    + `<g transform="rotate(4,1250,410)"><circle cx="1350" cy="260" r="34" fill="#FFE6A3"/><path d="M1070,500 Q1180,440 1270,490 T1430,470 L1430,550 L1070,550Z" fill="#5E7F5C"/></g>`
+    + txt('R8', tr('证物 1:晴天的天空', 'Exhibit 1: a clear sky'), 1080, 620, { size: 32 })
+    + paper(1100, 720, 600, 260, '#F3E59A', -3) + txt('R8', tr('嫌疑人:空气分子', 'Suspect: air molecules'), 1150, 820, { size: 40 }) + txt('R8', tr('作案手法:把蓝光弹得最多', 'Method: bounces blue the most'), 1150, 900, { size: 34 })
+    + `<defs>${skyGrad('gSky')}</defs>`,
+
+  // 老实验室办公桌:记录卡 + 坐标纸曲线 + 撕页日历
+  'lab-desk-1944': () => `<rect width="1920" height="1080" fill="#3B2A1E"/><rect width="1920" height="1080" fill="url(#vc-grain)" opacity=".3" style="mix-blend-mode:multiply"/>`
+    + paper(120, 120, 300, 360, '#EFE8D8', -3) + txt('R1', '1871', 175, 300, { size: 110, fill: '#2A2622' }) + txt('R3', tr('瑞利', 'RAYLEIGH'), 200, 400, { size: 40, fill: '#8E2A22' })
+    + paper(520, 100, 760, 860, '#E9EDE4', 1) + Array.from({ length: 20 }, (_, i) => `<path d="M560,${170 + i * 38} H1240" stroke="#9FC3B5" stroke-width="${i % 5 ? 1 : 2}" opacity=".7"/>`).join('') + Array.from({ length: 18 }, (_, i) => `<path d="M${560 + i * 40},170 V892" stroke="#9FC3B5" stroke-width="${i % 5 ? 1 : 2}" opacity=".7"/>`).join('')
+    + `<path d="${curve(570, 200, 660, 660, x => Math.pow(1 - x * .55, 4))}" fill="none" stroke="#24324C" stroke-width="5"/>`
+    + txt('R3', tr('散射强度', 'scattering'), 580, 160, { size: 30 }) + txt('R3', tr('波长 →  紫  蓝  绿  黄  红', 'wavelength →  violet  blue  green  yellow  red'), 600, 930, { size: 28 })
+    + k.mark(560, 200, 120, 120, T, -1) + txt('R6', tr('蓝在这里!', 'blue is up here!'), 700, 270, { size: 40 })
+    + paper(1380, 180, 420, 560, '#F4EEDC', 2) + txt('R2', tr('观测记录', 'OBSERVATION'), 1420, 260, { size: 40 })
+    + txt('R3', tr('天空:蓝', 'sky: blue'), 1420, 340, { size: 34 }) + fitT('R3', tr('日落:红 / 橙', 'sunset: red / orange'), 1420, 410, 340, { size: 34 }) + txt('R3', tr('云:白', 'clouds: white'), 1420, 480, { size: 34 })
+    + fitT('R8', tr('为什么日落不蓝?', 'why are sunsets not blue?'), 1420, 600, 340, { size: 34 })
+    + paper(1430, 800, 340, 200, '#F3E59A', -4) + fitT('R8', tr('光路越长,蓝光越早被弹光', 'longer path, blue scattered away'), 1460, 880, 280, { size: 26, maxLines: 2 }),
+
+  // 实验室数据看板:常驻监护屏 + 试管架
+  'lab-dashboard': () => `<rect width="1920" height="1080" fill="#C9D3D8"/><rect width="1920" height="1080" fill="url(#vc-grain)" opacity=".12" style="mix-blend-mode:multiply"/>`
+    + `<rect x="200" y="80" width="1100" height="680" rx="26" fill="#2B3236"/><rect x="240" y="120" width="1020" height="600" rx="10" fill="#10201C"/>`
+    + Array.from({ length: 9 }, (_, i) => `<path d="M260,${160 + i * 64} H1240" stroke="#24443B" stroke-width="2"/>`).join('')
+    + `<path d="${curve(280, 180, 940, 480, x => .15 + .8 * Math.pow(1 - x, 3.2))}" fill="none" stroke="#6FD6A8" stroke-width="6"/>`
+    + `<path d="${curve(280, 180, 940, 480, x => .05 + .17 * Math.pow(1 - x, 3.2))}" fill="none" stroke="#F0605A" stroke-width="6"/>`
+    + txt('R3', tr('蓝光 450nm', 'blue 450 nm'), 300, 210, { size: 32, fill: '#6FD6A8' }) + txt('R3', tr('红光 700nm', 'red 700 nm'), 300, 680, { size: 32, fill: '#F0605A' })
+    + txt('R4', '×5.9', 960, 260, { size: 96, fill: '#6FD6A8' }) + txt('R10', tr('示意', 'schematic'), 1150, 700, { size: 24, fill: '#8FB8A8' })
+    + `<rect x="1400" y="520" width="420" height="40" rx="8" fill="#9AA6AC"/>` + RAINBOW.map((col, i) => `<rect x="${1420 + i * 66}" y="380" width="40" height="160" rx="18" fill="${col}" opacity=".85"/><rect x="${1420 + i * 66}" y="360" width="40" height="30" rx="6" fill="#E8ECEE"/>`).join('')
+    + paper(1380, 120, 420, 200, '#F3E59A', 3) + txt('R8', tr('同一束光,散射比例按颜色排', 'one beam, scattered by color'), 1410, 230, { size: 28 })
+    + k.chapterBar(99, [{ name: tr('光', 'light'), start: 0, end: 40 }, { name: tr('散射', 'scatter'), start: 40, end: 120 }, { name: tr('天空', 'sky'), start: 120, end: 200 }], { y: 1000, total: 200, size: 26 }),
+
+  // 策略游戏:光在大气里推进的六边形地图
+  'strategy-game': () => {
+    const R = 62, hx = (c, r) => [180 + c * R * 1.5, 170 + r * R * 1.732 + (c % 2) * R * .866], hex = (x, y) => Array.from({ length: 6 }, (_, i) => `${(x + R * Math.cos(i * Math.PI / 3)).toFixed(1)},${(y + R * Math.sin(i * Math.PI / 3)).toFixed(1)}`).join(' ');
+    let s = `<rect width="1920" height="1080" fill="#14181F"/>`;
+    for (let c = 0; c < 18; c++) for (let r = 0; r < 6; r++) {
+      const [x, y] = hx(c, r), lit = c < 11 - Math.abs(r - 2.5), fill = lit ? (r < 2 ? '#5B8CC9' : r < 4 ? '#7FA7D9' : '#A9C9EA') : '#C9B48A';
+      s += `<polygon points="${hex(x, y)}" fill="${fill}" stroke="#0E1116" stroke-width="3"/>` + (lit ? '' : `<polygon points="${hex(x, y)}" fill="#3B3020" opacity=".45"/>`);
+    }
+    s += `<path d="M180,520 C520,470 820,560 1180,500" fill="none" stroke="#C23A30" stroke-width="9" stroke-dasharray="26 18"/>`
+      + `<rect x="0" y="0" width="1920" height="70" fill="#1B2230"/><rect x="0" y="68" width="1920" height="3" fill="#C9A44E"/>`
+      + txt('R3', tr('回合 3 · 光进入大气', 'Turn 3 · light enters the air'), 40, 48, { size: 30 }) + txt('R4', tr('已染蓝 42 格', 'Hexes turned blue: 42'), 1500, 48, { size: 30 })
+      + `<rect x="1300" y="160" width="560" height="420" rx="12" fill="#1B2230" stroke="#C9A44E" stroke-width="4"/>`
+      + txt('R2', tr('机制解锁:散射', 'Unlocked: scattering'), 1340, 230, { size: 40 }) + fitT('R3', tr('波长越短,弹开越多。蓝光的散射约为红光的 5 倍。', 'Shorter waves scatter more. Blue scatters ~5× more than red.'), 1340, 300, 480, { size: 30, maxLines: 4 })
+      + `<rect x="1340" y="470" width="480" height="70" rx="8" fill="#2A3242"/>` + txt('R9', tr('成就:天空变蓝', 'Achievement: blue sky'), 1370, 518, { size: 30 })
+      + `<rect x="1300" y="640" width="560" height="260" rx="12" fill="#1B2230" stroke="#C9A44E" stroke-width="4"/><circle cx="1390" cy="770" r="62" fill="#2A3242" stroke="#C9A44E" stroke-width="4"/>` + `<g transform="translate(1390,770) scale(.42) translate(-1390,-770)">${k.mascot(1390, 860, T, -1).replace(/<ellipse[^>]*opacity="\.25"\/>/, '')}</g>`
+      + fitT('R7', tr('顾问:日落时光要走更远,蓝光在半路就被弹光了。', 'Advisor: at sunset light travels farther; blue is scattered away on the way.'), 1480, 720, 350, { size: 28, maxLines: 4 });
+    return s;
+  },
+
+  // 解剖图解:扁平因果链(太阳 → 空气 → 眼睛)
+  'anatomy-diagram': () => {
+    const cap = (s, x, y) => { const w = k.width('R3', s, 34) + 50; return `<rect x="${x - w / 2}" y="${y - 40}" width="${w}" height="56" rx="28" fill="#FFD166"/>` + txt('R3', s, x, y - 2, { anchor: 'middle', size: 34, fill: '#13204A' }); };
+    return `<rect width="1920" height="1080" fill="#13204A"/>`
+      + `<circle cx="260" cy="420" r="120" fill="#FFD166"/><path d="M260,420 m-120,0 a120,120 0 0,0 240,0Z" fill="#F4B942"/>`
+      + `<rect x="620" y="200" width="660" height="440" rx="40" fill="#1E3170"/>` + Array.from({ length: 15 }, (_, i) => { const x = 700 + (i % 5) * 125 + ((i * 37) % 50) - 25, y = 270 + Math.floor(i / 5) * 140 + ((i * 53) % 60) - 30; return `<circle cx="${x}" cy="${y}" r="14" fill="#9AB3FF"/><circle cx="${x}" cy="${y}" r="14" fill="#13204A" opacity=".25" transform="translate(4,4)"/>`; }).join('')
+      + `<path d="M400,420 H620" stroke="#FFFFFF" stroke-width="10" marker-end="url(#ar)"/><path d="M1280,420 H1500" stroke="#5B8CFF" stroke-width="10" marker-end="url(#ar2)"/>`
+      + `<ellipse cx="1660" cy="420" rx="130" ry="80" fill="#FFFFFF"/><circle cx="1660" cy="420" r="58" fill="#3B6FE0"/><circle cx="1660" cy="420" r="26" fill="#13204A"/><path d="M1530,420 a130,80 0 0,1 260,0" fill="none" stroke="#9AA0C8" stroke-width="6"/>`
+      + cap(tr('白光', 'white light'), 510, 380) + cap(tr('空气分子把蓝光弹得最多', 'air scatters blue the most'), 950, 720) + cap(tr('四面八方都是蓝', 'blue from every direction'), 1660, 600)
+      + txt('R1', tr('天为什么是蓝的', 'Why is the sky blue'), 120, 140, { size: 64 }) + txt('R10', tr('示意图,不按比例', 'schematic, not to scale'), 120, 1010, { size: 26, fill: '#9AA0C8' })
+      + `<defs><marker id="ar" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#FFFFFF"/></marker><marker id="ar2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#5B8CFF"/></marker></defs>`;
+  },
+
+  // 剪辑台:原文 / 预览 / 数字 + 多轨时间轴
+  'editing-desk': () => k.backdrop(0, 0, 1920, 1080)
+    + k.panel(40, 40, 520, 600, tr('原文', 'SOURCE')) + k.mark(76, 168, 448, 44, T, -1) + fitT('R5', tr('「天空的蓝色来自阳光被空气分子散射。」', '"The blue of the sky comes from sunlight scattered by air molecules."'), 80, 200, 440, { size: 34, maxLines: 4 })
+    
+    + k.panel(600, 40, 760, 600, tr('预览', 'PREVIEW')) + `<rect x="640" y="130" width="680" height="470" rx="12" fill="url(#gSky)"/><circle cx="1180" cy="230" r="46" fill="#FFE6A3"/><path d="M640,520 Q800,450 960,500 T1320,480 V600 H640Z" fill="#8DBF8B"/>`
+    + k.panel(1400, 40, 480, 600, tr('数字', 'NUMBERS')) + txt('R3', tr('波长', 'wavelength'), 1440, 200, { size: 32 }) + `<rect x="1440" y="240" width="400" height="16" rx="8" fill="#D9D2C2"/><circle cx="1530" cy="248" r="24" fill="#2457C5" stroke="#1F1C1A" stroke-width="5"/>` + txt('R4', '450 nm', 1440, 340, { size: 56, fill: C.ink })
+    + txt('R3', tr('散射强度', 'scattering'), 1440, 440, { size: 32 }) + txt('R4', '×5', 1440, 540, { size: 80, fill: C.ink })
+    + k.panel(40, 680, 1840, 360, tr('时间轴', 'TIMELINE')) + [[tr('光', 'light'), 0, '#F2C14E'], [tr('散射', 'scatter'), 1, '#A8D8C5'], [tr('天空', 'sky'), 2, '#F3B2B0']].map(([n, i, col]) => `<rect x="${200 + i * 520}" y="${780 + i * 70}" width="460" height="54" rx="12" fill="${col}" stroke="#1F1C1A" stroke-width="5"/>` + txt('R3', n, 230 + i * 520, 818 + i * 70, { size: 30 })).join('')
+    + `<path d="M760,750 V1010" stroke="#C23A30" stroke-width="5"/>` + `<defs>${skyGrad('gSky', '#5E97DD', '#CFE6F7')}</defs>`,
+
+  // 信息卡片:大数字卡 + 柱状对比 + 主持角色
+  'info-cards': () => k.backdrop(0, 0, 1920, 1080)
+    + k.panel(120, 140, 640, 420, '') + txt('R1', tr('蓝光被弹开', 'Blue scatters'), 170, 260, { size: 56 }) + txt('R4', tr('≈ 5 倍', '≈ 5×'), 170, 430, { size: 140, fill: C.ink }) + txt('R3', tr('跟红光比', 'compared with red'), 170, 510, { size: 36 })
+    + k.panel(820, 140, 640, 760, '') + txt('R2', tr('散射强度', 'Scattering'), 870, 240, { size: 48 })
+    + RAINBOW.slice().reverse().map((col, i) => { const h = 60 + Math.pow(1 - i / 5, 3.2) * 460; return `<rect x="${880 + i * 92}" y="${820 - h}" width="64" height="${h}" rx="10" fill="${col}" stroke="#1F1C1A" stroke-width="5"/>`; }).join('')
+    + txt('R3', tr('紫  蓝  绿  黄  橙  红', 'violet → red'), 880, 870, { size: 30 })
+    + k.mascot(1680, 900, T, -1) + k.bubble(tr('所以天是蓝的!', 'So the sky is blue!'), 1500, 600, T, -1, { side: -1 })
+    + `<rect x="40" y="40" width="300" height="56" rx="28" fill="#F2C14E" stroke="#1F1C1A" stroke-width="5"/>` + txt('R2', tr('第 2 章 · 散射', 'Ch. 2 · Scattering'), 70, 80, { size: 30 }),
+
+  // 横版风景:白天的多层视差风景
+  'landscape-scroll': () => `<defs>${skyGrad('gS', '#2F6DC0', '#CFE7F7')}<linearGradient id="gM" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7FA6CC"/><stop offset="1" stop-color="#A9C3DC"/></linearGradient></defs>`
+    + `<rect width="1920" height="1080" fill="url(#gS)"/><circle cx="1560" cy="220" r="80" fill="#FFF3C4"/><circle cx="1560" cy="220" r="140" fill="#FFF3C4" opacity=".25"/>`
+    + `<path d="M0,620 L220,380 L420,560 L640,330 L900,600 L1150,360 L1420,590 L1680,400 L1920,560 V1080 H0Z" fill="url(#gM)"/>`
+    + `<path d="M0,700 Q300,600 620,690 T1240,680 T1920,660 V1080 H0Z" fill="#5C9A7E"/><path d="M0,800 Q400,720 820,800 T1920,780 V1080 H0Z" fill="#3F7F66"/>`
+    + `<path d="M0,920 Q700,860 1920,930 V1080 H0Z" fill="#2E5F4E"/><path d="M0,950 Q900,900 1920,960" stroke="#C9B48A" stroke-width="26" fill="none"/>`
+    + Array.from({ length: 6 }, (_, i) => `<path d="M${200 + i * 300},${200 + (i % 3) * 40} q20,-14 40,0 q20,-14 40,0" stroke="#1E3A5C" stroke-width="5" fill="none"/>`).join('')
+    + `<rect width="1920" height="1080" fill="url(#vc-grain)" opacity=".09" style="mix-blend-mode:overlay"/>` + k.mascot(900, 945, T, -1)
+    + `<rect x="120" y="100" width="620" height="110" rx="20" fill="#1E2F4A" opacity=".75"/>` + txt('R1', tr('越往远处,越蓝', 'The farther, the bluer'), 160, 175, { size: 54, fill: '#FFF8EC' }),
+
+  // 科技终端:终端窗口 + 数据面板
+  'terminal-tech': () => k.backdrop(0, 0, 1920, 1080)
+    + k.terminal(100, 120, 980, 560, [{ cmd: 'scatter --beam sunlight', t0: -9 }, { out: tr('分解:红 橙 黄 绿 蓝 紫', 'split: red orange yellow green blue violet'), t0: -8 }, { cmd: 'scatter --compare 450nm 700nm', t0: -7 }, { out: tr('蓝 / 红 = 5.9 倍', 'blue / red = 5.9x'), t0: -6 }], T, { title: 'sky.sh', size: 30 })
+    + k.panel(1160, 120, 660, 560, tr('散射强度', 'SCATTERING')) + RAINBOW.slice().reverse().map((col, i) => { const w = 60 + Math.pow(1 - i / 5, 3.2) * 460; return `<rect x="1200" y="${220 + i * 70}" width="${w}" height="36" rx="6" fill="${col}" opacity=".9"/>`; }).join('')
+    + txt('R4', '×5.9', 1600, 640, { size: 64 })
+    + k.stamp([tr('天空:蓝', 'SKY: BLUE')], 600, 800, T, -1) + txt('R10', tr('示意动画 · 数据为瑞利散射公式计算值', 'schematic · values from the Rayleigh formula'), 100, 1000, { size: 24 }),
+
+  // 纸面实验记录 + 屏幕对话框
+  'field-notebook': () => k.backdrop(0, 0, 1920, 1080)
+    + paper(100, 90, 820, 900, '#FBF8F0', -1.5) + Array.from({ length: 16 }, (_, i) => `<path d="M140,${200 + i * 48} H880" stroke="#B9C7D8" stroke-width="2" transform="rotate(-1.5,510,540)"/>`).join('')
+    + txt('R2', tr('实验记录 · 第 3 天', 'Lab notes · day 3'), 160, 180, { size: 44 })
+    + txt('R8', tr('手电筒照一杯加了几滴牛奶的水:', 'Flashlight through water + a few drops of milk:'), 160, 290, { size: 34 })
+    + txt('R8', tr('从侧面看 → 偏蓝', 'side view → bluish'), 200, 380, { size: 38 }) + txt('R8', tr('从正对面看 → 偏橙', 'straight through → orange'), 200, 460, { size: 38 })
+    + k.mark(190, 330, 360, 64, T, -1) + txt('R6', tr('= 天空 + 日落!', '= sky + sunset!'), 600, 420, { size: 44 })
+    + paper(200, 600, 340, 300, '#FFFFFF', 3) + `<rect x="220" y="620" width="300" height="220" fill="url(#gCup)" transform="rotate(3,370,750)"/>` + txt('R10', tr('照片:自家厨房,2026', 'photo: home kitchen, 2026'), 220, 880, { size: 22 })
+    + k.chat(1000, 140, 820, 640, [{ who: 'user', text: tr('为什么天是蓝的?', 'Why is the sky blue?'), t0: -9 }, { who: 'ai', text: tr('阳光撞上空气分子,蓝光被弹得最多,所以从各个方向都有蓝光进到眼睛。', 'Sunlight hits air molecules; blue is scattered the most, so blue reaches your eyes from every direction.'), t0: -8 }], T, { title: tr('问 AI', 'Ask AI'), size: 30 })
+    + `<defs>${skyGrad('gCup', '#B9D3EE', '#F3C58A')}</defs>`,
+
+  // 画作与展签:墙上两幅「天空」画 + 展签
+  'gallery-wall': () => `<rect width="1920" height="1080" fill="#ECE6DA"/><rect width="1920" height="1080" fill="url(#vc-grain)" opacity=".15" style="mix-blend-mode:multiply"/><rect y="960" width="1920" height="120" fill="#B9A98E"/>`
+    + `<defs>${skyGrad('gA', '#2E68B8', '#CDE3F4')}<linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3B3E7A"/><stop offset=".5" stop-color="#E2687A"/><stop offset="1" stop-color="#FFB466"/></linearGradient></defs>`
+    + shadow(180, 160, 640, 460, 2) + `<rect x="160" y="140" width="680" height="500" fill="#6B4A2E"/><rect x="190" y="170" width="620" height="440" fill="url(#gA)"/><path d="M190,520 Q400,470 600,510 T810,500 V610 H190Z" fill="#6E8E64"/>`
+    + shadow(1000, 160, 640, 460, 2) + `<rect x="980" y="140" width="680" height="500" fill="#6B4A2E"/><rect x="1010" y="170" width="620" height="440" fill="url(#gB)"/><circle cx="1320" cy="520" r="60" fill="#FFE3A0"/><path d="M1010,560 H1630 V610 H1010Z" fill="#2A2C55"/>`
+    + paper(300, 700, 420, 160, '#FBF8F0') + txt('R3', tr('《正午》', 'Noon'), 330, 760, { size: 34 }) + fitT('R10', tr('光走得近,蓝光最多', 'short path, most blue'), 330, 820, 360, { size: 26 })
+    + paper(1120, 700, 420, 160, '#FBF8F0') + txt('R3', tr('《日落》', 'Sunset'), 1150, 760, { size: 34 }) + fitT('R10', tr('光走得远,蓝光被弹光', 'long path, blue scattered away'), 1150, 820, 360, { size: 26 })
+    + txt('R1', tr('同一片天,两种颜色', 'One sky, two colors'), 960, 90, { anchor: 'middle', size: 56 }),
+};
+
+const stage = document.getElementById('stage');
+window.galleryReady = VC.ready(k, [JSON.stringify(SCENES[ID].toString())]).then(r => { k.begin(); stage.innerHTML = `<defs>${k.defs()}</defs>` + SCENES[ID](); return r; });
+</script>
+</body>
+</html>

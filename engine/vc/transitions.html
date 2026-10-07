@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>转场演示</title>
+<!-- 转场库里还没做过的四种:morph、zoom-through、slide-push、blur-push。每格一个循环:A 停 → 转场 → B 停。
+     参数取 .claude/skills/explainer-video/design/camera-transitions.md「转场库」。
+     URL:?style=<画风> &tx=<id>(只显示这一种,1920×1080)&t=秒 &render(无控件,供截图 / 量) &still(关掉场景里的待机微动,量转场用) -->
+<link rel="stylesheet" href="fonts.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#16171a;color:#e8e6e0;font-family:"Noto Sans SC",sans-serif}
+header{position:sticky;top:0;z-index:2;background:#16171a;border-bottom:1px solid #333;padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+header h1{font-size:18px;margin:0 8px 0 0;font-weight:900}
+.grp{display:flex;flex-wrap:wrap;gap:4px}
+button{font:inherit;font-size:14px;padding:6px 12px;border:1px solid #444;background:#222;color:#e8e6e0;border-radius:8px;cursor:pointer}
+button[aria-pressed=true]{background:#e8e6e0;color:#16171a}
+.scrub{display:flex;gap:8px;align-items:center;flex:1;min-width:220px}
+input[type=range]{flex:1;min-width:0}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,640px),1fr));gap:16px;padding:16px}
+figure{margin:0;min-width:0}
+figure svg{display:block;width:100%;height:auto;border-radius:6px}
+figcaption{font-size:14px;padding:6px 2px;color:#aaa}
+figcaption b{color:#e8e6e0}
+body.render header{display:none}
+body.render #grid{display:block;padding:0}
+body.render figure svg{width:1920px;border-radius:0}
+body.render figcaption{display:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>转场演示</h1>
+  <div class="grp" id="styles"></div>
+  <div class="scrub"><button id="play">播放</button><input id="scrub" type="range" min="0" max="4" step="0.01" value="0" aria-label="时间"><span id="time">0.0 秒</span></div>
+</header>
+<div id="grid"></div>
+<script src="vc.js"></script>
+<script src="styles.js"></script>
+<script>
+const Q = new URLSearchParams(location.search), RENDER = Q.has('render'), STILL = Q.has('still');
+if (RENDER) document.body.classList.add('render');
+let STYLE = Q.get('style') || 'paper-skeuo', T = +(Q.get('t') || 0), playing = false, kit = null;
+const T0 = 1.4, HOLD = 1.6;   // A 停 1.4s → 转场 → B 停 1.6s
+const S = VC.shape;
+
+// 四组镜头。每组:bg(两镜共用的底)+ a / b(各自的前景);场景里只调组件与文字角色
+// 待机微动:每镜头有一样东西在轻轻动(浮动),量转场时用 &still 关掉
+const bob = (t, ph = 0) => STILL ? 0 : Math.sin(t * 1.6 + ph) * 6;
+const DEMOS = {
+  'slide-push': {
+    name: 'slide-push 面板推入', note: '0.5s cubic-bezier(.7,0,.2,1),强调色竖条领路 · 图表 / 面板换页',
+    a: (k, t) => k.backdrop(0, 0, 1920, 1080) + k.panel(260, 170, 1400, 740, '图 1 · 每日摄入')
+      + k.text('R3', '实验期间每天的热量', 340, 330, t) + k.counter([[-1, 1570]], 336, 560 + bob(t), t, { unit: '千卡', size: 150 })
+      + k.text('R10', '示意数据', 340, 840, t),
+    b: (k, t) => {
+      const vals = [64, 61, 58, 55, 52.5], X = i => 420 + i * 220, Y = v => 820 - (v - 40) * 18;
+      return k.backdrop(0, 0, 1920, 1080) + k.panel(260, 170, 1400, 740, '图 2 · 体重变化')
+        + vals.map((v, i) => `<rect x="${X(i) - 50}" y="${Y(v) + (i === 4 ? bob(t) : 0)}" width="100" height="${820 - Y(v) - (i === 4 ? bob(t) : 0)}" rx="8" fill="${k.S.c.accent}" opacity="${.45 + i * .12}"/>`
+          + k.text('R3', `第 ${i * 6} 周`, X(i), 870, t, -1, { anchor: 'middle', size: 26 })).join('')
+        + k.text('R10', '示意数据', 340, 290, t);
+    },
+  },
+  'blur-push': {
+    name: 'blur-push 模糊推进', note: '0.55s CSS ease;旧 → .92 + 模糊 24 + 淡出,新 1.06 → 1;底垫 1.08 重模糊 · 章节切换',
+    a: (k, t) => k.backdrop(0, 0, 1920, 1080) + k.text('R3', '第一章', 960, 420, t, -1, { anchor: 'middle', size: 40 })
+      + k.text('R1', '实验怎么做', 960, 560 + bob(t), t, -1, { anchor: 'middle', entrance: 'static' }),
+    b: (k, t) => k.backdrop(0, 0, 1920, 1080) + k.text('R3', '第二章', 960, 420, t, -1, { anchor: 'middle', size: 40 })
+      + k.text('R1', '结果出来了', 960, 560 + bob(t), t, -1, { anchor: 'middle', entrance: 'static' }),
+  },
+  'zoom-through': {
+    name: 'zoom-through 推进穿越', note: '指数推近 zoom = Z^e(Z ≥ 1100/r0),smooth 缓动 1.2s;物体变开口露出下一层 · 从局部进入下一层',
+    obj: { cx: 1340, cy: 560, r0: 120 },
+    a: (k, t) => {
+      const c = k.S.c, { cx, cy, r0 } = DEMOS['zoom-through'].obj, ring = c.ink || '#000';
+      return k.backdrop(0, 0, 1920, 1080) + k.text('R2', '一碗米饭', 260, 300, t, -1, { entrance: 'static' })
+        + k.text('R3', '放大看里面有什么', 262, 370, t, -1, { entrance: 'static' })
+        + `<circle cx="${cx}" cy="${cy + bob(t)}" r="${r0}" fill="${c.marker || c.accent}" stroke="${ring}" stroke-width="6"/>`
+        + `<circle cx="${cx - 40}" cy="${cy - 30 + bob(t)}" r="18" fill="#fff" opacity=".6"/>`;
+    },
+    b: (k, t) => {
+      const c = k.S.c, rows = [['碳水', 60], ['脂肪', 30], ['蛋白质', 10]];
+      return k.backdrop(0, 0, 1920, 1080) + k.panel(300, 200, 1320, 680, '成分(示意)')
+        + rows.map(([n, v], i) => k.text('R3', n, 380, 400 + i * 150, t, -1, { size: 36 })
+          + `<rect x="620" y="${360 + i * 150}" width="${v * 12 + (i === 0 ? bob(t) * 2 : 0)}" height="56" rx="10" fill="${c.accent}" opacity="${.9 - i * .2}"/>`).join('');
+    },
+  },
+  'fill-zoom': {
+    name: 'fill-zoom 冲进形状', note: '前 55% expoIn 放大到 30 倍冲进圆点(圆点颜色 = 下一屏底色),后 45% 新画面 1.25 → 1 expoOut · 动态文字、清单',
+    obj: { cx: 1380, cy: 520 },
+    a: (k, t) => k.backdrop(0, 0, 1920, 1080) + k.text('R3', '第 1 条', 300, 400, t, -1, { entrance: 'static', size: 40 }) + k.text('R1', '先看配料表', 300, 560 + bob(t), t, -1, { entrance: 'static' })
+      + `<circle cx="1380" cy="520" r="70" fill="${k.S.c.accent}"/>`,
+    b: (k, t) => `<rect width="1920" height="1080" fill="${k.S.c.accent}"/>` + k.text('R3', '第 2 条', 300, 400, t, -1, { entrance: 'static', size: 40, fill: '#fff' }) + k.text('R1', '再看营养成分', 300, 560 + bob(t), t, -1, { entrance: 'static', fill: '#fff' }),
+  },
+  bands: {
+    name: 'bands 斜色带', note: '三条斜切色带接力扫过,最后一条 = 新底色;0.5s expoInOut,错开 12% · 节奏快的段落切换',
+    a: (k, t) => k.backdrop(0, 0, 1920, 1080) + k.text('R3', '第 2 条', 300, 400, t, -1, { entrance: 'static', size: 40 }) + k.text('R1', '再看营养成分', 300, 560 + bob(t), t, -1, { entrance: 'static' }),
+    b: (k, t) => k.backdrop(0, 0, 1920, 1080) + k.text('R3', '第 3 条', 300, 400, t, -1, { entrance: 'static', size: 40 }) + k.text('R1', '最后看份量', 300, 560 + bob(t), t, -1, { entrance: 'static' }),
+  },
+  fade: {   // 阳性对照:只给 measure-tx.mjs 用,不进并排页
+    control: true, name: 'fade 线性淡化(对照)', note: '0.35s 线性',
+    a: (k, t) => DEMOS['blur-push'].a(k, t), b: (k, t) => DEMOS['blur-push'].b(k, t),
+  },
+  morph: {
+    name: 'morph 形变接续', note: 'smooth 缓动 0.9s;上一镜的主体直接变成下一镜的主体,其余元素先退后进 · 概念讲解',
+    bg: k => k.backdrop(0, 0, 1920, 1080),
+    from: k => ({ d: S.circle(700, 560, 90), fill: k.S.c.marker || k.S.c.accent }),
+    to: k => ({ d: S.rect(1060, 300, 520, 520, 36), fill: k.S.c.accent }),
+    a: (k, t) => k.text('R2', '一个数据点', 520, 360, t, -1, { entrance: 'static' }) + k.text('R3', '一位受试者的一次测量', 522, 760 + bob(t), t, -1, { entrance: 'static' }),
+    b: (k, t) => k.text('R2', '变成一张卡片', 300, 420, t, -1, { entrance: 'static' }) + k.text('R3', '展开看这个人的全部记录', 302, 500 + bob(t), t, -1, { entrance: 'static' })
+      + k.text('R4', '24', 1320, 640, t, -1, { anchor: 'middle', fill: k.S.c.ink }) + k.text('R3', '周', 1320, 720, t, -1, { anchor: 'middle', fill: k.S.c.ink }),
+  },
+};
+const IDS = Q.get('tx') ? [Q.get('tx')] : Object.keys(DEMOS).filter(id => !DEMOS[id].control);
+const LOOP = id => T0 + kit.txDur(id) + HOLD;
+
+function frame(id, t) {
+  const D = DEMOS[id], k = kit;
+  if (id === 'morph') {
+    const A = tt => D.a(k, tt), B = tt => D.b(k, tt);
+    return D.bg(k) + k.transition('morph', t, T0, A, B, { from: D.from(k), to: D.to(k), base: () => '' });
+  }
+  return k.transition(id, t, T0, tt => D.a(k, tt), tt => D.b(k, tt), D.obj || {});
+}
+function render(t) {
+  T = t; kit.begin();
+  document.getElementById('grid').innerHTML = IDS.map(id => {
+    const tt = RENDER ? t : t % LOOP(id);
+    return `<figure><svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg"><defs>${kit.defs()}</defs>${frame(id, tt)}</svg><figcaption><b>${DEMOS[id].name}</b> · ${DEMOS[id].note}</figcaption></figure>`;
+  }).join('');
+  if (!RENDER) { document.getElementById('scrub').value = t % 4.5; document.getElementById('time').textContent = t.toFixed(1) + ' 秒'; }
+}
+async function setup() {
+  kit = VC.kit(STYLE);
+  const txt = JSON.stringify(Object.values(DEMOS).map(d => [d.name, d.note])) + '第 1 条先看配料表第 2 条再看营养成分第 3 条最后看份量图 1 · 每日摄入实验期间每天的热量千卡示意数据图 2 · 体重变化第周第一章实验怎么做第二章结果出来了一碗米饭放大看里面有什么成分(示意)碳水脂肪蛋白质一个数据点一位受试者的一次测量变成一张卡片展开看这个人的全部记录24';
+  window.fontsReady = await VC.ready(kit, [txt]);
+  document.querySelectorAll('#styles button').forEach(b => b.setAttribute('aria-pressed', b.dataset.style === STYLE));
+  render(T);
+}
+window.render = render; window.setStyle = async s => { STYLE = s; await setup(); };
+window.txInfo = () => Object.fromEntries(IDS.map(id => [id, { t0: T0, dur: kit.txDur(id) }]));
+document.getElementById('styles').innerHTML = Object.values(VC.styles).map(s => `<button data-style="${s.id}">${s.name}</button>`).join('');
+document.getElementById('styles').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { STYLE = b.dataset.style; setup(); } });
+document.getElementById('scrub').addEventListener('input', e => render(+e.target.value));
+let last = 0;
+function tick(now) { if (!playing) return; const dt = last ? (now - last) / 1000 : 0; last = now; render(T + dt); requestAnimationFrame(tick); }
+document.getElementById('play').addEventListener('click', e => { playing = !playing; last = 0; e.target.textContent = playing ? '暂停' : '播放'; if (playing) requestAnimationFrame(tick); });
+window.txReady = setup();
+</script>
+</body>
+</html>

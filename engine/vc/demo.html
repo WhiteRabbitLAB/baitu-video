@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>共享组件演示</title>
+<!-- 每个组件一行;同一份内容、同一套时间,只换画风(styles.js)。URL 参数:?style=paper-skeuo|tech-ui|cartoon-ui &lang=zh|en &t=秒 &render -->
+<link rel="stylesheet" href="fonts.css">
+<style>
+:root{--bg:#F3F1EC;--ink:#1F1C1A;--line:#D5D0C4}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans SC",sans-serif}
+header{position:sticky;top:0;z-index:2;background:var(--bg);border-bottom:1px solid var(--line);padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+header h1{font-size:18px;margin:0 8px 0 0;font-weight:900}
+.grp{display:flex;gap:4px}
+button{font:inherit;font-size:14px;padding:6px 12px;border:1px solid var(--line);background:#fff;border-radius:8px;cursor:pointer}
+button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.scrub{display:flex;gap:8px;align-items:center;flex:1;min-width:220px}
+input[type=range]{flex:1;min-width:0}
+#rows{display:flex;flex-direction:column;gap:0;max-width:1920px;margin:0 auto}
+#rows svg{display:block;width:100%;height:auto}
+body.render header{display:none}
+body.render #rows{width:1920px;max-width:none}
+#err{color:#B23A2E;padding:8px 16px;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<header>
+  <h1>共享组件演示</h1>
+  <div class="grp" id="styles"></div>
+  <div class="grp" id="langs"><button data-lang="zh">中文</button><button data-lang="en">English</button></div>
+  <div class="scrub"><button id="play">播放</button><input id="scrub" type="range" min="0" max="8" step="0.01" value="0" aria-label="时间"><span id="time">0.0 秒</span></div>
+</header>
+<div id="err"></div>
+<div id="rows"></div>
+<script src="vc.js"></script>
+<script src="styles.js"></script>
+<script>
+const Q = new URLSearchParams(location.search), RENDER = Q.has('render');
+if (RENDER) document.body.classList.add('render');
+let STYLE = Q.get('style') || 'paper-skeuo', LANG = Q.get('lang') || 'zh', T = +(Q.get('t') || 0), playing = false, kit = null;
+const LOOP = 8, RW = 1920, RH = 300, LX = 300;   // 每行 1920×300;左边 300px 写组件名
+
+// 同一份内容的中英两版
+const TXT = {
+  zh: {
+    hand: '第 3 天:体重 61.2 kg,早餐只吃了一碗米饭', handMark: '一碗米饭', handPre: '第 3 天:体重 61.2 kg,早餐只吃了',
+    typed: '“受试者每日约摄入 1570 千卡,持续 24 周。”', src: '出处角标:示意文本,非引文',
+    stamp: '已核实', stamp2: '示意', unit: '千卡',
+    b1: '先别急着下结论!', b2: '数据不一定说明因果。',
+    chatT: 'AI 对话', u: '这首诗写得怎么样?', a: '整体流畅,意象统一;第三句节奏略弱,可以再推敲一下。',
+    termT: 'terminal', c1: 'node engine/cli.mjs render lesson-03', o1: '总帧数 5400(180s × 30)', o2: '✓ 字体全部加载', c2: 'ls out/lesson-03',
+    chapters: ['开头', '实验怎么做', '结果', '为什么', '怎么用'], panel: n => `第 ${n} 段`, panelSub: ['同一张桌面', '横移到下一块', '再到下一块'],
+    rows: [['手写逐字', 'R8 手记 + R6 批注'], ['打字机', 'R5 一手原文 + R10 角标'], ['印章 / 标记物', 'R9'], ['数字滚动', 'R4 · 只在真实值之间'],
+      ['气泡弹出', 'R7 角色对白'], ['AI 对话框', 'R7 机器说的话'], ['终端窗口', '命令与输出'], ['章节进度条', '频道统一,取画风强调色'], ['段首横移', '1.2s 缓入缓出 + 运动模糊']],
+  },
+  en: {
+    hand: 'Day 3: 61.2 kg, only a milkshake for breakfast', handMark: 'a milkshake', handPre: 'Day 3: 61.2 kg, only ',
+    typed: '"Subjects ate about 1,570 kcal a day for 24 weeks."', src: 'Source tag: placeholder text, not a quote',
+    stamp: 'VERIFIED', stamp2: 'ILLUSTRATIVE', unit: 'kcal',
+    b1: "Don't jump to conclusions!", b2: "Correlation isn't causation.",
+    chatT: 'AI chat', u: 'How good is this poem?', a: 'It flows well and the images hold together; line three is a bit weak.',
+    termT: 'terminal', c1: 'node engine/cli.mjs render lesson-03', o1: 'frames 5400 (180s × 30)', o2: '✓ all fonts loaded', c2: 'ls out/lesson-03',
+    chapters: ['Hook', 'The setup', 'Results', 'Why', 'Use it'], panel: n => `Part ${n}`, panelSub: ['Same desk', 'Pan to the next', 'And the next'],
+    rows: [['Handwriting', 'R8 notes + R6 markup'], ['Typewriter', 'R5 source + R10 tag'], ['Stamp / badge', 'R9'], ['Number roll', 'R4 · real values only'],
+      ['Speech bubble', 'R7 dialogue'], ['AI chat', 'R7 machine voice'], ['Terminal', 'commands & output'], ['Chapter bar', 'channel-wide, style accent'], ['Pan to next', '1.2s ease + motion blur']],
+  },
+};
+const allText = () => Object.values(TXT).flatMap(L => Object.values(L).flatMap(v => typeof v === 'function' ? [v(1), v(2), v(3)] : Array.isArray(v) ? v.flat() : [v])).join('')
+  + Object.values(VC.styles).map(s => s.name + s.nameEn).join('');
+
+// ---------- 九行,每行一个函数:(kit, L, t) → 行内 SVG(行坐标 0..1920 × 0..300) ----------
+const fmtN = v => LANG === 'en' ? v.toLocaleString('en-US') : String(v);
+const ROWS = [
+  (k, L, t) => {   // 手写 + 批注
+    const x = LX + 60, y = 170, r = k.R('R8'), pre = k.width('R8', L.handPre), mw = k.width('R8', L.handMark), d = k.dur('R8', L.hand);
+    const markUnder = k.markUnder;   // 荧光笔压在字下面
+    const m = k.mark(x + pre, y - r.size * .95, mw, r.size * 1.15, t, .4 + d + .2);
+    return (markUnder ? m : '') + k.text('R8', L.hand, x, y, t, .4) + (markUnder ? '' : m)
+      + k.text('R6', LANG === 'en' ? 'really?' : '真的?', x + pre + mw + 40, y - 62, t, .4 + d + .9, { size: 40 });
+  },
+  (k, L, t) => k.text('R5', L.typed, LX + 60, 150, t, .4) + k.text('R10', L.src, LX + 60, 226, t, .4 + k.dur('R5', L.typed) + .3),
+  (k, L, t) => k.stamp(L.stamp, LX + 360, 150, t, 1) + k.stamp(L.stamp2, LX + 860, 150, t, 2.2, { rot: 4, color: k.S.carriers.stamp === 'ink' ? k.S.c.muted : undefined, fill: k.S.c.sky }),
+  (k, L, t) => k.counter([[.5, 3200], [2.5, 1570], [5, 2400]], LX + 120, 200, t, { fmt: fmtN, unit: L.unit })
+    + k.text('R3', '3200 → 1570 → 2400', LX + 760, 180, t, .5),
+  (k, L, t) => {
+    const av = (x, col) => `<circle cx="${x}" cy="262" r="26" fill="${col}" stroke="${k.S.c.ink}" stroke-width="4"/>`;
+    return av(LX + 140, k.S.c.yolk || k.S.c.accent) + av(LX + 1440, k.S.c.mint || k.S.c.glow || k.S.c.pen)
+      + k.bubble(L.b1, LX + 160, 226, t, .6, { t1: 6.6 }) + k.bubble(L.b2, LX + 1420, 226, t, 2.4, { side: -1, t1: 7.4 });
+  },
+  (k, L, t) => k.chat(LX + 60, 24, 1100, 256, [{ who: 'user', text: L.u, t0: .4 }, { who: 'ai', text: L.a, t0: 1.4 }], t, { title: L.chatT, size: 26 }),
+  (k, L, t) => k.terminal(LX + 60, 24, 1100, 256, [{ cmd: L.c1, t0: .4 }, { out: L.o1, t0: 2.4 }, { out: L.o2, t0: 3, col: k.S.carriers.window === 'win' ? 'glow' : null }, { cmd: L.c2, t0: 3.8 }], t, { title: L.termT, size: 28 }),
+  (k, L, t) => {
+    const ends = [1.2, 3, 4.8, 6.4, 8], ch = L.chapters.map((name, i) => ({ name, start: i ? ends[i - 1] : 0, end: ends[i] }));
+    return `<rect x="${LX}" y="40" width="${RW - LX}" height="220" fill="${k.S.c.bg}"/>` + k.chapterBar(t, ch, { x: LX + 40, w: RW - LX - 80, y: 190, total: LOOP, size: 26 }).replace('x="0"', `x="${LX}"`);
+  },
+  (k, L, t) => {
+    const W = RW - LX, cid = 'panclip';
+    const panel = n => tt => k.panel(20, 24, W - 40, 252, '')   // 面板外观跟画风走
+      + k.text('R2', L.panel(n + 1), 80, 150, tt, -1, { entrance: 'static' }) + k.text('R3', L.panelSub[n], 80, 210, tt, -1, { entrance: 'static' })
+      + Array.from({ length: 6 }, (_, i) => `<rect x="${700 + i * 150}" y="${100 + (i % 2) * 40}" width="110" height="110" rx="10" fill="${k.S.c.accent}" opacity="${.25 + i * .12}"/>`).join('');
+    return `<clipPath id="${cid}"><rect x="${LX}" y="0" width="${W}" height="${RH}"/></clipPath><g clip-path="url(#${cid})"><g transform="translate(${LX},0)">`
+      + k.panGroup(t, [2.2, 5.4], [panel(0), panel(1), panel(2)], { width: W }) + '</g></g>';
+  },
+];
+
+const rowsEl = document.getElementById('rows');
+function render(t) {
+  T = t; const L = TXT[LANG];
+  kit.begin();
+  const S = kit.S, c = S.c, isDark = (h => (parseInt(h.slice(1, 3), 16) * 299 + parseInt(h.slice(3, 5), 16) * 587 + parseInt(h.slice(5, 7), 16) * 114) / 1000 < 110)(c.bg);   // 按底色亮度
+  rowsEl.innerHTML = ROWS.map((fn, i) => {
+    const [name, role] = L.rows[i];
+    return `<svg viewBox="0 0 ${RW} ${RH}" xmlns="http://www.w3.org/2000/svg"><defs>${kit.defs()}</defs>${kit.backdrop(0, 0, RW, RH)}
+      <rect x="0" y="0" width="${LX}" height="${RH}" fill="${isDark ? '#000' : '#fff'}" opacity="${isDark ? .25 : .35}"/>
+      <path d="M0 ${RH - .5} H${RW}" stroke="${isDark ? (c.edge || c.text || '#fff') : c.ink}" stroke-opacity=".25"/>
+      <text x="36" y="120" ${VC.fontAttr('Noto Sans SC:900')} font-size="34" fill="${isDark ? (c.text || '#fff') : c.ink}">${i + 1} ${VC.esc(name)}</text>
+      <text x="36" y="168" ${VC.fontAttr('Noto Sans SC:500')} font-size="22" fill="${c.muted}">${VC.esc(role)}</text>
+      <text x="36" y="250" ${VC.fontAttr('Noto Sans SC:500')} font-size="20" fill="${c.muted}" opacity=".8">${VC.esc(LANG === 'en' ? S.nameEn : S.name)} · ${STYLE}</text>
+      ${fn(kit, L, t)}</svg>`;
+  }).join('');
+  if (!RENDER) { document.getElementById('scrub').value = t; document.getElementById('time').textContent = t.toFixed(1) + (LANG === 'en' ? ' s' : ' 秒'); }
+}
+
+async function setup() {
+  kit = VC.kit(STYLE, { lang: LANG });
+  window.fontsReady = await VC.ready(kit, [allText()]);
+  const bad = Object.entries(window.fontsReady).filter(([, n]) => n <= 0).map(([s]) => s);
+  document.getElementById('err').textContent = bad.length ? '字体没加载上:' + bad.join('、') : '';
+  document.querySelectorAll('#styles button').forEach(b => b.setAttribute('aria-pressed', b.dataset.style === STYLE));
+  document.querySelectorAll('#langs button').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === LANG));
+  document.documentElement.lang = LANG === 'en' ? 'en' : 'zh-CN';
+  render(T);
+}
+window.render = render;
+window.setStyle = async (s, l) => { STYLE = s; if (l) LANG = l; await setup(); };
+
+document.getElementById('styles').innerHTML = Object.values(VC.styles).map(s => `<button data-style="${s.id}">${s.name}</button>`).join('');
+document.getElementById('styles').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { STYLE = b.dataset.style; setup(); } });
+document.getElementById('langs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { LANG = b.dataset.lang; setup(); } });
+document.getElementById('scrub').addEventListener('input', e => render(+e.target.value));
+let last = 0;
+function tick(now) { if (!playing) return; const dt = last ? (now - last) / 1000 : 0; last = now; render((T + dt) % LOOP); requestAnimationFrame(tick); }
+document.getElementById('play').addEventListener('click', e => { playing = !playing; last = 0; e.target.textContent = playing ? '暂停' : '播放'; if (playing) requestAnimationFrame(tick); });
+window.demoReady = setup().catch(e => { document.getElementById('err').textContent = String(e.stack || e); throw e; });
+</script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Why is the sky blue? · 为什么天是蓝的</title>
+<!-- 示例期:白板画风;中文 / 英文(?lang=en);横版 render(t) / 竖版 vertFrame(t)(?vert)。
+     Example episode: whiteboard style; Chinese / English (?lang=en); landscape render(t) / vertical vertFrame(t) (?vert).
+     所有画面节点都挂在配音时间轴上(at('p1s2', 1) = 第 1 段第 2 句的第 2 个分句开始),换语言不用改秒数。 -->
+<link rel="stylesheet" href="fonts-sky.css">
+<style>html,body{margin:0;overflow:hidden;background:#F8F8F5}svg{display:block}</style>
+</head>
+<body>
+<svg id="stage" width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg"></svg>
+<script>
+const Q = new URLSearchParams(location.search), LANG = Q.get('lang') === 'en' ? 'en' : 'zh', VERT = Q.has('vert');
+document.write(`<script src="data-sky${LANG === 'en' ? '.en' : ''}.js"><\/script>`);
+</script>
+<script src="../../../engine/vc/vc.js"></script>
+<script src="../../../engine/vc/styles.js"></script>
+<script>
+const kit = VC.kit('whiteboard'), C = kit.S.c;
+const SUB = { font: 'Noto Sans SC:900', size: VERT ? 58 : 52, y: VERT ? 1780 : 1040, x: VERT ? 540 : 960, maxW: VERT ? 960 : 1800 };
+const T = {
+  zh: { title: '为什么天是蓝的?', white: '白光', rainbow: '红 橙 黄 绿 蓝 紫', air: '空气分子', bounce: '弹向四面八方',
+        short: '波长短 → 弹得狠', long: '波长长 → 弹得少', ratio: '蓝光 ≈ 红光 × 5', end: '天就是蓝的' },
+  en: { title: 'Why is the sky blue?', white: 'white light', rainbow: 'every color of the rainbow', air: 'air molecules', bounce: 'scattered everywhere',
+        short: 'short wave → scatters a lot', long: 'long wave → scatters less', ratio: 'blue ≈ 5 × red', end: 'so the sky is blue' },
+}[LANG];
+
+// 时间锚点(取自配音时间轴;分句数中英不同时取最后一个)
+const S = Object.fromEntries(TL.sentences.map(s => [s.id, s]));
+const at = (id, k = 0) => { const p = S[id].parts || []; return (p[Math.min(k, p.length - 1)] || S[id]).start; };
+const P2 = TL.paragraphs[1].start;
+
+// 版面:横版 1920×1080、竖版 1080×1920 各一套坐标,画法共用
+const L = VERT
+  ? { title: [540, 230], sun: [200, 520], beam: [300, 520, 600], fan: [600, 520, 960, 380, 46], rainbow: [540, 820], mols: [[300, 1050], [520, 1150], [760, 1060], [400, 1300], [700, 1320]], hub: 1, airLabel: [540, 1440], bounce: [540, 1530],
+      w1: [140, 380, 800], w2: [140, 600, 800], ratio: [140, 820, 800], sky: [140, 1180, 940, 1090], person: [540, 1650], endText: [540, 990] }
+  : { title: [960, 150], sun: [260, 420], beam: [400, 420, 760], fan: [760, 420, 1060, 330, 36], rainbow: [1090, 520], mols: [[1420, 330], [1560, 440], [1380, 560], [1640, 300], [1700, 560]], hub: 1, airLabel: [1540, 650], bounce: [1540, 790],
+      w1: [160, 300, 640], w2: [160, 540, 640], ratio: [160, 800, 700], sky: [1000, 300, 1800, 120], person: [1400, 820], endText: [1400, 960] };
+
+function shot1(t) {
+  let s = kit.textFit('R1', T.title, L.title[0], L.title[1], VERT ? 940 : 1400, t, 0.1, { anchor: 'middle' });
+  const [sx, sy] = L.sun;
+  const rays = Array.from({ length: 8 }, (_, i) => { const a = i * Math.PI / 4; return VC.wobblyLine(sx + Math.cos(a) * 92, sy + Math.sin(a) * 92, sx + Math.cos(a) * 130, sy + Math.sin(a) * 130, i + 3, 1.5); });
+  s += kit.sketch([VC.wobblyEllipse(sx, sy, 70, 70, 4, 2.5, 1.06), ...rays], t, 0.4, 1.3, { color: '#E0A100', width: 6 });
+  const [bx0, by, bx1] = L.beam;
+  s += kit.sketch(VC.wobblyLine(bx0, by, bx1, by, 9, 2), t, 1.1, 0.7, { width: 7 });
+  s += kit.text('R8', T.white, (bx0 + bx1) / 2, by - 30, t, 1.5, { anchor: 'middle' });
+  const cols = ['#D2352B', '#F08A24', '#E0B400', '#1F8A4C', '#2457C5', '#7A3DB8'], [fx, fy, fx1, fy1, gap] = L.fan, t2 = at('p1s1', 1);
+  cols.forEach((col, i) => { s += kit.sketch(VC.wobblyLine(fx, fy, fx1, fy1 + i * gap, 20 + i, 1.5), t, t2 + i * 0.12, 0.5, { color: col, width: 6, pen: i === cols.length - 1 }); });
+  s += kit.textFit('R8', T.rainbow, L.rainbow[0], L.rainbow[1], VERT ? 900 : 760, t, t2 + 0.6, { anchor: VERT ? 'middle' : 'start', size: 40 });
+  const t3 = at('p1s2', 1);
+  s += kit.sketch(L.mols.map(([x, y], i) => VC.wobblyEllipse(x, y, 22, 22, 30 + i, 1.5, 1.08)), t, t3, 1.0, { color: C.ink, width: 5 });
+  s += kit.text('R3', T.air, L.airLabel[0], L.airLabel[1], t, t3 + 0.6, { anchor: 'middle', size: 36 });
+  const t4 = at('p1s2', 2), [mx, my] = L.mols[L.hub];
+  const arrows = Array.from({ length: 8 }, (_, i) => { const a = i * Math.PI / 4 + 0.2; return VC.wobblyLine(mx + Math.cos(a) * 34, my + Math.sin(a) * 34, mx + Math.cos(a) * 96, my + Math.sin(a) * 96, 50 + i, 1); });
+  s += kit.sketch(arrows, t, t4, 0.9, { color: C.blue, width: 5 });
+  s += kit.text('R6', T.bounce, L.bounce[0], L.bounce[1], t, t4 + 0.5, { size: 44, anchor: 'middle' });
+  return s;
+}
+
+function wave(x, y, w, amp, lambda) {
+  let d = `M${x},${y}`;
+  for (let i = 1; i <= 160; i++) { const xx = x + w * i / 160; d += ` L${xx.toFixed(1)},${(y + amp * Math.sin((xx - x) / lambda * 2 * Math.PI)).toFixed(1)}`; }
+  return d;
+}
+function shot2(t) {
+  let s = '';
+  const t0 = at('p2s1'), [ax, ay, aw] = L.w1, [cx, cy, cw] = L.w2;
+  s += kit.sketch(wave(ax, ay, aw, 34, 60), t, t0, 1.2, { color: C.blue, width: 6 });
+  s += kit.textFit('R8', T.short, ax, ay + 100, aw + 160, t, t0 + 0.6);
+  s += kit.sketch(wave(cx, cy, cw, 34, 200), t, t0 + 1.0, 1.0, { color: C.red, width: 6 });
+  s += kit.textFit('R8', T.long, cx, cy + 100, cw + 160, t, t0 + 1.5, { fill: C.red });
+  s += kit.textFit('R2', T.ratio, L.ratio[0], L.ratio[1], L.ratio[2], t, at('p2s2') + 0.3);
+  const t2 = at('p2s3'), [kx0, ky, kx1, kTop] = L.sky, kmid = (kx0 + kx1) / 2;
+  s += kit.sketch(`M${kx0},${ky} Q${kmid},${kTop} ${kx1},${ky}`, t, t2, 0.8, { color: C.blue, width: 5 });
+  const [px, pfeet] = L.person;
+  s += kit.mascot(px, pfeet, t, t2 + 0.3);
+  const head = pfeet - 250;   // 光线射向头顶(占位角色身子半径 92,头顶小芽之上)
+  const from = Array.from({ length: 5 }, (_, i) => kx0 + 60 + i * (kx1 - kx0 - 120) / 4);
+  s += kit.sketch(from.map((x, i) => VC.wobblyLine(x, ky + 30 - (i === 2 ? 40 : 0), px + (x - px) * .3, head + Math.abs(x - px) * .08, 70 + i, 1.2)), t, t2 + 1.0, 1.2, { color: C.blue, width: 5 });
+  s += kit.textFit('R1', T.end, L.endText[0], L.endText[1], VERT ? 900 : 760, t, at('p2s4'), { anchor: 'middle', size: 76, fill: C.blue });
+  return s;
+}
+
+const stage = document.getElementById('stage');
+if (VERT) { stage.setAttribute('width', 1080); stage.setAttribute('height', 1920); stage.setAttribute('viewBox', '0 0 1080 1920'); }
+const W = VERT ? 1080 : 1920, H = VERT ? 1920 : 1080;
+function frame(t, endCard = 0) {
+  kit.begin();
+  stage.innerHTML = `<defs>${kit.defs()}</defs>${kit.backdrop(0, 0, W, H)}`
+    + (VERT ? (t < P2 ? shot1(t) : shot2(t)) : kit.panGroup(t, [P2], [shot1, shot2]))
+    + kit.subtitle(t, SUBS, SUB)
+    + (endCard > 0 ? `<rect width="${W}" height="${H}" fill="#F8F8F5" opacity="${Math.min(1, endCard * 2)}"/>` + kit.text('R1', LANG === 'en' ? 'Full version on the channel' : '完整版在主页', W / 2, H / 2, 9, 0, { anchor: 'middle', entrance: 'static' }) : '');
+}
+window.render = t => frame(t);
+window.vertFrame = (t, e = 0) => frame(t, e);
+
+const ALL = [...Object.values(T), ...TL.sentences.map(s => s.text), ...SUBS.map(c => c.text), 'Full version on the channel', '完整版在主页'];
+window.fontsReady = VC.ready(kit, ALL, [SUB.font]).then(r => { frame(+(Q.get('t') || 0)); return r; });
+</script>
+</body>
+</html>

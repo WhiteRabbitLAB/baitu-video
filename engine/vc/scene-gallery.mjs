@@ -1,0 +1,36 @@
+// 场景示范图:node .claude/skills/explainer-video/engine/vc/scene-gallery.mjs [zh|en] → skill 的 scenes/thumbs/<id>[.en].jpg(960×540)+ _all[.en].jpg(4×3 拼图)
+// 每张 = scene-gallery.html?scene=<id> 的 1920×1080 整帧;字体没加载上就报错退出,不出带替代字体的图。
+import { chromium } from 'playwright';
+import { execFileSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
+import { PROJECT as ROOT, SKILL, ENGINE } from '../lib/paths.mjs';
+const HERE = path.dirname(new URL(import.meta.url).pathname);
+const OUT = path.join(SKILL, 'scenes/thumbs'), TMP = path.join(ROOT, 'cache/vc-scenes');
+fs.mkdirSync(OUT, { recursive: true }); fs.mkdirSync(TMP, { recursive: true });
+const LANG = process.argv[2] === 'en' ? 'en' : 'zh', SUF = LANG === 'en' ? '.en' : '';
+const ids = ['case-file', 'lab-desk-1944', 'lab-dashboard', 'strategy-game', 'anatomy-diagram', 'editing-desk', 'info-cards', 'landscape-scroll', 'terminal-tech', 'field-notebook', 'gallery-wall'];   // = scenes/INDEX.md 的顺序
+const b = await chromium.launch(), p = await b.newPage({ viewport: { width: 1920, height: 1080 } });
+p.on('pageerror', e => { console.error('PAGEERROR', e.message); process.exitCode = 5; });
+const pngs = [];
+for (const id of ids) {
+  await p.goto(new URL(`scene-gallery.html?scene=${id}&lang=${LANG}`, import.meta.url).href);
+  const rep = await p.evaluate(() => window.galleryReady);
+  const bad = Object.entries(rep).filter(([, n]) => n <= 0);
+  if (bad.length) throw new Error(`${id} 字体没加载上:${JSON.stringify(bad)}`);
+  const png = path.join(TMP, id + '.png');
+  await p.screenshot({ path: png, clip: { x: 0, y: 0, width: 1920, height: 1080 } });
+  execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-i', png, '-vf', 'scale=960:540:flags=lanczos', '-q:v', '3', path.join(OUT, id + SUF + '.jpg')]);
+  pngs.push(png); console.log('ok', id);
+}
+await b.close();
+// 拼图:每行 COLS 格,每格 640×360,空格补黑
+const COLS = pngs.length > 6 ? 4 : 3, n = pngs.length;
+const inputs = pngs.flatMap(f => ['-i', f]);
+const scaled = pngs.map((_, i) => `[${i}:v]scale=640:360:flags=lanczos[s${i}]`).join(';');
+const layout = pngs.map((_, i) => `${(i % COLS) * 640}_${Math.floor(i / COLS) * 360}`).join('|');
+execFileSync('ffmpeg', ['-loglevel', 'error', '-y', ...inputs, '-filter_complex',
+  `${scaled};${pngs.map((_, i) => `[s${i}]`).join('')}xstack=inputs=${n}:layout=${layout}:fill=black[o]`, '-map', '[o]', '-q:v', '3', path.join(OUT, '_all' + SUF + '.jpg')]);
+for (const f of pngs) fs.unlinkSync(f);   // 中间 PNG 用完即删
+fs.rmdirSync(TMP);
+console.log('→', OUT);

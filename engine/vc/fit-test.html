@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>排版压测</title>
+<!-- 「不友好输入」压测:超长标题、中英混排、带标点的长句、长数字,放进固定宽度的框里,全部走 kit.textFit。
+     ?style=<id> &w=1920&h=1080(竖屏 w=1080&h=1920)。对照开关:&bad = 同样的字不用 fit 直接写(应报出画);&overlap = 故意叠两串字(应报叠字)。
+     验:node .claude/skills/explainer-video/engine/tools/check-text-bounds.mjs ".claude/skills/explainer-video/engine/vc/fit-test.html?style=paper-skeuo&w=1080&h=1920" 1080 1920 -->
+<link rel="stylesheet" href="fonts.css">
+<style>body{margin:0;background:#222}svg{display:block}</style>
+</head>
+<body>
+<div id="out"></div>
+<script src="vc.js"></script>
+<script src="styles.js"></script>
+<script>
+const Q = new URLSearchParams(location.search), STYLE = Q.get('style') || 'paper-skeuo';
+const W = +(Q.get('w') || 1920), H = +(Q.get('h') || 1080), BAD = Q.has('bad'), OVERLAP = Q.has('overlap');
+// [角色, 文字, 最多几行] —— 每一条都是真实会遇到的难排输入
+const CASES = [
+  ['R1', '两个人几乎只吃了一年肉，真正出事的是那盘瘦肉', 2],
+  ['R2', '第三章 · 为什么「只吃瘦肉」三天就撑不住了？', 2],
+  ['R2', 'GLP-1 receptor agonists and the Minnesota Starvation Experiment', 2],
+  ['R3', '每日摄入约 2,650 千卡（其中脂肪约占 80%）；蛋白质 15%～25%', 2],
+  ['R5', '“受试者在实验第 12 周出现明显的抑郁、易怒与注意力下降。”', 3],
+  ['R8', '他事先预言：几天内准会病倒，结果第三天就腹泻了', 2],
+  ['R2', '国际癌症研究机构（IARC）专著第 114 卷：加工肉类 1 类致癌物', 2],
+];
+const M = 80, BOX = W - M * 2;   // 框宽 = 画宽 − 两边各 80
+function frame(k, t) {
+  const o = [k.backdrop(0, 0, W, H)], c = k.S.c;
+  const rowH = (H - 160) / CASES.length;
+  CASES.forEach(([r, s, n], i) => {
+    const top = 80 + i * rowH, base = top + Math.min(rowH * .42, k.R(r).size * 1.05);
+    o.push(`<rect x="${M}" y="${top}" width="${BOX}" height="${rowH - 12}" fill="none" stroke="${c.muted || '#999'}" stroke-dasharray="6 6" opacity=".5"/>`);
+    if (BAD) o.push(k.text(r, s, M, base, t, -1, { entrance: 'static' }));
+    else o.push(k.textFit(r, s, M, base, BOX, t, -1, { entrance: 'static', maxLines: n, size: Math.min(k.R(r).size, (rowH - 30) / n / 1.25) }));
+  });
+  if (OVERLAP) o.push(k.text('R2', '这一行故意压在别的字上', M + 40, 80 + Math.min((H - 160) / CASES.length * .42, k.R('R1').size * 1.05) + 6, t, -1, { entrance: 'static' }));
+  return o.join('');
+}
+let KIT;
+window.render = t => { KIT.begin(); document.getElementById('out').innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg"><defs>${KIT.defs()}</defs>${frame(KIT, t)}</svg>`; };
+window.fontsReady = (async () => {
+  KIT = VC.kit(STYLE);
+  const rep = await VC.ready(KIT, [CASES.map(c => c[1]).join('') + '这一行故意压在别的字上']);
+  window.render(99);
+  return rep;
+})();
+</script>
+</body>
+</html>

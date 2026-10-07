@@ -1,0 +1,171 @@
+{
+  "_note": "字体目录(单一驻地):画风用到的每个字体族在这里登记下载地址与授权。全部可商用(SIL OFL 1.1 / Apache 2.0)。file = 本地缓存文件名;variable = 可变字体(按需要的字重切静态字重);zip = 在压缩包里的路径;fixWinding = 子集后要修轮廓方向(浏览器里「回」会被填实)。地址 2026-10-08 逐个实测 HTTP 200。 licenseUrl = 许可证原文(随子集字体一起放进 LICENSES/);renameTo = 字体声明了保留名称(或名称是商标),改动过的版本(子集化也算)文件内部必须改名——CSS 里仍用原族名当代号,不把原名写进字体文件。2026-10-08 逐个读过许可证原文。",
+  "fonts": [
+    {
+      "family": "Noto Sans SC",
+      "file": "NotoSansSC[wght].ttf",
+      "variable": true,
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/notosanssc/NotoSansSC%5Bwght%5D.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/notosanssc/OFL.txt"
+    },
+    {
+      "family": "Noto Serif SC",
+      "file": "NotoSerifSC[wght].ttf",
+      "variable": true,
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/notoserifsc/NotoSerifSC%5Bwght%5D.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/notoserifsc/OFL.txt"
+    },
+    {
+      "family": "ZCOOL KuaiLe",
+      "file": "ZCOOLKuaiLe-Regular.ttf",
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/zcoolkuaile/ZCOOLKuaiLe-Regular.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/zcoolkuaile/OFL.txt"
+    },
+    {
+      "family": "ZCOOL XiaoWei",
+      "file": "ZCOOLXiaoWei.ttf",
+      "fixWinding": true,
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/zcoolxiaowei/ZCOOLXiaoWei-Regular.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/zcoolxiaowei/OFL.txt"
+    },
+    {
+      "family": "Ma Shan Zheng",
+      "file": "MaShanZheng.ttf",
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/mashanzheng/MaShanZheng-Regular.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/mashanzheng/OFL.txt"
+    },
+    {
+      "family": "Zhi Mang Xing",
+      "file": "ZhiMangXing.ttf",
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/zhimangxing/ZhiMangXing-Regular.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/zhimangxing/OFL.txt"
+    },
+    {
+      "family": "LXGW Marker Gothic",
+      "file": "LXGWMarkerGothic-Regular.ttf",
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/lxgwmarkergothic/LXGWMarkerGothic-Regular.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/lxgwmarkergothic/OFL.txt"
+    },
+    {
+      "family": "Xiaolai",
+      "file": "Xiaolai.ttf",
+      "license": "OFL-1.1",
+      "url": "https://github.com/lxgw/kose-font/releases/download/v3.126/Xiaolai-Regular.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/lxgw/kose-font/master/OFL.txt"
+    },
+    {
+      "family": "Smiley Sans",
+      "file": "smiley/SmileySans-Oblique.ttf",
+      "license": "OFL-1.1",
+      "url": "https://github.com/atelier-anchor/smiley-sans/releases/download/v2.0.1/smiley-sans-v2.0.1.zip",
+      "zip": "SmileySans-Oblique.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/atelier-anchor/smiley-sans/main/LICENSE",
+      "renameTo": "VC Display Oblique",
+      "rfn": "Reserved Font Names \"Smiley\" and \"得意黑\""
+    },
+    {
+      "family": "Jason Handwriting 1",
+      "file": "JasonHandwriting1.ttf",
+      "license": "OFL-1.1",
+      "url": "https://github.com/jasonhandwriting/JasonHandwriting/raw/HEAD/JasonHandwriting1.ttf",
+      "licenseUrl": null,
+      "copyright": "Copyright (c) Jason (Yu Ching Sung). JasonHandwriting 1–9 are released under the SIL Open Font License 1.1 (per https://github.com/jasonhandwriting/JasonHandwriting README)."
+    },
+    {
+      "family": "JetBrains Mono",
+      "file": "JetBrainsMono[wght].ttf",
+      "variable": true,
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/jetbrainsmono/JetBrainsMono%5Bwght%5D.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/jetbrainsmono/OFL.txt"
+    },
+    {
+      "family": "Space Grotesk",
+      "file": "SpaceGrotesk[wght].ttf",
+      "variable": true,
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/spacegrotesk/SpaceGrotesk%5Bwght%5D.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/spacegrotesk/OFL.txt"
+    },
+    {
+      "family": "Space Mono",
+      "weight": 400,
+      "file": "SpaceMono-Regular.ttf",
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/spacemono/SpaceMono-Regular.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/spacemono/OFL.txt"
+    },
+    {
+      "family": "Space Mono",
+      "weight": 700,
+      "file": "SpaceMono-Bold.ttf",
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/spacemono/SpaceMono-Bold.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/spacemono/OFL.txt"
+    },
+    {
+      "family": "Quicksand",
+      "file": "Quicksand[wght].ttf",
+      "variable": true,
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/quicksand/Quicksand%5Bwght%5D.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/quicksand/OFL.txt",
+      "renameTo": "VC Rounded",
+      "rfn": "Reserved Font Name \"Quicksand\""
+    },
+    {
+      "family": "STIX Two Text",
+      "file": "STIXTwoText[wght].ttf",
+      "variable": true,
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/stixtwotext/STIXTwoText%5Bwght%5D.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/stixtwotext/OFL.txt",
+      "renameTo": "VC Math Text",
+      "rfn": "\"STIX\" is a trademark of IEEE; Reserved Font Name \"TM Math\""
+    },
+    {
+      "family": "Kalam",
+      "file": "Kalam-Regular.ttf",
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/kalam/Kalam-Regular.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/kalam/OFL.txt"
+    },
+    {
+      "family": "Caveat Brush",
+      "file": "CaveatBrush-Regular.ttf",
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/caveatbrush/CaveatBrush-Regular.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/caveatbrush/OFL.txt"
+    },
+    {
+      "family": "Gochi Hand",
+      "file": "GochiHand-Regular.ttf",
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/gochihand/GochiHand-Regular.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/gochihand/OFL.txt",
+      "renameTo": "VC Hand",
+      "rfn": "Reserved Font Name \"Gochi\""
+    },
+    {
+      "family": "Anton",
+      "file": "Anton-Regular.ttf",
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/anton/Anton-Regular.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/anton/OFL.txt"
+    },
+    {
+      "family": "Special Elite",
+      "file": "SpecialElite-Regular.ttf",
+      "license": "Apache-2.0",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/apache/specialelite/SpecialElite-Regular.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/apache/specialelite/LICENSE.txt"
+    }
+  ]
+}

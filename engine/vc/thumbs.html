@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>画风缩略图</title>
+<!-- 同一个场景(信息卡片)、同一段内容、同一套版面,只换画风层(styles.js)。?style=<id>;不带参数时 6 种并排。
+     scene(kit) 里只出现文字角色与组件调用,不写任何颜色或字体 —— 这就是「只换画风层」的检验。 -->
+<link rel="stylesheet" href="fonts.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1a1a1a;color:#eee;font-family:"Noto Sans SC",sans-serif}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,560px),1fr));gap:16px;padding:16px}
+figure{margin:0;min-width:0}
+figure svg{display:block;width:100%;height:auto}
+.box{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:6px}
+.box iframe{position:absolute;left:0;top:0;width:1920px;height:1080px;border:0;transform-origin:0 0}
+figcaption{font-size:14px;padding:6px 2px;color:#bbb}
+body.one #grid{display:block;padding:0}
+body.one figure svg{width:1920px;border-radius:0}
+body.one figcaption{display:none}
+</style>
+</head>
+<body>
+<div id="grid"></div>
+<script src="vc.js"></script>
+<script src="styles.js"></script>
+<script>
+const Q = new URLSearchParams(location.search), ONE = Q.get('style');
+if (ONE) document.body.classList.add('one');
+const T = 9;   // 取所有动画都已完成的一帧
+const TX = {
+  title: '一碗米饭有多少热量?', sub: '实验第 3 天 · 记录', panel: '今日数据', label: '每日摄入', unit: '千卡',
+  note: '早餐只吃了一碗米饭', notePre: '早餐只吃了', noteMark: '一碗米饭', src: '示意数据,非真实记录',
+  stamp: '已核实', say: '先别急着下结论!', chapters: ['开头', '实验怎么做', '结果', '为什么', '怎么用'],
+};
+
+// 场景:信息卡片。只调用组件与角色,不碰颜色 / 字体
+function scene(k, t) {
+  const L = TX, o = [];
+  o.push(k.backdrop(0, 0, 1920, 1080));
+  o.push(k.text('R2', L.title, 140, 170, t));
+  o.push(k.text('R3', L.sub, 142, 228, t));
+  o.push(k.panel(140, 290, 900, 560, L.panel));
+  o.push(k.text('R3', L.label, 200, 420, t));
+  o.push(k.counter([[0, 1570]], 196, 580, t, { unit: L.unit }));
+  const r8 = k.R('R8'), ny = 720, pre = k.width('R8', L.notePre), mw = k.width('R8', L.noteMark);
+  const m = k.mark(200 + pre, ny - r8.size * .95, mw, r8.size * 1.15, t, 0);
+  o.push(k.markUnder ? m + k.text('R8', L.note, 200, ny, t) : k.text('R8', L.note, 200, ny, t) + m);
+  o.push(k.text('R10', L.src, 200, 806, t));
+  o.push(k.stamp(L.stamp, 1400, 420, t, 0, { rot: -6 }));
+  o.push(k.mascot(1560, 930));
+  o.push(k.bubble(L.say, 1520, 700, t, 0, { side: -1 }));
+  const ends = [1.2, 3, 4.8, 6.4, 8], ch = L.chapters.map((name, i) => ({ name, start: i ? ends[i - 1] : 0, end: ends[i] }));
+  o.push(k.chapterBar(2.2, ch, { total: 8 }));
+  o.push(`<rect width="1920" height="1080" fill="url(#vc-vig)"/>`);
+  return o.join('');
+}
+
+// 并排模式:每种画风一个 iframe(同页多个 SVG 会共用 vc-* 的 id,渐变 / 图案会串)
+if (!ONE) {
+  document.getElementById('grid').innerHTML = Object.values(VC.styles).map(s => `<figure><div class="box"><iframe src="?style=${s.id}" title="${s.name}" scrolling="no"></iframe></div><figcaption>${s.name} · ${s.id}</figcaption></figure>`).join('');
+  const fit = () => document.querySelectorAll('.box').forEach(b => { b.firstChild.style.transform = `scale(${b.clientWidth / 1920})`; });
+  addEventListener('resize', fit); fit();
+}
+const ids = ONE ? [ONE] : [];
+const allText = Object.values(TX).flat().join('') + Object.values(VC.styles).map(s => s.name).join('');
+window.thumbsReady = (async () => {
+  const report = {}, html = [];
+  for (const id of ids) {
+    const kit = VC.kit(id);
+    report[id] = await VC.ready(kit, [allText]);
+    kit.begin();
+    html.push(`<figure><svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg"><defs>${kit.defs()}</defs>${scene(kit, T)}</svg><figcaption>${kit.S.name} · ${id}</figcaption></figure>`);
+  }
+  if (ONE) document.getElementById('grid').innerHTML = html.join('');
+  return report;
+})();
+</script>
+</body>
+</html>

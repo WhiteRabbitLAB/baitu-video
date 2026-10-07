@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>{{EP}}</title>
+<!-- 由 `new {{EP}}` 生成的起步页面。页面契约(渲染器只认这些):
+       必需  window.render(t)      只由时间 t(秒)决定画面,同一个 t 永远画出同一帧
+       必需  window.fontsReady     Promise;resolve 的对象里数字都要 > 0(VC.ready 的返回值就是)
+       可选  window.renderSfx(sr)  离线渲染音效 → {b64, sampleRate, samples, peak, cues}
+       可选  window.coverReady     ?cover=<尺寸>-<版本> 时的封面模式,Promise
+       可选  window.vertFrame(t, e) ?vert 时的竖版画面(1080×1920),e = 尾卡进度 0–1
+     URL 参数:?render(渲染器打开时总带着)&lang=en(第二种语言)&cover=16x9-a &vert
+     数据:data-{{EP}}.js 由 `subs {{EP}}` 生成(window.TL 时间轴、window.SUBS 字幕);fonts-{{EP}}.css 由 `fonts {{EP}}` 生成。 -->
+<link rel="stylesheet" href="fonts-{{EP}}.css">
+<style>html,body{margin:0;overflow:hidden}svg{display:block}</style>
+</head>
+<body>
+<svg id="stage" width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="data-{{EP}}.js"></script>
+<script src="{{VC}}/vc.js"></script>
+<script src="{{VC}}/styles.js"></script>
+<script>
+const kit = VC.kit('{{STYLE}}');                 // 画风:见 skill 的 styles/INDEX.md
+const SUB = { font: 'Noto Sans SC:900', size: 52, maxW: 1800 };   // 字幕规格:频道统一,照你的 channel.md 改;竖版 maxW 用 960
+
+// 时间锚点都取自配音时间轴:at('p1s2') = 第 1 段第 2 句开始;at('p1s2', 1) = 这句第 2 个分句开始
+const S = Object.fromEntries(TL.sentences.map(s => [s.id, s]));
+const at = (id, part = 0) => (S[id].parts?.[part] || S[id]).start;
+const PARA = TL.paragraphs.map(p => p.start);       // 每段开始的时刻(段首横移用)
+
+// 每段一个镜头。组件见 engine/vc/README.md 的组件表;写法照 engine/vc/demo.html 抄最快
+function shot1(t) {
+  return kit.text('R1', TL.sentences[0].text, 960, 300, t, at('p1s1'), { anchor: 'middle' });
+}
+function shot2(t) {
+  return PARA.length > 1 ? kit.text('R2', TL.sentences.find(s => s.para === 2).text, 160, 300, t, PARA[1]) : '';
+}
+
+const stage = document.getElementById('stage');
+window.render = function (t) {
+  kit.begin();
+  stage.innerHTML = `<defs>${kit.defs()}</defs>${kit.backdrop(0, 0, 1920, 1080)}`
+    + kit.panGroup(t, PARA.slice(1), [shot1, shot2])
+    + kit.subtitle(t, SUBS, SUB);
+};
+
+// 画面上会出现的全部文字(测宽要等字体加载完)
+const ALL = [...TL.sentences.map(s => s.text), ...SUBS.map(c => c.text)];
+window.fontsReady = VC.ready(kit, ALL, [SUB.font]).then(r => { window.render(+(new URLSearchParams(location.search).get('t') || 0)); return r; });
+</script>
+</body>
+</html>
