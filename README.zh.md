@@ -1,4 +1,4 @@
-# explainer-video
+# baitu-video
 
 **用代码做讲解视频:任何话题、10 种画风,配音、字幕、渲染、验收由一个引擎跑完。**
 一个 [Claude Code](https://claude.com/claude-code) skill:方法(片型、场景、画风、设计库)加上把稿子变成成片 MP4 的引擎。
@@ -47,13 +47,13 @@ English: [README.md](README.md)
 ## 快速开始
 在你的项目里(Node ≥ 18、ffmpeg;建议装 whisper-cli):
 ```bash
-git clone https://github.com/WhiteRabbitLAB/baitu-video .claude/skills/explainer-video
+git clone https://github.com/WhiteRabbitLAB/baitu-video .claude/skills/baitu-video
 npm init -y && npm i -D playwright && npx playwright install chromium
-E=.claude/skills/explainer-video/engine/cli.mjs
+E=.claude/skills/baitu-video/engine/cli.mjs
 
 # 1. 项目配置 + 你的频道配置(放在你自己的项目里,不放进 skill 目录)
-cp .claude/skills/explainer-video/engine/explainer.example.json explainer.json
-mkdir -p profiles && cp -r .claude/skills/explainer-video/profiles/_template profiles/my-channel
+cp .claude/skills/baitu-video/engine/explainer.example.json explainer.json
+mkdir -p profiles && cp -r .claude/skills/baitu-video/profiles/_template profiles/my-channel
 node $E doctor                        # 自检;❌ 必须先解决
 
 # 2. 新建一期

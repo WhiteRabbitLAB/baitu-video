@@ -1,4 +1,4 @@
-# explainer-video
+# baitu-video
 
 **Make explainer videos with code — any topic, any of 10 visual styles, narrated, subtitled, rendered and checked by one engine.**
 A [Claude Code](https://claude.com/claude-code) skill: the method (formats, scenes, styles, a design library) plus the engine that turns a script into a finished MP4.
@@ -47,13 +47,13 @@ The page is plain HTML/SVG where `render(t)` draws the frame for time `t`; the e
 ## Quick start
 In your project (Node ≥ 18, ffmpeg; whisper-cli recommended):
 ```bash
-git clone https://github.com/WhiteRabbitLAB/baitu-video .claude/skills/explainer-video
+git clone https://github.com/WhiteRabbitLAB/baitu-video .claude/skills/baitu-video
 npm init -y && npm i -D playwright && npx playwright install chromium
-E=.claude/skills/explainer-video/engine/cli.mjs
+E=.claude/skills/baitu-video/engine/cli.mjs
 
 # 1. project config + your channel profile (kept in YOUR project, not inside the skill)
-cp .claude/skills/explainer-video/engine/explainer.example.json explainer.json
-mkdir -p profiles && cp -r .claude/skills/explainer-video/profiles/_template profiles/my-channel
+cp .claude/skills/baitu-video/engine/explainer.example.json explainer.json
+mkdir -p profiles && cp -r .claude/skills/baitu-video/profiles/_template profiles/my-channel
 node $E doctor                        # checks everything; ❌ must be fixed
 
 # 2. a new episode

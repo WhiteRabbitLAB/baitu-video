@@ -1,6 +1,6 @@
 // 竖版「版面居中」检查:内容是不是偏上 / 偏下 / 偏左右,画面中间有没有大块空着
-//   node .claude/skills/explainer-video/engine/tools/check-vert-balance.mjs <页面?参数> <内容区上沿> <内容区下沿> [时刻 …] [--shots 目录]
-//   例:node .claude/skills/explainer-video/engine/tools/check-vert-balance.mjs "video/lesson-03.html?render&vert" 360 1530 20 48 66
+//   node .claude/skills/baitu-video/engine/tools/check-vert-balance.mjs <页面?参数> <内容区上沿> <内容区下沿> [时刻 …] [--shots 目录]
+//   例:node .claude/skills/baitu-video/engine/tools/check-vert-balance.mjs "video/lesson-03.html?render&vert" 360 1530 20 48 66
 // 约定:页面把每个镜头的内容包在 <g id="vcontent"> 里(标题栏、字幕不算内容)。
 // 量所有可见叶子元素的合并边框,报:上下留白、左右留白、内容中心离内容区中心偏多少。
 // 记一处「偏」(退出码 1)的条件:上下留白少的一边不到多的一边的 0.6 倍,或内容中心纵向偏 >35px、横向偏 >40px。
@@ -9,7 +9,7 @@ import { chromium } from 'playwright';
 import path from 'node:path';
 const args = process.argv.slice(2), si = args.indexOf('--shots'), SHOTS = si >= 0 ? args.splice(si, 2)[1] : null;
 const [page, top, bot, ...ts] = args;
-if (!page || !top || !bot) { console.error('用法:node .claude/skills/explainer-video/engine/tools/check-vert-balance.mjs <页面?参数> <内容区上沿> <内容区下沿> [时刻 …] [--shots 目录]'); process.exit(2); }
+if (!page || !top || !bot) { console.error('用法:node .claude/skills/baitu-video/engine/tools/check-vert-balance.mjs <页面?参数> <内容区上沿> <内容区下沿> [时刻 …] [--shots 目录]'); process.exit(2); }
 import { PROJECT as ROOT } from '../lib/paths.mjs';
 const [file, query = ''] = page.split('?');
 const b = await chromium.launch(), p = await b.newPage({ viewport: { width: 1080, height: 1920 } });

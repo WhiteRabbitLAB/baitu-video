@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // 讲解视频引擎入口。在你的项目根目录运行:
-//   node .claude/skills/explainer-video/engine/cli.mjs <命令> [参数]
+//   node .claude/skills/baitu-video/engine/cli.mjs <命令> [参数]
 // 命令:
 //   doctor                              自检:依赖、字体、项目配置、频道配置、配音密钥(只报有没有)
 //   subs <期> [--lang zh] [--channel 名] [--out 目录] [--data 文件]   字幕 .srt + 页面数据文件(每期设定:<brief>/subtitles.json)
@@ -48,11 +48,12 @@ const COMMANDS = {
     if (!pos[0]) throw new Error('用法:narrate <期> [--lang zh] [--channel 名] [--out 目录] [--paras 1,2]');
     const r = await (await import('./lib/narrate.mjs')).narrate({ ep: pos[0], lang: opt('lang'), channel: opt('channel'), out: opt('out'), paras: opt('paras')?.split(',').map(Number) });
     console.log(JSON.stringify(r, null, 1));
-    return r.unmatched ? 3 : 0;
+    if (r.unmatched) console.log(`⚠️  ${r.unmatched} 句的配音和稿子没完全对上(常见是同音字被听错);时间轴已按前后句补齐。是不是真漏读,等 accept 的「漏读」一项判断。`);
+    return 0;
   },
 };
 if (!cmd || !COMMANDS[cmd]) {
-  console.log('用法:node .claude/skills/explainer-video/engine/cli.mjs <命令>\n命令:' + Object.keys(COMMANDS).join('、'));
+  console.log('用法:node .claude/skills/baitu-video/engine/cli.mjs <命令>\n命令:' + Object.keys(COMMANDS).join('、'));
   process.exit(cmd ? 2 : 0);
 }
 try { process.exitCode = await COMMANDS[cmd](args); } catch (e) { console.error('❌ ' + e.message); process.exitCode = 1; }

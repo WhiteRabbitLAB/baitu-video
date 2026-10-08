@@ -1,5 +1,5 @@
 // 画风外观表:组件(vc.js)只认文字角色,这里给每个角色字体 / 颜色 / 出场方式,并选承载物的造型(carriers)。
-// 字体写法 '族名:字重';中文字走 zh,其余字符走 en。全部 SIL OFL(见 .claude/skills/explainer-video/design/fonts.md)。
+// 字体写法 '族名:字重';中文字走 zh,其余字符走 en。全部 SIL OFL(见 .claude/skills/baitu-video/design/fonts.md)。
 // 新增画风:复制一套,改颜色与字体,carriers 先从已有造型里挑;要新造型就在 vc.js 对应组件里加一个 kind 分支。
 // 角色值的出处:各画风卡与场景卡的书写来源表(paper-skeuo ← N8/N9;tech-ui ← A1/A2;cartoon-ui ← N1–N3)。
 (function () {

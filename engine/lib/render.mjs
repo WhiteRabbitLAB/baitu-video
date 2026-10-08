@@ -22,7 +22,11 @@ export async function render(o) {
     : Array.from({ length: o.limit ?? Math.round(tl.duration * FPS) }, (_, i) => i / FPS);
   const N = TIMES.length;
   const log = { startedAt: new Date().toISOString(), workers: WORKERS, fps: FPS, size: [W, H], fonts: [] };
-  const C = await chromium(), browsers = [];
+  const C = await chromium(), browsers = [], ffs = [];
+  const per = Math.ceil(N / WORKERS);
+  const segs = Array.from({ length: WORKERS }, (_, k) => [k * per, Math.min(N, (k + 1) * per)]).filter(([a, b]) => a < b);
+  let t0 = Date.now(), done = 0;
+  try {
   const open = async () => { const b = await C.launch(); browsers.push(b); const { p, fonts } = await openPage(b, E.url(), { width: W, height: H }); log.fonts.push(fonts); return p; };
   console.log(`总帧数 ${N}`);
 
@@ -36,14 +40,13 @@ export async function render(o) {
     await p.close();
   }
 
-  const per = Math.ceil(N / WORKERS);
-  const segs = Array.from({ length: WORKERS }, (_, k) => [k * per, Math.min(N, (k + 1) * per)]).filter(([a, b]) => a < b);
-  const t0 = Date.now(); let done = 0;
+  t0 = Date.now();
   await Promise.all(segs.map(async ([a, b], k) => {
     const p = await open();
     const seg = path.join(TMP, `seg${k}.mp4`), man = [];
     const ff = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-c:v', 'png', '-i', '-',
       '-c:v', 'libx264', '-preset', 'medium', '-crf', '16', '-pix_fmt', 'yuv420p', '-r', String(FPS), seg], { stdio: ['pipe', 'inherit', 'inherit'] });
+    ffs.push(ff);
     const closed = new Promise((res, rej) => ff.on('close', c => c === 0 ? res() : rej(new Error('ffmpeg exit ' + c))));
     for (let i = a; i < b; i++) {
       await p.evaluate(t => window.render(t), TIMES[i]);
@@ -55,7 +58,10 @@ export async function render(o) {
     ff.stdin.end(); await closed; await p.close();
     fs.writeFileSync(path.join(TMP, `seg${k}.frames.json`), JSON.stringify({ range: [a, b], frames: man }));
   }));
-  await Promise.all(browsers.map(b => b.close()));
+  } finally {   // 页面报错时也要关掉浏览器和还在等画面的 ffmpeg,否则进程挂着不退出
+    await Promise.all(browsers.map(b => b.close().catch(() => {})));
+    for (const f of ffs) if (f.exitCode === null) f.kill('SIGKILL');
+  }
   log.renderSeconds = (Date.now() - t0) / 1000;
 
   const all = [], segCheck = [];

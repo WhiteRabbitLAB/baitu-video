@@ -56,4 +56,4 @@ How to measure each reference's camera moves, transitions and pacing, and the nu
 - Leading knowledge creators and the share of general-knowledge content: [Toutiao](https://www.toutiao.com/zixun/7507411167116691456/), [36Kr](https://www.36kr.com/p/1725129342977)
 - Douyin knowledge trends (2025 report): [Jiemian](https://www.jiemian.com/article/7351025.html)
 - Huixingzhen's and Banfo's forms: [Digitaling](https://www.digitaling.com/articles/261029.html)
-- Kurzgesagt, 3Blue1Brown, TED-Ed, CGP Grey: [vidpros](https://vidpros.com/9-best-youtube-channels-for-explainer-videos-on-tough-topics)
+- Kurzgesagt, 3Blue1Brown, TED-Ed, CGP Grey: [vidpros](https://vidpros.com/9-best-youtube-channels-for-baitu-videos-on-tough-topics)

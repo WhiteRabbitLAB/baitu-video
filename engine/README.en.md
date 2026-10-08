@@ -15,7 +15,7 @@ Whatever the topic or visual style, every video goes through this one toolchain.
 2. **Channel profile**: copy the skill's `profiles/_template/` to `profiles/<channel>/` **in your project** (`"profile": "<channel>"` in `explainer.json`). Don't put it inside the skill folder — updating the skill would overwrite it. Fill in channel / voice / preferences; the json block in `voice.md` is what the engine reads (defaults to free edge-tts).
 3. **Self-check**:
    ```
-   node .claude/skills/explainer-video/engine/cli.mjs doctor
+   node .claude/skills/baitu-video/engine/cli.mjs doctor
    ```
    Checks Node, Playwright, ffmpeg, whisper, the font-subsetting tool, component fonts, project config, channel profiles, the narration key for each language (present or not — values are never printed), and disk space. ❌ must be fixed first; ⚠️ is a heads-up. No Playwright yet: `npm init -y && npm i -D playwright && npx playwright install chromium`.
 4. **New episode**: `new <ep> --style <style>` creates a script template `brief/<ep>/script.zh.txt`, `subtitles.json`, and a starter page `video/<ep>.html` (component paths computed for you).

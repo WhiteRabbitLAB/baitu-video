@@ -2,7 +2,7 @@
 
 中文:[pipeline.md](pipeline.md)
 
-Each step says what to do, what it produces, and what to watch for. All commands are in the engine ([engine/README.en.md](engine/README.en.md)); run `node .claude/skills/explainer-video/engine/cli.mjs <command> <ep>` from your project root:
+Each step says what to do, what it produces, and what to watch for. All commands are in the engine ([engine/README.en.md](engine/README.en.md)); run `node .claude/skills/baitu-video/engine/cli.mjs <command> <ep>` from your project root:
 narration `narrate` → subtitles `subs` → sample `render --ranges` → full `render` → `mix` → `cover` → (vertical platforms only) `vertical` → `accept` → `clean`.
 Your channel's own rules live in the channel profile (`profiles/<channel>/`).
 

@@ -1,5 +1,5 @@
 ---
-name: explainer-video
+name: baitu-video
 description: 用代码做讲解视频的完整方法,不限话题(科普、AI 用法、历史、评测……):选题→事实表→文案与台词检查→配音字幕→按「片型 × 场景 × 画风」做画面(字体与对话框随场景走,可选生图角色表演)→渲染混音→封面竖版→验收。含片型库、场景库、画风库、设计库(字体/色板/组件/动效)与频道配置,均留新增口子。用户说「做新一期」「换个场景/画风」「加一种片型/场景/画风」「做角色动画段」时使用。
 ---
 
@@ -41,7 +41,7 @@ English: [SKILL.en.md](SKILL.en.md)
 
 ## 引擎
 能直接跑的示例期(中英两种配音、横竖两种画幅):[examples/sky-demo](examples/sky-demo/README.md)。
-做片子用的命令、共享画面组件和检查工具都在 [engine/](engine/README.md)。第一次用先在项目根目录跑自检:`node .claude/skills/explainer-video/engine/cli.mjs doctor`。
+做片子用的命令、共享画面组件和检查工具都在 [engine/](engine/README.md)。第一次用先在项目根目录跑自检:`node .claude/skills/baitu-video/engine/cli.mjs doctor`。
 
 ## 先读什么
 

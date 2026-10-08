@@ -16,7 +16,7 @@ The skill is not tied to any TTS service. Say here which one you use; the pipeli
 | `fish` | Fish Audio | `FISH_API_KEY` | whisper alignment | per docs, untested | `voice` (reference_id) |
 
 Common fields: `speed` (1 = normal; for services that can't change speed, the engine time-stretches after synthesis without paying again), `pauses` (silence at start / between paragraphs / at the end, in seconds), `maxChars` (per-request limit; longer paragraphs are split at a sentence end), `keyEnv` (use a different key variable).
-Before switching provider or voice, run a probe: `node .claude/skills/explainer-video/engine/tools/tts-probe.mjs '{"provider":"minimax","voice":"male-qn-qingse"}' zh`.
+Before switching provider or voice, run a probe: `node .claude/skills/baitu-video/engine/tools/tts-probe.mjs '{"provider":"minimax","voice":"male-qn-qingse"}' zh`.
 
 ## Timestamps
 Word-level subtitle sync needs timestamps. If the API doesn't return them, the engine aligns automatically by running whisper over the synthesized audio (needs whisper-cli; the self-check verifies it).

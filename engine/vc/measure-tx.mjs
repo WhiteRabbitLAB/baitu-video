@@ -1,4 +1,4 @@
-// 量转场:node .claude/skills/explainer-video/engine/vc/measure-tx.mjs [画风] [--sheet 目录]
+// 量转场:node .claude/skills/baitu-video/engine/vc/measure-tx.mjs [画风] [--sheet 目录]
 // 对 transitions.html 里每种转场,按 30fps 逐帧渲染(&still 关掉待机微动),整帧缩到 480×270 灰度,
 // 算每帧的「进度」= |帧 − A| ÷ |B − A|(A = 转场前一帧,B = 转场后一帧;按像素差的均值),报:
 //   5–95% 用时、到 50% 的时刻(相对转场起点)、相邻帧最大跳变(灰度差均值,和 measure_film.py 的「相邻帧跳变」同口径)。

@@ -1,7 +1,7 @@
 // 「文字出画 / 叠字」检查(验收:竖版成片、竖封面必跑;横版也可用)
-//   node .claude/skills/explainer-video/engine/tools/check-text-bounds.mjs <页面相对路径?参数> <宽> <高> [时刻 …] [--margin 40]
-//   例:node .claude/skills/explainer-video/engine/tools/check-text-bounds.mjs "video/lesson-03.html?render&vert" 1080 1920 0 5 30
-//       node .claude/skills/explainer-video/engine/tools/check-text-bounds.mjs "video/lesson-03.html?render&cover=3x4-a" 1080 1440
+//   node .claude/skills/baitu-video/engine/tools/check-text-bounds.mjs <页面相对路径?参数> <宽> <高> [时刻 …] [--margin 40]
+//   例:node .claude/skills/baitu-video/engine/tools/check-text-bounds.mjs "video/lesson-03.html?render&vert" 1080 1920 0 5 30
+//       node .claude/skills/baitu-video/engine/tools/check-text-bounds.mjs "video/lesson-03.html?render&cover=3x4-a" 1080 1440
 // 做法:按给定视口打开页面;有 vert 参数时逐个时刻调 window.vertFrame(t),否则调 window.render(t);封面(cover 参数)只等 coverReady 查一次。
 // 量每个可见 <text> 的实际边框(getBoundingClientRect,含所有缩放 / 平移),超出画面或离边不到安全边距的都报出来。
 // 叠字:两串可见的字边框重叠面积 > 较小那串的 20% 就报(同一串字的阴影 / 描边副本 —— 字相同、位置差 <10px —— 不算)。
@@ -10,7 +10,7 @@ import { chromium } from 'playwright';
 import path from 'node:path';
 const args = process.argv.slice(2), mi = args.indexOf('--margin'), M = mi >= 0 ? +args.splice(mi, 2)[1] : 40;
 const [page, W, H, ...ts] = args;
-if (!page || !W || !H) { console.error('用法:node .claude/skills/explainer-video/engine/tools/check-text-bounds.mjs <页面?参数> <宽> <高> [时刻 …] [--margin 40]'); process.exit(2); }
+if (!page || !W || !H) { console.error('用法:node .claude/skills/baitu-video/engine/tools/check-text-bounds.mjs <页面?参数> <宽> <高> [时刻 …] [--margin 40]'); process.exit(2); }
 import { PROJECT as ROOT } from '../lib/paths.mjs';
 const [file, query = ''] = page.split('?');
 const b = await chromium.launch(), p = await b.newPage({ viewport: { width: +W, height: +H } });

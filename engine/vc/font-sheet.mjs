@@ -1,4 +1,4 @@
-// 字体样张:node .claude/skills/explainer-video/engine/vc/font-sheet.mjs → .claude/skills/explainer-video/design/font-samples/2026-10-new-sources.jpg
+// 字体样张:node .claude/skills/baitu-video/engine/vc/font-sheet.mjs → .claude/skills/baitu-video/design/font-samples/2026-10-new-sources.jpg
 // 1) 把 font-sheet.html 用到的字从 cache/fonts-cand 的候选字体里子集化到 cache/vc-font-sheet/(原样,不改轮廓);
 //    中文字体再用 engine/tools/check-winding.py 查「同向内轮廓」(洞会被填实)。它报出来的字要在样张上肉眼核:
 //    笔画落在框里的字(直、真、面)几何上和缺陷长得一样,只有渲染出来才分得清。阳性对照:站酷小薇原版的「回」。

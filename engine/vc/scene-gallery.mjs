@@ -1,4 +1,4 @@
-// 场景示范图:node .claude/skills/explainer-video/engine/vc/scene-gallery.mjs [zh|en] → skill 的 scenes/demo/<id>[.en].jpg(960×540)+ _all[.en].jpg(4×3 拼图)
+// 场景示范图:node .claude/skills/baitu-video/engine/vc/scene-gallery.mjs [zh|en] → skill 的 scenes/demo/<id>[.en].jpg(960×540)+ _all[.en].jpg(4×3 拼图)
 // 每张 = scene-gallery.html?scene=<id> 的 1920×1080 整帧;字体没加载上就报错退出,不出带替代字体的图。
 import { chromium } from 'playwright';
 import { execFileSync } from 'node:child_process';

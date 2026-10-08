@@ -54,4 +54,4 @@
 - 知识区头部创作者与泛知识占比:[今日头条](https://www.toutiao.com/zixun/7507411167116691456/)、[36氪](https://www.36kr.com/p/1725129342977)
 - 抖音知识类热点(2025 报告):[界面新闻](https://www.jiemian.com/article/7351025.html)
 - 回形针、半佛的形式:[数英](https://www.digitaling.com/articles/261029.html)
-- Kurzgesagt、3Blue1Brown、TED-Ed、CGP Grey:[vidpros](https://vidpros.com/9-best-youtube-channels-for-explainer-videos-on-tough-topics)
+- Kurzgesagt、3Blue1Brown、TED-Ed、CGP Grey:[vidpros](https://vidpros.com/9-best-youtube-channels-for-baitu-videos-on-tough-topics)

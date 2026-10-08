@@ -1,5 +1,5 @@
 // 配音服务探针:接新服务 / 换中转 / 换音色前先跑一次(最便宜的一句话)。
-//   node .claude/skills/explainer-video/engine/tools/tts-probe.mjs '{"provider":"minimax","voice":"male-qn-qingse"}' [zh|en]
+//   node .claude/skills/baitu-video/engine/tools/tts-probe.mjs '{"provider":"minimax","voice":"male-qn-qingse"}' [zh|en]
 // 报:时长、接口给没给时间戳、whisper 听写回来的字和原文对上多少。只打印布尔与数字,不打印密钥。
 import { synthesize } from '../lib/tts/index.mjs';
 import { unitsFromWhisper, lcs } from '../lib/align.mjs';

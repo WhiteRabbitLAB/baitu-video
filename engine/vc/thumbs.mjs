@@ -1,4 +1,4 @@
-// 画风缩略图:node .claude/skills/explainer-video/engine/vc/thumbs.mjs → .claude/skills/explainer-video/styles/thumbs/<id>.jpg(960×540)+ _all.jpg(3×2 拼图)
+// 画风缩略图:node .claude/skills/baitu-video/engine/vc/thumbs.mjs → .claude/skills/baitu-video/styles/thumbs/<id>.jpg(960×540)+ _all.jpg(3×2 拼图)
 // 每张 = thumbs.html?style=<id> 的 1920×1080 整帧;字体没加载上就报错退出,不出带替代字体的图。
 import { chromium } from 'playwright';
 import { execFileSync } from 'node:child_process';

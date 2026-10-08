@@ -9,18 +9,18 @@ Visual components shared by every channel. Components only know text roles R1–
 | `vc.js` | The components (pure functions returning SVG strings, 1920×1080 coordinates, reproducible frame by frame) |
 | `styles.js` | The style looks: paper skeuomorphic `paper-skeuo`, game skeuomorphic `game-ui`, flat geometric `flat-geometric`, flat illustration `flat-illustration`, cartoon UI `cartoon-ui`, dark tech `tech-ui`, whiteboard `whiteboard`, dark math `dark-math`, chalkboard `chalkboard`, kinetic type `kinetic` (10 in all; thumbnails in ../../styles/INDEX.md) |
 | `demo.html` | Demo page: one row per component, switchable style, Chinese / English, timeline |
-| `thumbs.html` / `thumbs.mjs` | Style thumbnails: the same scene, only the style changes; `node engine/vc/thumbs.mjs` → `.claude/skills/explainer-video/styles/thumbs/` |
+| `thumbs.html` / `thumbs.mjs` | Style thumbnails: the same scene, only the style changes; `node engine/vc/thumbs.mjs` → `.claude/skills/baitu-video/styles/thumbs/` |
 | `transitions.html` / `measure-tx.mjs` | Transition demos (morph, zoom-through, slide-push, blur-push…) and transition measurement (with a linear-fade positive control): `node engine/vc/measure-tx.mjs paper-skeuo` |
 | Fonts | `fonts.css` + `fonts/`: the engine's bundled subset fonts (every font the styles use, cut to the demo pages' characters); re-cut with `node <engine>/cli.mjs fonts-demo`. Finished episodes use `fonts <ep>` |
 | `scene-gallery.html` / `scene-gallery.mjs` | Scene demo frames: one frame per scene (11), one neutral topic; `node engine/vc/scene-gallery.mjs en` (or `zh`) → the skill's `scenes/demo/` (scene cards show published-video screenshots in `scenes/thumbs/`; this doesn't overwrite them) |
 | `shot.mjs` | Demo-page screenshots: `node engine/vc/shot.mjs <dir> paper-skeuo,zh,7.5 tech-ui,en,2.4` |
 
 ## Using them in a new episode
-**Fastest: `node .claude/skills/explainer-video/engine/cli.mjs new <ep> --style <style>`** — the starter page it creates has all paths worked out (template [../templates/page.html](../templates/page.html)). When writing shots, copy from [demo.html](demo.html) — it shows how every component is used in every style.
+**Fastest: `node .claude/skills/baitu-video/engine/cli.mjs new <ep> --style <style>`** — the starter page it creates has all paths worked out (template [../templates/page.html](../templates/page.html)). When writing shots, copy from [demo.html](demo.html) — it shows how every component is used in every style.
 By hand, with the page in the default location `video/<ep>.html`:
 ```html
-<script src="../.claude/skills/explainer-video/engine/vc/vc.js"></script>
-<script src="../.claude/skills/explainer-video/engine/vc/styles.js"></script>
+<script src="../.claude/skills/baitu-video/engine/vc/vc.js"></script>
+<script src="../.claude/skills/baitu-video/engine/vc/styles.js"></script>
 <script>
 const kit = VC.kit('paper-skeuo');
 window.fontsReady = VC.ready(kit, [all text that appears on screen], ['Noto Sans SC:900']);   // third argument: fonts used outside the style table (e.g. subtitles). Returns "family:weight → count"; 0 = not loaded, and the renderer refuses to start

@@ -1,7 +1,7 @@
 # 验收
 
 每项把命令与原始输出存档。**每个判定器先证明自己有效**(阳性对照命中后才采信它的 0)。
-**一条命令跑完下表的自动项**:`node .claude/skills/explainer-video/engine/cli.mjs accept <期>` → `<产物目录>/acceptance/summary.md`(每项原始输出另存一个文件)。
+**一条命令跑完下表的自动项**:`node .claude/skills/baitu-video/engine/cli.mjs accept <期>` → `<产物目录>/acceptance/summary.md`(每项原始输出另存一个文件)。
 结果分五种:PASS / FAIL / LOOK(要人看一眼)/ INFO(只记录)/ BROKEN(探针自己失效,结果不算数)。
 人听过、确认没问题的漏读报警(同音字被听错之类)登记在 `<brief>/accept.json` 的 `heardOk`,写清原因。
 

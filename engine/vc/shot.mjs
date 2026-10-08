@@ -1,4 +1,4 @@
-// 演示页截图:node .claude/skills/explainer-video/engine/vc/shot.mjs <输出目录> 画风,语言,秒 …   例:node .claude/skills/explainer-video/engine/vc/shot.mjs /tmp/x paper-skeuo,zh,7.5 tech-ui,en,2.4
+// 演示页截图:node .claude/skills/baitu-video/engine/vc/shot.mjs <输出目录> 画风,语言,秒 …   例:node .claude/skills/baitu-video/engine/vc/shot.mjs /tmp/x paper-skeuo,zh,7.5 tech-ui,en,2.4
 // 每张是整页(九行);字体没加载上会打印 FONT MISSING。
 import { chromium } from 'playwright';
 const [,, out, ...specs] = process.argv;   // spec = style,lang,t

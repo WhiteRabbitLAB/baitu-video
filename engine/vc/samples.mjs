@@ -1,13 +1,13 @@
-// 画风入库三张样张(styles/ROADMAP.md「入库标准」):node .claude/skills/explainer-video/engine/vc/samples.mjs <画风 id>
+// 画风入库三张样张(styles/ROADMAP.md「入库标准」):node .claude/skills/baitu-video/engine/vc/samples.mjs <画风 id>
 //   1 空场景 = thumbs.html(信息卡片场景,同内容只换画风)
 //   2 文字角色 = roles.html 全部画完的一帧(R1–R10 各一行 + 角色)
 //   3 角色 = roles.html 右栏:画到一半 + 画完,左右并排(看出场方式与角色在画风里像不像贴纸)
-// 输出 .claude/skills/explainer-video/styles/samples/<id>-1-scene.jpg、-2-roles.jpg、-3-character.jpg;中间 PNG 用完即删。
+// 输出 .claude/skills/baitu-video/styles/samples/<id>-1-scene.jpg、-2-roles.jpg、-3-character.jpg;中间 PNG 用完即删。
 import { chromium } from 'playwright';
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-const ID = process.argv[2]; if (!ID) throw new Error('用法:node .claude/skills/explainer-video/engine/vc/samples.mjs <画风 id>');
+const ID = process.argv[2]; if (!ID) throw new Error('用法:node .claude/skills/baitu-video/engine/vc/samples.mjs <画风 id>');
 import { PROJECT as ROOT, SKILL, ENGINE } from '../lib/paths.mjs';
 const HERE = path.dirname(new URL(import.meta.url).pathname);
 const OUT = path.join(SKILL, 'styles/samples'), TMP = path.join(ROOT, 'cache/vc-samples');

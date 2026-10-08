@@ -1,5 +1,5 @@
 // 开源导出:按白名单把 skill 复制到一个目录(开源仓库的工作区),再扫一遍频道痕迹当门禁 —— 扫到就判失败,不许发布。
-//   node .claude/skills/explainer-video/engine/tools/export.mjs <目标目录>
+//   node .claude/skills/baitu-video/engine/tools/export.mjs <目标目录>
 // 排除:TODO.md(内部过程记录)、examples 里跑出来的产物、profiles/ 下除 _template / example / README.md 以外的文件夹(作者自己的频道)、.DS_Store。
 // 门禁:通用规则(本机绝对路径)+ 私有词表 export-private.json(期号、片名与题材专名、频道名、私有路径);每条先跑阳性对照。
 // 例外写在各条规则里;NOTICE、LICENSE、字体许可证原文不扫。
@@ -48,7 +48,13 @@ if (hits.length) { console.error(`❌ 门禁不过:${hits.length} 处\n` + hits.
 // 目标已是 git 仓库(开源仓库的工作区)⇒ 只清空 .git 以外的东西,保留提交历史
 if (fs.existsSync(path.join(DEST, '.git'))) { for (const e of fs.readdirSync(DEST)) if (e !== '.git') fs.rmSync(path.join(DEST, e), { recursive: true, force: true }); }
 else fs.rmSync(DEST, { recursive: true, force: true });
-for (const rel of files) { const to = path.join(DEST, rel); fs.mkdirSync(path.dirname(to), { recursive: true }); fs.copyFileSync(path.join(SKILL, rel), to); }
+// 改名(可选,写在 export-private.json 的 rename):开源版的 skill 名与安装目录和本地不同时,导出时替换文本文件里的这个词
+const RENAME = fs.existsSync(PRIV_FILE) ? JSON.parse(fs.readFileSync(PRIV_FILE, 'utf8')).rename : null;
+for (const rel of files) {
+  const to = path.join(DEST, rel); fs.mkdirSync(path.dirname(to), { recursive: true });
+  if (RENAME && TEXT.test(rel)) fs.writeFileSync(to, fs.readFileSync(path.join(SKILL, rel), 'utf8').replaceAll(RENAME.from, RENAME.to));
+  else fs.copyFileSync(path.join(SKILL, rel), to);
+}
 
 // 导出后:Markdown 相对链接都要能打开
 const broken = [];

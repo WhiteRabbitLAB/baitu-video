@@ -15,7 +15,7 @@ English: [README.en.md](README.en.md)
 2. **频道配置**:把 skill 的 `profiles/_template/` 整个复制成**你项目里的** `profiles/<频道名>/`(`explainer.json` 里 `"profile": "<频道名>"`)。别放进 skill 目录——升级 skill 会被覆盖。填 channel / voice / preferences;`voice.md` 里的 json 代码块是引擎读的配音设定,默认是免费的 edge-tts。
 3. **自检**:
    ```
-   node .claude/skills/explainer-video/engine/cli.mjs doctor
+   node .claude/skills/baitu-video/engine/cli.mjs doctor
    ```
    查 Node、Playwright、ffmpeg、whisper、字体子集化工具、组件字体、项目配置、频道配置、每种语言的配音密钥(只报有没有,不打印值)、磁盘。❌ 必须先解决,⚠️ 是提醒。没装 Playwright:`npm init -y && npm i -D playwright && npx playwright install chromium`。
 4. **新建一期**:`new <期> --style <画风>` 建好稿子模板 `brief/<期>/script.zh.txt`、`subtitles.json` 和起步页面 `video/<期>.html`(组件路径自动算好)。

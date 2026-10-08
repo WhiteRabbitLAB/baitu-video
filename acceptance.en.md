@@ -3,7 +3,7 @@
 中文:[acceptance.md](acceptance.md)
 
 Archive the command and raw output for every item. **Every checker proves itself first** (only trust its 0 after a positive control has been caught).
-**One command runs every automatic item below**: `node .claude/skills/explainer-video/engine/cli.mjs accept <ep>` → `<output dir>/acceptance/summary.md` (each item's raw output is saved in its own file).
+**One command runs every automatic item below**: `node .claude/skills/baitu-video/engine/cli.mjs accept <ep>` → `<output dir>/acceptance/summary.md` (each item's raw output is saved in its own file).
 Five outcomes: PASS / FAIL / LOOK (a person should look) / INFO (recorded only) / BROKEN (the probe itself failed; the result doesn't count).
 Skipped-word alarms a person has listened to and cleared (a homophone misheard, say) go in `heardOk` in `<brief>/accept.json`, with the reason.
 

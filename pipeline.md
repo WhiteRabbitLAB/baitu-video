@@ -1,6 +1,6 @@
 # 制作流程
 
-每一步写「做什么、产出什么、注意什么」。命令都在引擎里([engine/README.md](engine/README.md)),在项目根目录运行 `node .claude/skills/explainer-video/engine/cli.mjs <命令> <期>`:
+每一步写「做什么、产出什么、注意什么」。命令都在引擎里([engine/README.md](engine/README.md)),在项目根目录运行 `node .claude/skills/baitu-video/engine/cli.mjs <命令> <期>`:
 配音 `narrate` → 字幕 `subs` → 样片 `render --ranges` → 整片 `render` → `mix` → `cover` →(选了竖版平台)`vertical` → `accept` → `clean`。
 频道自己的规矩写在频道配置(profiles/<频道>/)。
 

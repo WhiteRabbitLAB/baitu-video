@@ -35,7 +35,7 @@ For character acting, add the character module ([characters/](characters/INDEX.e
 
 ## Engine
 A runnable example episode (Chinese and English narration, landscape and vertical): [examples/sky-demo](examples/sky-demo/README.md).
-The commands, shared visual components and check tools all live in [engine/](engine/README.en.md). First time: run the self-check from your project root: `node .claude/skills/explainer-video/engine/cli.mjs doctor`.
+The commands, shared visual components and check tools all live in [engine/](engine/README.en.md). First time: run the self-check from your project root: `node .claude/skills/baitu-video/engine/cli.mjs doctor`.
 
 ## What to read
 

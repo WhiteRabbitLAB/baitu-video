@@ -16,7 +16,7 @@ skill 不绑定任何一家语音服务。在这里写你用哪家,流水线按�
 | `fish` | Fish Audio | `FISH_API_KEY` | whisper 对齐 | 按文档,未实测 | `voice`(reference_id) |
 
 通用字段:`speed`(1 = 正常;服务本身不能调速的,引擎合成后变速,不重新花钱)、`pauses`(段首 / 段间 / 片尾留白秒数)、`maxChars`(单次请求的字数上限,超了在句末拆开)、`keyEnv`(换密钥变量名)。
-换服务或换音色前先跑一次探针:`node .claude/skills/explainer-video/engine/tools/tts-probe.mjs '{"provider":"minimax","voice":"male-qn-qingse"}' zh`。
+换服务或换音色前先跑一次探针:`node .claude/skills/baitu-video/engine/tools/tts-probe.mjs '{"provider":"minimax","voice":"male-qn-qingse"}' zh`。
 
 ## 时间戳
 字幕逐字对齐要用时间戳。接口不返回时,引擎自动用 whisper 识别合成好的音频来对齐(要装 whisper-cli;自检会查)。

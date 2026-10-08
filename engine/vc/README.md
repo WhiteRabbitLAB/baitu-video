@@ -7,18 +7,18 @@
 | `vc.js` | 组件(纯函数,返回 SVG 字符串,1920×1080 坐标,逐帧可复现) |
 | `styles.js` | 画风外观表:纸面拟物 `paper-skeuo`、游戏拟物 `game-ui`、扁平几何 `flat-geometric`、扁平插画 `flat-illustration`、卡通界面 `cartoon-ui`、科技深色 `tech-ui`、白板手绘 `whiteboard`、黑底数学 `dark-math`、黑板粉笔 `chalkboard`、动态文字 `kinetic`(共 10 种,缩略图见 ../../styles/INDEX.md) |
 | `demo.html` | 演示页:每个组件一行,可切换画风、中英文、时间轴 |
-| `thumbs.html` / `thumbs.mjs` | 画风缩略图:同一场景只换画风;`node engine/vc/thumbs.mjs` → `.claude/skills/explainer-video/styles/thumbs/` |
+| `thumbs.html` / `thumbs.mjs` | 画风缩略图:同一场景只换画风;`node engine/vc/thumbs.mjs` → `.claude/skills/baitu-video/styles/thumbs/` |
 | `transitions.html` / `measure-tx.mjs` | 转场演示(morph、zoom-through、slide-push、blur-push)与量转场(带线性淡化阳性对照):`node engine/vc/measure-tx.mjs paper-skeuo` |
 | 字体 | `fonts.css` + `fonts/`:引擎自带的子集字体(画风表用到的全部字体,按演示页的字切);重切:`node <engine>/cli.mjs fonts-demo`。每期正片用 `fonts <期>` |
 | `scene-gallery.html` / `scene-gallery.mjs` | 场景示范图:11 个场景各一帧,同一个中性题目;`node engine/vc/scene-gallery.mjs zh`(或 `en`)→ skill 的 `scenes/demo/`(场景卡顶部用的是成片截图 `scenes/thumbs/`,这里不覆盖它)|
 | `shot.mjs` | 演示页截图:`node engine/vc/shot.mjs <目录> paper-skeuo,zh,7.5 tech-ui,en,2.4` |
 
 ## 在新一期里用
-**最快:`node .claude/skills/explainer-video/engine/cli.mjs new <期> --style <画风>`**,生成的起步页面路径都算好了(模板 [../templates/page.html](../templates/page.html))。写镜头时照 [demo.html](demo.html) 抄——每个组件在不同画风里怎么用都在那里。
+**最快:`node .claude/skills/baitu-video/engine/cli.mjs new <期> --style <画风>`**,生成的起步页面路径都算好了(模板 [../templates/page.html](../templates/page.html))。写镜头时照 [demo.html](demo.html) 抄——每个组件在不同画风里怎么用都在那里。
 手写的话,页面在默认位置 `video/<期>.html` 时:
 ```html
-<script src="../.claude/skills/explainer-video/engine/vc/vc.js"></script>
-<script src="../.claude/skills/explainer-video/engine/vc/styles.js"></script>
+<script src="../.claude/skills/baitu-video/engine/vc/vc.js"></script>
+<script src="../.claude/skills/baitu-video/engine/vc/styles.js"></script>
 <script>
 const kit = VC.kit('paper-skeuo');
 window.fontsReady = VC.ready(kit, [本期画面上的全部文字], ['Noto Sans SC:900']);   // 第三个参数:画风表以外还要用的字体(如字幕)。返回「族:字重 → 数量」,0 = 没加载上,渲染器会拒绝开工

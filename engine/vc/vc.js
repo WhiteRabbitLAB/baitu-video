@@ -1,6 +1,6 @@
 // 讲解视频共享组件(VC)。所有频道共用。
 // 约定(与各期页面一致):render(t) 只由时间决定;组件都是纯函数,返回 SVG 字符串,坐标系 1920×1080。
-// 组件只认「文字角色」R1–R10(.claude/skills/explainer-video/text-roles.md);字体、颜色、承载物、出场方式全由画风提供(styles.js)。
+// 组件只认「文字角色」R1–R10(.claude/skills/baitu-video/text-roles.md);字体、颜色、承载物、出场方式全由画风提供(styles.js)。
 // 用法:<script src="…/engine/vc/vc.js"></script><script src="…/engine/vc/styles.js"></script>
 //       const kit = VC.kit('paper-skeuo');  await VC.ready(kit, [本期全部文字]);  每帧开头 kit.begin();
 // file:// 下 ES module 会被 CORS 拦,所以用普通脚本 + 全局 VC。
