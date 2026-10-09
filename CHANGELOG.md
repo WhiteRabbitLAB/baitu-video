@@ -33,5 +33,7 @@
 - `doctor`: a channel profile missing only some of its three files now names the missing file instead of saying the whole profile can't be found. 频道配置只缺其中一两个文件时,`doctor` 直接说缺哪个,不再报「找不到频道配置」。
 
 ### Fixes / 修复
+- `shot` and `vertical` no longer hang when the page throws: the browser (and ffmpeg) are closed on error. `shot` / `vertical` 页面报错时关掉浏览器(和 ffmpeg),不再挂住不退出。
+- `fonts.json`: ZCOOL QingKe HuangYou and Abril Fatface registered (listed in the design library for the dashboard scene but missing from the download table). `fonts.json` 补登站酷庆科黄油体、Abril Fatface(设计库早有,下载表漏登)。
 - Kinetic-type style: the highlight block no longer covers the previous character. 动态文字画风的强调色块不再压到前一个字。
 - Fact sheets no longer count toward the font subset (they never appear on screen). 事实表不再算进字体子集用字。

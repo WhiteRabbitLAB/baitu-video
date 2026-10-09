@@ -75,6 +75,8 @@ The first full video built with these components (12 shots, paper-skeuo). Practi
 - **Before export**: `fontsReady` is just `VC.ready`'s return value; fonts are cut with the engine's `fonts <ep>`, which registers every font of the styles the page uses, so "unused families reporting 0" can't happen. (That episode used the old approach: a hand-built `faces` object with only that episode's fonts.)
 
 Pitfalls hit:
+- `check-text-bounds` merges the `<text>` elements under one parent into a single string before measuring (for letter-by-letter handwriting): side-by-side independent strings (several readout lines on a screen, several items on a card) each need their own `<g>`, or the merged box reports overlaps that don't exist.
+- `zoom-through` pads outside the opening with the style's base colour: a background the page draws itself must extend far beyond the frame for this transition; but `pan` / `slide-push` place the two shots side by side, so an oversized background lets the new shot cover the old one ⇒ pass the oversized version only as zoom-through's new shot (B, which grows out of the opening).
 - If the thumbnail / vertical readiness code is written before `fontsReady`, `await window.fontsReady` gets undefined, and the `render(0)` when fonts become ready overwrites the thumbnail ⇒ first `while (!window.fontsReady) await …`, then draw.
 - A file-writing tool turned escapes like `'：'` into the literal character on disk; later script replacements must match the actual character (the result was still full width, not broken).
 - Some fonts draw traditional glyph forms for simplified characters (Long Cang's "时" → "時", see design/fonts.md); make a sample sheet of any new font and zoom in.

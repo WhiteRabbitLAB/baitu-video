@@ -40,6 +40,10 @@ The monitor lowers / goes full screen / shrinks back; pan to the next wall at ea
 
 ## Cases
 A documentary-style video about a "same thing, two labels" experiment.
+A sequel: the same lab, but the monitor now runs a neuron-activity trace (fibre recording) and a mouse cage sits on the bench; the props and labels from the first video come back unchanged, so the picture itself says "this is a sequel".
 
 ## Pitfalls
 Curves with direction but no values ⇒ schematic shape + a permanent "schematic" label.
+- The zoom-through transition shrinks a shot and shows the style's base colour (paper cream) outside it as a glaring ring ⇒ extend a hand-drawn room beyond the frame only for that transition and only for the **new** shot (the one growing out of the opening); **don't for pan / slide-push**: the two shots sit side by side and the new shot's oversized room covers the old one completely (measured 2026-10-09; the full video had to be re-rendered).
+- Draw lab animals in the same way as the mascot (ink outline + volume gradient + rounded shapes); otherwise they look like assets from another set when they share a frame (decision-maker, 2026-10-09: the first mouse "didn't look good"; the redraw was "much better").
+- Readouts that drop and then settle when food appears: compress the paper's time constant into a few seconds of schematic; numbers show only real values (e.g. 96%), never a count-up from 0.

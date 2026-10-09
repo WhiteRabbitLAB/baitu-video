@@ -21,21 +21,23 @@ export async function vertical(o) {
   const END_CARD = cfg.endCard ?? 2.5;
   const mixWav = path.join(TMP, `mix${suf}.wav`);
   if (!fs.existsSync(mixWav)) throw new Error('先跑 mix(缺 ' + mixWav + ')');
-  const b = await (await chromium()).launch();
-  const { p } = await openPage(b, E.url('vert'), { width: 1080, height: 1920 });
-  const frames = SEGS.flatMap(([a, z]) => Array.from({ length: Math.round((z - a) * FPS) }, (_, i) => [a + i / FPS, 0]));
-  const last = SEGS.at(-1)[1];
-  for (let i = 0; i < END_CARD * FPS; i++) frames.push([last, (i + 1) / (END_CARD * FPS)]);
-  const vid = path.join(TMP, `vert-v${suf}.mp4`);
-  const ff = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-c:v', 'png', '-i', '-', '-c:v', 'libx264', '-preset', 'medium', '-crf', '18', '-pix_fmt', 'yuv420p', '-r', String(FPS), vid], { stdio: ['pipe', 'inherit', 'inherit'] });
-  const closed = new Promise((res, rej) => ff.on('close', c => c === 0 ? res() : rej(new Error('ffmpeg ' + c))));
-  for (let i = 0; i < frames.length; i++) {
-    await p.evaluate(([t, e]) => window.vertFrame(t, e), frames[i]);
-    const png = await p.screenshot({ type: 'png' });
-    if (!ff.stdin.write(png)) await new Promise(r => ff.stdin.once('drain', r));
-    if (i % 300 === 0) console.log(`${i}/${frames.length}`);
-  }
-  ff.stdin.end(); await closed; await b.close();
+  const b = await (await chromium()).launch(), vid = path.join(TMP, `vert-v${suf}.mp4`);
+  let ff, done = false;
+  try {   // 页面报错时也要关掉浏览器,否则进程挂着不退出
+    const { p } = await openPage(b, E.url('vert'), { width: 1080, height: 1920 });
+    const frames = SEGS.flatMap(([a, z]) => Array.from({ length: Math.round((z - a) * FPS) }, (_, i) => [a + i / FPS, 0]));
+    const last = SEGS.at(-1)[1];
+    for (let i = 0; i < END_CARD * FPS; i++) frames.push([last, (i + 1) / (END_CARD * FPS)]);
+    ff = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-c:v', 'png', '-i', '-', '-c:v', 'libx264', '-preset', 'medium', '-crf', '18', '-pix_fmt', 'yuv420p', '-r', String(FPS), vid], { stdio: ['pipe', 'inherit', 'inherit'] });
+    const closed = new Promise((res, rej) => ff.on('close', c => c === 0 ? res() : rej(new Error('ffmpeg ' + c))));
+    for (let i = 0; i < frames.length; i++) {
+      await p.evaluate(([t, e]) => window.vertFrame(t, e), frames[i]);
+      const png = await p.screenshot({ type: 'png' });
+      if (!ff.stdin.write(png)) await new Promise(r => ff.stdin.once('drain', r));
+      if (i % 300 === 0) console.log(`${i}/${frames.length}`);
+    }
+    ff.stdin.end(); await closed; done = true;
+  } finally { if (!done && ff) ff.kill('SIGKILL'); await b.close(); }   // 中途出错:连还在等画面的 ffmpeg 一起关
   const parts = SEGS.map(([a, z], i) => `[0:a]atrim=${a.toFixed(4)}:${(a + Math.round((z - a) * FPS) / FPS).toFixed(4)},asetpts=PTS-STARTPTS[a${i}];`).join('');
   const fc = `${parts}anullsrc=r=48000:cl=stereo,atrim=0:${END_CARD}[sil];${SEGS.map((_, i) => `[a${i}]`).join('')}[sil]concat=n=${SEGS.length + 1}:v=0:a=1,loudnorm=I=-16:TP=-1.5:LRA=11[a]`;
   const out = path.join(OUT, `${ep}-${cfg.name || 'vertical'}${suf}.mp4`);

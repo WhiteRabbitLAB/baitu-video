@@ -121,6 +121,22 @@
       "rfn": "Reserved Font Name \"Quicksand\""
     },
     {
+      "family": "ZCOOL QingKe HuangYou",
+      "file": "ZCOOLQingKeHuangYou-Regular.ttf",
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/zcoolqingkehuangyou/ZCOOLQingKeHuangYou-Regular.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/zcoolqingkehuangyou/OFL.txt"
+    },
+    {
+      "family": "Abril Fatface",
+      "file": "AbrilFatface-Regular.ttf",
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/abrilfatface/AbrilFatface-Regular.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/abrilfatface/OFL.txt",
+      "renameTo": "VC Fatface",
+      "rfn": "Reserved Font Names \"Abril\" and \"Abril Fatface\""
+    },
+    {
       "family": "STIX Two Text",
       "file": "STIXTwoText[wght].ttf",
       "variable": true,

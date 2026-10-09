@@ -43,3 +43,4 @@ Validated: lab-desk-1944, lab-dashboard (one finished video each). Worth trying:
 ## Cases
 - An old-lab story: 3:44; the sample passed first time.
 - A dashboard story: 3:52; the first chapter progress bar and vertical cut; passed first time.
+- A sequel to the dashboard story: about 5:00; the first 10 seconds recap the previous video and its open question, then the new experiment; props from the first video come back unchanged.

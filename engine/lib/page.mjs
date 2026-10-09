@@ -37,7 +37,7 @@ export function episode({ ep, channel, lang, out }) {
   const page = path.join(PROJECT, fill(ch.paths.page, ep));
   if (!fs.existsSync(page)) throw new Error(`没有成片页 ${page}`);
   const url = q => 'file://' + page + '?render' + (suf ? '&lang=' + lang : '') + (q ? '&' + q : '');
-  return { ch, ep, lang, suf, OUT, page, url, brief: path.join(PROJECT, fill(ch.paths.brief, ep)), TMP: path.join(PROJECT, 'cache/render') };
+  return { ch, ep, lang, suf, OUT, page, url, brief: path.join(PROJECT, fill(ch.paths.brief, ep)), TMP: path.join(PROJECT, 'cache/render', ep) };   // 每期各用一个临时目录:两个会话同时渲染不同的期不会互相覆盖分段文件(2026-10-09 实测撞过)
 }
 
 export async function openPage(browser, url, { width = 1920, height = 1080, ready = 'fontsReady' } = {}) {
