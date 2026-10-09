@@ -38,9 +38,14 @@ export async function doctor() {
   which('ffprobe') ? ok('ffprobe', '有') : bad('ffprobe', '没装(随 ffmpeg 一起装)');
 
   // 4) whisper(漏读核查;接口不给时间戳时用来对齐)—— 可选
-  const model = process.env.WHISPER_MODEL || path.join(process.env.HOME || '', 'Library/Caches/vox-asr-models/ggml-medium.bin');
+  const { WHISPER_MODEL, WHISPER_MODEL_DEFAULT } = await import('./align.mjs'), model = WHISPER_MODEL();
+  const getModel = `mkdir -p cache/whisper && curl -L -o cache/whisper/ggml-medium.bin https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium.bin(约 1.5 GB;或在 .env 写 WHISPER_MODEL=模型路径)`;
   if (!which('whisper-cli')) warn('whisper', '没装 whisper-cli:漏读核查跑不了;配音服务不给时间戳时也对不齐字幕(brew install whisper-cpp)');
-  else fs.existsSync(model) ? ok('whisper', 'whisper-cli + 模型') : warn('whisper', `有 whisper-cli,但模型不在 ${model}(用 WHISPER_MODEL 指定)`);
+  else fs.existsSync(model) ? ok('whisper', `whisper-cli + 模型(${model === WHISPER_MODEL_DEFAULT ? '项目 cache/whisper' : path.basename(model)})`) : warn('whisper', `有 whisper-cli,但没有模型文件:${getModel}`);
+
+  // 4b) python3:验收「字幕时长」直接调它(只用标准库);量成片节奏的两个工具另要 numpy —— 后者可选
+  if (!which('python3')) bad('python3', '没装:验收第 5 项「字幕时长」要用(macOS 自带或 brew install python)');
+  else run('python3', ['-c', 'import numpy']) !== null ? ok('python3', '有(含 numpy)') : ok('python3', '有;没有 numpy:只影响量成片节奏的 measure_film.py / measure_fades.py(pip install numpy)');
 
   // 5) 字体子集化(fontTools + brotli)—— 可选
   try { const P = (await import('./fonts.mjs')).python(); ok('fontTools', `有(字体子集化;${P[0].includes('venv') ? '项目 venv' : P[0] === 'uv' ? 'uv 临时环境' : 'python3'})`); }
@@ -62,7 +67,8 @@ export async function doctor() {
     for (const id of Object.keys(cfg?.channels || {})) {
       const ch = loadChannel(id);
       const miss = ['channel.md', 'voice.md', 'preferences.md'].filter(f => !fs.existsSync(path.join(ch.dir, f)));
-      if (miss.length) { bad(`频道 ${id}`, `找不到频道配置(channel / voice / preferences)。试过:${profileCandidates(ch.profile || id).map(d => path.relative(PROJECT, d) || '.').join(' / ')}。把 skill 的 profiles/_template/ 复制到 <项目>/profiles/${ch.profile || id}/`); continue; }
+      if (miss.length === 3) { bad(`频道 ${id}`, `找不到频道配置(channel / voice / preferences)。试过:${profileCandidates(ch.profile || id).map(d => path.relative(PROJECT, d) || '.').join(' / ')}。把 skill 的 profiles/_template/ 复制到 <项目>/profiles/${ch.profile || id}/`); continue; }
+      if (miss.length) { bad(`频道 ${id}`, `${path.relative(PROJECT, ch.dir) || '.'} 里缺 ${miss.join('、')}(从 skill 的 profiles/_template/ 复制过来再填)`); continue; }
       if (/<频道\/系列名>|<channel \/ series name>/.test(fs.readFileSync(path.join(ch.dir, 'channel.md'), 'utf8'))) warn(`频道 ${id}`, 'channel.md 还是模板原文:至少填上平台、字幕规格、平台规矩');
       ok(`频道 ${id}`, ch.dir.startsWith(SKILL) ? 'skill/' + path.relative(SKILL, ch.dir) : path.relative(PROJECT, ch.dir));
       let v; try { v = loadVoice(ch.dir); } catch (e) { bad(`配音 ${id}`, e.message); continue; }

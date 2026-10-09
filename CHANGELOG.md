@@ -28,6 +28,9 @@
 - Principles: **composition** (one subject per shot, 60–80% of the usable frame) and **don't repeat the subtitles on screen**; the fact sheet is a hard rule. 原则加「构图」「画面不复述字幕」,事实表是硬规矩。
 - Pipeline / SKILL: fact-sheet format; read the component table and demo page instead of the `vc.js` source. 流程写明事实表格式;写页面先看组件表和演示页。
 - edge-tts: with uv installed the engine runs `uvx edge-tts` itself — don't install it globally (that also installs `edge-playback`, which plays sound); `doctor` shows which command it will use. edge-tts 装了 uv 就不用另装,别全局装;`doctor` 会显示实际用哪条命令。
+- **Requirements** section in the README (zh / en): what to install, required vs optional, macOS commands, and where to get the whisper model; Linux / Windows stated as untested. README 加「环境依赖」一节:必须 / 可选、macOS 装法、whisper 模型去哪下;Linux、Windows 如实写未实测。
+- `doctor` now checks **python3** (the subtitle-duration check needs it) and numpy (optional); a missing whisper model prints the download command. The model is looked up in `WHISPER_MODEL` (environment or `.env`), then `cache/whisper/ggml-medium.bin` in the project. `doctor` 新查 python3(字幕时长验收要用)与 numpy(可选);缺 whisper 模型时直接给下载命令;模型按 `WHISPER_MODEL`(环境变量或 `.env`)→ 项目 `cache/whisper/ggml-medium.bin` 的顺序找。
+- `doctor`: a channel profile missing only some of its three files now names the missing file instead of saying the whole profile can't be found. 频道配置只缺其中一两个文件时,`doctor` 直接说缺哪个,不再报「找不到频道配置」。
 
 ### Fixes / 修复
 - Kinetic-type style: the highlight block no longer covers the previous character. 动态文字画风的强调色块不再压到前一个字。

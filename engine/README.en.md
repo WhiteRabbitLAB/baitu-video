@@ -17,7 +17,7 @@ Whatever the topic or visual style, every video goes through this one toolchain.
    ```
    node .claude/skills/baitu-video/engine/cli.mjs doctor
    ```
-   Checks Node, Playwright, ffmpeg, whisper, the font-subsetting tool, component fonts, project config, channel profiles, the narration key for each language (present or not — values are never printed), and disk space. ❌ must be fixed first; ⚠️ is a heads-up. No Playwright yet: `npm init -y && npm i -D playwright && npx playwright install chromium`.
+   Checks Node, Playwright, ffmpeg, whisper (including the model file), python3, the font-subsetting tool, component fonts, project config, channel profiles, the narration key for each language (present or not — values are never printed), and disk space. ❌ must be fixed first; ⚠️ is a heads-up. No Playwright yet: `npm init -y && npm i -D playwright && npx playwright install chromium`. The full list of what to install and how is under "Requirements" in the skill [README](../README.md).
 4. **New episode**: `new <ep> --style <style>` creates a script template `brief/<ep>/script.zh.txt`, `subtitles.json`, a starter page `video/<ep>.html` (component paths computed for you) and a fact-sheet template `brief/<ep>/facts.md` (acceptance item 14 checks it; to keep it elsewhere, add `"facts": "docs/{ep}-facts.md"` to the channel's `paths` in `explainer.json`).
 5. **Script → video**: a blank line separates paragraphs; then `narrate` → `subs` → edit the page → `fonts` → `shot` a few frames → `render` → `mix` → `accept`.
 

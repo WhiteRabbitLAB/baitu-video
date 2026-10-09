@@ -17,7 +17,7 @@ English: [README.en.md](README.en.md)
    ```
    node .claude/skills/baitu-video/engine/cli.mjs doctor
    ```
-   查 Node、Playwright、ffmpeg、whisper、字体子集化工具、组件字体、项目配置、频道配置、每种语言的配音密钥(只报有没有,不打印值)、磁盘。❌ 必须先解决,⚠️ 是提醒。没装 Playwright:`npm init -y && npm i -D playwright && npx playwright install chromium`。
+   查 Node、Playwright、ffmpeg、whisper(含模型文件)、python3、字体子集化工具、组件字体、项目配置、频道配置、每种语言的配音密钥(只报有没有,不打印值)、磁盘。❌ 必须先解决,⚠️ 是提醒。没装 Playwright:`npm init -y && npm i -D playwright && npx playwright install chromium`。每样东西装什么、怎么装,整表见 skill 的 [README](../README.zh.md)「环境依赖」。
 4. **新建一期**:`new <期> --style <画风>` 建好稿子模板 `brief/<期>/script.zh.txt`、`subtitles.json`、起步页面 `video/<期>.html`(组件路径自动算好),外加事实表模板 `brief/<期>/facts.md`(验收第 14 项查它;放别处就在 `explainer.json` 频道的 `paths` 里加一行 `"facts": "docs/{ep}-facts.md"`)。
 5. **写稿 → 出片**:稿子空一行分段;然后 `narrate` → `subs` → 改页面 → `fonts` → `shot` 看几帧 → `render` → `mix` → `accept`。
 

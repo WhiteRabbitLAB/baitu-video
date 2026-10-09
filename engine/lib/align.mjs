@@ -7,8 +7,13 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { SR } from './audio.mjs';
 import { stripPunct, normWord, units } from './script.mjs';
+import { CACHE } from './paths.mjs';
+import { readEnv } from './config.mjs';
 
-export const WHISPER_MODEL = () => process.env.WHISPER_MODEL || path.join(process.env.HOME || '', 'Library/Caches/vox-asr-models/ggml-medium.bin');
+// whisper 模型文件(单一驻地,doctor 也用它):环境变量 / 项目 .env 里的 WHISPER_MODEL → 项目 cache/whisper/ggml-medium.bin → 作者机器上的旧位置;都没有就返回项目里的默认位置(doctor 据此提示下载到哪)
+export const WHISPER_MODEL_DEFAULT = path.join(CACHE, 'whisper/ggml-medium.bin');
+export const WHISPER_MODEL = () => process.env.WHISPER_MODEL || readEnv().WHISPER_MODEL
+  || [WHISPER_MODEL_DEFAULT, path.join(process.env.HOME || '', 'Library/Caches/vox-asr-models/ggml-medium.bin')].find(f => fs.existsSync(f)) || WHISPER_MODEL_DEFAULT;
 const DIG = Object.fromEntries([...'0123456789'].map((d, i) => [d, '零一二三四五六七八九'[i]]));
 
 // 接口时间戳 → 单位序列 [{u, a, b}](秒,已加偏移)

@@ -44,8 +44,31 @@ A video is chosen by four questions — **what** (explainer, true story, tutoria
 
 The page is plain HTML/SVG where `render(t)` draws the frame for time `t`; the engine renders it frame by frame with headless Chromium and hands everything else — narration, subtitles, mixing, thumbnails, vertical cut, acceptance — to one CLI.
 
+## Requirements
+Only tested on macOS. On Linux, installing the same tools with your distro's package manager should work but is **untested**; Windows is untried. After installing, run `node .claude/skills/baitu-video/engine/cli.mjs doctor` in your project root — it checks each item and tells you how to fix whatever is missing.
+
+| What | Needed? | For | Install (macOS) |
+|---|---|---|---|
+| Node ≥ 18 | required | the engine itself | `brew install node` |
+| Playwright + Chromium | required | frame rendering, screenshots, checks | in your project: `npm init -y && npm i -D playwright && npx playwright install chromium` |
+| ffmpeg (with ffprobe, libx264, loudnorm) | required | encoding, mixing, loudness | `brew install ffmpeg` |
+| python3 | required | the "subtitle duration" acceptance check (standard library only) | ships with macOS, or `brew install python` |
+| uv | required for the free edge-tts voice; recommended otherwise | the engine runs `uvx edge-tts` on the fly (no global install); also used to fetch fontTools / pypinyin when missing | `brew install uv` |
+| whisper-cli + model file | recommended; required if your TTS provider gives no timestamps | the "missed lines" acceptance check; aligns subtitles for providers without timestamps | `brew install whisper-cpp`; model below |
+| fontTools + brotli | recommended | per-episode font subsetting (`fonts` command) | `pip install fonttools brotli`, or nothing if uv is installed |
+| numpy | optional | the pacing tools `measure_film.py`, `measure_fades.py` | `pip install numpy` |
+
+**Whisper model** (medium, about 1.5 GB):
+```bash
+mkdir -p cache/whisper
+curl -L -o cache/whisper/ggml-medium.bin https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium.bin
+```
+The engine finds it at `cache/whisper/ggml-medium.bin` in your project; anywhere else, set `WHISPER_MODEL=<path>` in the project's `.env`.
+
+TTS API keys go in `.env` at the project root (variable names per provider are in `engine/lib/providers.mjs`; the default edge-tts needs no key).
+
 ## Quick start
-In your project (Node ≥ 18, ffmpeg; whisper-cli recommended):
+In your project (install the required items under "Requirements" first):
 ```bash
 git clone https://github.com/WhiteRabbitLAB/baitu-video .claude/skills/baitu-video
 npm init -y && npm i -D playwright && npx playwright install chromium
