@@ -18,7 +18,7 @@ Whatever the topic or visual style, every video goes through this one toolchain.
    node .claude/skills/baitu-video/engine/cli.mjs doctor
    ```
    Checks Node, Playwright, ffmpeg, whisper, the font-subsetting tool, component fonts, project config, channel profiles, the narration key for each language (present or not — values are never printed), and disk space. ❌ must be fixed first; ⚠️ is a heads-up. No Playwright yet: `npm init -y && npm i -D playwright && npx playwright install chromium`.
-4. **New episode**: `new <ep> --style <style>` creates a script template `brief/<ep>/script.zh.txt`, `subtitles.json`, and a starter page `video/<ep>.html` (component paths computed for you).
+4. **New episode**: `new <ep> --style <style>` creates a script template `brief/<ep>/script.zh.txt`, `subtitles.json`, a starter page `video/<ep>.html` (component paths computed for you) and a fact-sheet template `brief/<ep>/facts.md` (acceptance item 14 checks it; to keep it elsewhere, add `"facts": "docs/{ep}-facts.md"` to the channel's `paths` in `explainer.json`).
 5. **Script → video**: a blank line separates paragraphs; then `narrate` → `subs` → edit the page → `fonts` → `shot` a few frames → `render` → `mix` → `accept`.
 
 ## Page contract (all the renderer relies on)
@@ -64,4 +64,4 @@ ElevenLabs, Azure and Fish Audio were wired up from their official docs; the aut
 | `fonts.json` | Font catalog: download URL and license for every font (single source) |
 | `lib/doctor.mjs` | Self-check |
 | `vc/` | Shared visual components (see [vc/README.md](vc/README.en.md)) |
-| `tools/` | Checks and measurements: text out of frame / overlap, vertical centering, glyph winding, film pacing, fades, subtitle timing |
+| `tools/` | Checks and measurements: text out of frame / overlap, vertical centering, frame fill (`check-fill`), subtitles repeated on screen (`check-echo`), glyph winding, film pacing, fades, subtitle timing |

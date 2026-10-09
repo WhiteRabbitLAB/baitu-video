@@ -10,7 +10,7 @@ skill 不绑定任何一家语音服务。在这里写你用哪家,流水线按�
 | `dashscope` | 阿里百炼(通义 TTS) | `DASHSCOPE_API_KEY` | whisper 对齐 | 实测 | `voice`(如 Cherry)、`model`(默认 qwen3-tts-flash)、`languageType` |
 | `openai` | OpenAI TTS | `OPENAI_API_KEY` | whisper 对齐 | 实测(经中转) | `voice`、`model`(默认 gpt-4o-mini-tts)、`style`(语气说明)、`speed`;走中转写 `baseUrl` |
 | `gemini` | Gemini TTS | `GOOGLE_API_KEY` | whisper 对齐 | 实测 | `voice`(如 Iapetus)、`model`、`style`(风格提示) |
-| `edge-tts` | 微软 Edge 朗读(免费) | 不要 | whisper 对齐 | 实测 | `voice`(如 zh-CN-YunxiNeural)、`speed`;非官方接口,不保证长期可用 |
+| `edge-tts` | 微软 Edge 朗读(免费) | 不要 | whisper 对齐 | 实测 | `voice`(如 zh-CN-YunxiNeural)、`speed`;非官方接口,不保证长期可用。**装了 uv 就不用另装**:引擎自动用 `uvx edge-tts`;别 `uv tool install` / `pip install` 全局装(全局装会顺带装一个会出声的 `edge-playback`) |
 | `elevenlabs` | ElevenLabs | `ELEVENLABS_API_KEY` | 接口给,逐字符 | 按文档,未实测 | `voice`(voice_id,必填)、`model` |
 | `azure` | Azure 语音 | `AZURE_SPEECH_KEY` | whisper 对齐 | 按文档,未实测 | `voice`、`region`(必填) |
 | `fish` | Fish Audio | `FISH_API_KEY` | whisper 对齐 | 按文档,未实测 | `voice`(reference_id) |

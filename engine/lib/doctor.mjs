@@ -71,14 +71,14 @@ export async function doctor() {
         if (!p) { bad(`配音 ${id}/${lang}`, `不认识的服务「${cfgV.provider}」;可选:${Object.keys(PROVIDERS).join('、')}`); continue; }
         const keyName = cfgV.keyEnv || p.keyEnv;
         const keyOk = !keyName || hasKey(keyName);
-        const cmdOk = !p.cmd || !!(await import('./tts/edge-tts.mjs')).command();
+        const cmd = p.cmd ? (await import('./tts/edge-tts.mjs')).command() : null, cmdOk = !p.cmd || !!cmd;
         const notes = [p.timestamps ? '接口给时间戳' : '接口不给时间戳,用 whisper 对齐', p.status === 'tested' ? `实测 ${p.checked}` : '按官方文档接入、未实测,第一次用先跑 tools/tts-probe.mjs'].join(';');
         const head = `${p.name} · ${cfgV.voice || '默认音色'}`;
         if (!keyOk) bad(`配音 ${id}/${lang}`, `${head}:密钥 ${keyName} 没设(写进 .env)`);
-        else if (!cmdOk) bad(`配音 ${id}/${lang}`, `${head}:没有 edge-tts 命令(pip install edge-tts,或装 uv)`);
+        else if (!cmdOk) bad(`配音 ${id}/${lang}`, `${head}:没有 edge-tts 命令:装 uv 即可(引擎自动用 uvx edge-tts,不用另装;别全局装)`);
         else if (!p.timestamps && !which('whisper-cli')) bad(`配音 ${id}/${lang}`, `${head}:这家不给时间戳,要 whisper-cli 对齐字幕,但没装`);
         else if (p.status !== 'tested') warn(`配音 ${id}/${lang}`, `${head};${notes}`);
-        else ok(`配音 ${id}/${lang}`, `${head};${notes}`);
+        else ok(`配音 ${id}/${lang}`, `${head};${notes}${cmd ? `;命令:${cmd.join(' ')}${cmd[0] === 'uvx' ? '(自动临时装,不用另装)' : ''}` : ''}`);
       }
     }
   }

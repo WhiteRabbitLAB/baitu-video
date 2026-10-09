@@ -11,8 +11,10 @@ Your channel's own rules live in the channel profile (`profiles/<channel>/`).
 - Give the decision-maker 3–4 candidates, each with: a one-line hook, the story line, the takeaway, the risks (hard-to-verify facts / platform-sensitive).
 - Check them against the topic bar and preferences in the channel profile; see which format in formats/ fits.
 
-## 1. Fact sheet
-- Each row: claim / source (primary first) / status "verified · to verify · leave out".
+## 1. Fact sheet (required; acceptance item 14 checks it)
+- Write it in `<brief>/facts.md` (`new` creates a template); a four-column table: # / Claim / Source / Status.
+- Sources must be ones you actually checked this time (link, book + page, paper); look things up online when you can. Anything written from memory is "unverified" and stays out of the script until checked; "cut" claims are removed from the script.
+- Each row: claim / source (primary first) / status "verified · unverified · cut" ("to verify" / "leave out" also accepted).
 - Mark platform-risky content "not in the script" right here.
 
 ## 2. Script
@@ -43,6 +45,8 @@ Your channel's own rules live in the channel profile (`profiles/<channel>/`).
 
 ## 6. Storyboard, transition table, font table
 - Storyboard: one row per paragraph (time / narration point / visuals / character); start with "the first 3 seconds"; long videos get a chapter table.
+- For every shot, write down what the subject is and how big it is (principles.md § Visuals, "Composition"); on-screen text only carries what the narration can't (names, numbers, short keywords) — never the subtitle again.
+- Before writing the page, read the component table [engine/vc/README.en.md](engine/vc/README.en.md) and the demo page `engine/vc/demo.html` (how every component is called in every style); no need to read the `vc.js` source.
 - Transition table (transitions.md): what enters each paragraph, what it leaves behind, where the next one picks up.
 - This episode's font table: copy the writing-source mapping from the scene file, add sources unique to this episode; take fonts from design/fonts.md and subset to the characters used.
 

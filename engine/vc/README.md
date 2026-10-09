@@ -5,7 +5,7 @@
 | 文件 | 管什么 |
 |---|---|
 | `vc.js` | 组件(纯函数,返回 SVG 字符串,1920×1080 坐标,逐帧可复现) |
-| `styles.js` | 画风外观表:纸面拟物 `paper-skeuo`、游戏拟物 `game-ui`、扁平几何 `flat-geometric`、扁平插画 `flat-illustration`、卡通界面 `cartoon-ui`、科技深色 `tech-ui`、白板手绘 `whiteboard`、黑底数学 `dark-math`、黑板粉笔 `chalkboard`、动态文字 `kinetic`(共 10 种,缩略图见 ../../styles/INDEX.md) |
+| `styles.js` | 画风外观表:纸面拟物 `paper-skeuo`、游戏拟物 `game-ui`、扁平几何 `flat-geometric`、扁平插画 `flat-illustration`、卡通界面 `cartoon-ui`、科技深色 `tech-ui`、白板手绘 `whiteboard`、黑底数学 `dark-math`、黑板粉笔 `chalkboard`、动态文字 `kinetic`、孔版印刷 `risograph`(共 11 种,缩略图见 ../../styles/INDEX.md) |
 | `demo.html` | 演示页:每个组件一行,可切换画风、中英文、时间轴 |
 | `thumbs.html` / `thumbs.mjs` | 画风缩略图:同一场景只换画风;`node engine/vc/thumbs.mjs` → `.claude/skills/baitu-video/styles/thumbs/` |
 | `transitions.html` / `measure-tx.mjs` | 转场演示(morph、zoom-through、slide-push、blur-push)与量转场(带线性淡化阳性对照):`node engine/vc/measure-tx.mjs paper-skeuo` |
@@ -49,7 +49,8 @@ function render(t) {
 | 终端窗口 | `kit.terminal(x, y, w, h, [{cmd,t0}/{out,t0}], t)` | 命令与输出 | 机壳屏 / 深色窗口 / 粗描边窗口 |
 | 章节进度条 | `kit.chapterBar(t, [{name,start,end}])` | 频道统一 | 只取强调色 |
 | 段首横移 | `VC.pan(t, starts)` / `kit.panGroup(t, starts, [fn])` | — | 不随画风;默认 1.2s + 运动模糊 |
-| 转场 | `kit.transition(id, t, t0, A, B, 参数)`;id = `slide-push` / `blur-push` / `zoom-through`(`{cx,cy,r0}`)/ `morph`(`{from,to}` 路径 + 颜色)/ `fade` | — | slide-push 的领路竖条取强调色;zoom-through 的开口底子取画风底 |
+| 转场 | `kit.transition(id, t, t0, A, B, 参数)`;id = `roller`(滚筒刮过:前沿左边新、右边旧,`{band,x0,x1}`)/ `slide-push` / `blur-push` / `zoom-through`(`{cx,cy,r0}`)/ `morph`(`{from,to}` 路径 + 颜色)/ `fade` | — | slide-push 的领路竖条取强调色;zoom-through 的开口底子取画风底 |
+| 油墨分版(孔版印刷) | `kit.ink('b'\|'p', 内容, {grain:'strong'\|'light'\|'none'})`;网点填充 `kit.tone('b', 0–1)`;页面 `<defs>${kit.defs({frame})}</defs>`(颗粒按帧号换位) | — | 只在 `riso` 画风里有网点与颗粒;其他画风里 `tone` 返回实色、`ink` 只做正片叠底 |
 | 形变 | `VC.morphPath(dA, dB, k)`、`VC.shape.rect / circle` | — | 任意两条闭合路径插值 |
 
 ## 规矩
@@ -62,7 +63,7 @@ function render(t) {
 - 旧片(N1–N9、A1–A6)没有改用这套组件,仍是各自的大 HTML。
 - **长度不固定的字一律用 `textFit`**:标题、封面字、从数据来的标签、竖版里的任何一句。它按真实字宽缩字号(默认最多两行、最小 0.6 倍),`ok=false` 会在控制台告警——这时改字或改版面,别硬塞。
 - **折行规矩(`wrap` / `fit` / 气泡 / 对话框共用)**:中文按词断(浏览器分词 `Intl.Segmenter`),「第 114 卷」这类「第 + 数字 + 量词」不拆;句读和右引号不放行首,左引号不放行尾。两行时在词边界里挑断点:两行接近、第一行不短于第二行、优先断在逗号 / 冒号 / 空格后、不断在引号括号里。
-- **压测页 `fit-test.html`**:一组「不友好输入」(超长标题、中英混排、带标点长句、长数字),`?style=&w=&h=` 换画风画幅;对照开关 `&bad`(不用 fit,应报出画)、`&overlap`(故意叠字,应报叠字)。改了排版相关代码,10 种画风 × 横竖屏都跑一遍 `engine/tools/check-text-bounds.mjs`,全 0 才算过(2026-10-07 实测全 0)。
+- **压测页 `fit-test.html`**:一组「不友好输入」(超长标题、中英混排、带标点长句、长数字),`?style=&w=&h=` 换画风画幅;对照开关 `&bad`(不用 fit,应报出画)、`&overlap`(故意叠字,应报叠字)。改了排版相关代码,11 种画风 × 横竖屏都跑一遍 `engine/tools/check-text-bounds.mjs`,全 0 才算过(2026-10-07 实测全 0)。
 
 ## 正片实战(第一部用这套组件的正片,2026-10-07)
 第一次用这套组件做整片(12 个镜头,paper-skeuo 外观)。可以照着抄的做法:

@@ -9,6 +9,9 @@
        可选  window.renderSfx(sr)  离线渲染音效 → {b64, sampleRate, samples, peak, cues}
        可选  window.coverReady     ?cover=<尺寸>-<版本> 时的封面模式,Promise
        可选  window.vertFrame(t, e) ?vert 时的竖版画面(1080×1920),e = 尾卡进度 0–1
+       建议  window.CHECK = { frame:[x,y,w,h], margin }   声明了验收就逐帧扫正片的出画、叠字、字和素材互压(画面占满全屏就写 frame:[0,0,1920,1080])
+       建议  window.inTransition(t)  转场时刻返回 true(新旧两镜头交错,扫描跳过)
+       故意压在字上的图形(划线、荧光笔、装饰点)加 data-over="原因",检查不算它
      URL 参数:?render(渲染器打开时总带着)&lang=en(第二种语言)&cover=16x9-a &vert
      数据:data-{{EP}}.js 由 `subs {{EP}}` 生成(window.TL 时间轴、window.SUBS 字幕);fonts-{{EP}}.css 由 `fonts {{EP}}` 生成。 -->
 <link rel="stylesheet" href="fonts-{{EP}}.css">

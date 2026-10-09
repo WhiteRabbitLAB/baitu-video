@@ -10,7 +10,7 @@ The skill is not tied to any TTS service. Say here which one you use; the pipeli
 | `dashscope` | Alibaba Model Studio (Qwen TTS) | `DASHSCOPE_API_KEY` | whisper alignment | tested | `voice` (e.g. Cherry), `model` (default qwen3-tts-flash), `languageType` |
 | `openai` | OpenAI TTS | `OPENAI_API_KEY` | whisper alignment | tested (via relay) | `voice`, `model` (default gpt-4o-mini-tts), `style` (tone instructions), `speed`; `baseUrl` for a relay |
 | `gemini` | Gemini TTS | `GOOGLE_API_KEY` | whisper alignment | tested | `voice` (e.g. Iapetus), `model`, `style` (style prompt) |
-| `edge-tts` | Microsoft Edge read-aloud (free) | none | whisper alignment | tested | `voice` (e.g. en-US-GuyNeural), `speed`; unofficial, may stop working |
+| `edge-tts` | Microsoft Edge read-aloud (free) | none | whisper alignment | tested | `voice` (e.g. en-US-GuyNeural), `speed`; unofficial, may stop working. **With uv installed there's nothing else to install**: the engine runs `uvx edge-tts` itself; don't install it globally with `uv tool install` / `pip install` (that also installs `edge-playback`, which plays sound) |
 | `elevenlabs` | ElevenLabs | `ELEVENLABS_API_KEY` | from API, per character | per docs, untested | `voice` (voice_id, required), `model` |
 | `azure` | Azure Speech | `AZURE_SPEECH_KEY` | whisper alignment | per docs, untested | `voice`, `region` (required) |
 | `fish` | Fish Audio | `FISH_API_KEY` | whisper alignment | per docs, untested | `voice` (reference_id) |

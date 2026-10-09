@@ -1,6 +1,7 @@
 /* 由引擎 fonts 生成;子集字体,授权见 engine/fonts.json */
 @font-face{font-family:'Anton';src:url(./fonts/vc-Anton-400.woff2) format('woff2');font-weight:400;font-display:block}
 @font-face{font-family:'Caveat Brush';src:url(./fonts/vc-CaveatBrush-400.woff2) format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'Cormorant Italic';src:url(./fonts/vc-CormorantItalic-700.woff2) format('woff2');font-weight:700;font-display:block}
 @font-face{font-family:'Jason Handwriting 1';src:url(./fonts/vc-JasonHandwriting1-400.woff2) format('woff2');font-weight:400;font-display:block}
 @font-face{font-family:'JetBrains Mono';src:url(./fonts/vc-JetBrainsMono-400.woff2) format('woff2');font-weight:400;font-display:block}
 @font-face{font-family:'JetBrains Mono';src:url(./fonts/vc-JetBrainsMono-700.woff2) format('woff2');font-weight:700;font-display:block}

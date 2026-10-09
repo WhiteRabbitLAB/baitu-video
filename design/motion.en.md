@@ -31,6 +31,14 @@ Every scene needs at least 2–4 small loops: light flecks, grain, instrument cu
 | Ink overprint | Multiply | Red pen, file-red printing, stamps |
 | Desk lamp / window light | A lighting gradient multiplied over everything | Paper skeuomorphic |
 | Gold-edged panel | Gradient stroke + inner shadow | Game skeuomorphic |
+| Halftone (Risograph) | 21 dot patterns per ink, 7 px grid, blue at 15°, pink at 75°; `kit.tone(ink, level)` | Risograph |
+| Ink plates + misregistration | One group per ink, multiplied; the pink plate is offset a fixed (3,-2) px, **no per-frame jitter**; `kit.ink(ink, content)` | Risograph |
+| Print grain | Paper-colored specks over the ink (not holes in the paper), re-seeded 12×/s; strong for fills, light for text | Risograph |
+
+## Mechanism animations (the picture acts out a process)
+- **Bioaccumulation particles**: each unit of "mercury" is a pink dot with its own host chain (water → small fish → mid fish → big fish); when prey is eaten it slides straight into the predator's mouth and shrinks away, and each of its dots flies to a fixed spot inside the predator (one random body coordinate per dot per host, reproducible frame by frame). For "the longer it lives", new dots pop up one by one inside the big fish + an age counter. A "schematic · not measured" tag stays in the corner, followed straight away by measured data (episode 11: an FDA-mean dot matrix, one dot = 0.01 mg/kg). [Ours] episode 11.
+- **Tear the label**: a zig-zag paper strip covers the real name; when torn it curls from its top-left corner + rises + fades (gone by 0.35–0.65 of the move, before it can leave the frame), then the real (Latin) name shows. [Ours] episode 11.
+- **Flip the package**: squash horizontally to 0 and expand again (front in the first half, back in the second), with the key line on the back brushed with a highlighter. [Ours] episode 11.
 
 ## Adding
 For a new motion or material write: how it's done, parameters, which style it's for, the reference implementation.

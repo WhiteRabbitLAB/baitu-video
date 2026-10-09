@@ -8,7 +8,7 @@ import { PROJECT as ROOT, SKILL, ENGINE } from '../lib/paths.mjs';
 const HERE = path.dirname(new URL(import.meta.url).pathname);
 const OUT = path.join(SKILL, 'styles/thumbs'), TMP = path.join(ROOT, 'cache/vc-thumbs');
 fs.mkdirSync(OUT, { recursive: true }); fs.mkdirSync(TMP, { recursive: true });
-const ids = ['paper-skeuo', 'game-ui', 'flat-geometric', 'flat-illustration', 'cartoon-ui', 'tech-ui', 'whiteboard', 'dark-math', 'chalkboard', 'kinetic'];   // = styles/INDEX.md 的顺序
+const ids = ['paper-skeuo', 'game-ui', 'flat-geometric', 'flat-illustration', 'cartoon-ui', 'tech-ui', 'whiteboard', 'dark-math', 'chalkboard', 'kinetic', 'risograph'];   // = styles/INDEX.md 的顺序
 const b = await chromium.launch(), p = await b.newPage({ viewport: { width: 1920, height: 1080 } });
 p.on('pageerror', e => { console.error('PAGEERROR', e.message); process.exitCode = 5; });
 const pngs = [];

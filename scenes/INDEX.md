@@ -20,6 +20,7 @@
 | [terminal-tech](terminal-tech.md) | 科技终端 | 深色界面、终端窗口、数据面板 | tech-ui | product-review、howto-guide | 整片 ×2 |
 | [field-notebook](field-notebook.md) | 纸面实验记录 + 屏幕对话框 | 纸是人记的,屏幕是机器说的 | paper-skeuo | story-method-test | 整片(中英) |
 | [gallery-wall](gallery-wall.md) | 画作与展签 | 公版名作 + 展签 + 对比墙 | paper-skeuo | story-method-test | 整片(中英;页面已删) |
+| [deep-sea-section](deep-sea-section.md) | 深海剖面 | 竖向海水剖面 + 深度尺,镜头随讲解下潜,每种生物在真实深度 | risograph | spread-history、mechanism、case-file | 整片 |
 
 ## 新增场景(口子)
 1. 复制 [_template.md](_template.md)。

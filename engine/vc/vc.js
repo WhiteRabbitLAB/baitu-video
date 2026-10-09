@@ -354,8 +354,8 @@
         return `<g style="mix-blend-mode:multiply" fill="none" stroke="${col}" stroke-linecap="round" stroke-linejoin="round"><path d="${d}" stroke-width="5" opacity=".85"/><path d="${d}" stroke-width="2.2" opacity=".5" transform="translate(1.5,-1.2)"/></g>`;
       }
       if (kind === 'block') {   // 动态文字:强调色块从左一刷到底(压在字下面,调用方先画它)
-        const ww = (w + 24) * ease.expoOut(seg(t, t0, t0 + .18));
-        return `<rect x="${f1(x - 12)}" y="${f1(y - 4)}" width="${f1(ww)}" height="${f1(h + 8)}" fill="${S.c.blockFill || S.c.marker || col}"/>`;
+        const ww = (w + 16) * ease.expoOut(seg(t, t0, t0 + .18));   // 左边只留 4px:斜体字的前一个字会探进来,留多了色块会压到它
+        return `<rect x="${f1(x - 4)}" y="${f1(y - 4)}" width="${f1(ww)}" height="${f1(h + 8)}" fill="${S.c.blockFill || S.c.marker || col}"/>`;
       }
       if (kind === 'ring') {   // 粉笔 / 马克笔一笔画的圈(不叠底,深色板上也看得见)
         return sketch(VC.wobblyEllipse(x + w / 2, y + h / 2, w / 2 + 16, h / 2 + 14, seed, 2.5, 1.1), t, t0, o.dur || .6, { color: col, width: 5, pen: false });
@@ -515,6 +515,12 @@
         const seedB = strSeed(s), dB = [VC.wobblyRect(bx, by, w, h, seedB, 3.5), VC.wobblyLine(-14, by + h + 2, 0, -6, seedB + 1, 1.5) + ' ' + VC.wobblyLine(0, -6, 14, by + h + 2, seedB + 2, 1.5).replace('M', 'L')];
         return `<g transform="translate(${f1(x)},${f1(y)})" opacity="${f2(1 - kout)}">${sketch(dB, t, t0, .45, { color: S.c.ink, width: 4.5, pen: false })}<g opacity="${f2(seg(t, t0 + .35, t0 + .6))}">${txt}</g></g>`;
       }
+      if (kind === 'riso') {   // 纸片 + 墨线框,淡入上滑
+        const k = ease.out(kin);
+        return `<g transform="translate(${f1(x)},${f1(y + 18 * (1 - k))})" opacity="${f2(k * (1 - kout))}">
+          <rect x="${f1(bx)}" y="${f1(by)}" width="${f1(w)}" height="${f1(h)}" rx="12" fill="${S.c.paper}" stroke="${S.c.ink}" stroke-width="4"/>
+          <path d="M-14,${f1(by + h - 2)} L0,-6 L14,${f1(by + h - 2)}" fill="${S.c.paper}" stroke="${S.c.ink}" stroke-width="4" stroke-linejoin="round"/><rect x="-16" y="${f1(by + h - 8)}" width="32" height="7" fill="${S.c.paper}"/>${txt}</g>`;
+      }
       // outline:白底粗描边气泡 + 尾巴,从尾巴尖回弹弹出
       const sc = Math.max(.001, ease.back(kin)) * (1 - kout * .3), lw = S.c.lw;
       return `<g transform="translate(${f1(x)},${f1(y)}) scale(${f3(sc)})" opacity="${f2(clamp(kin * 3) * (1 - kout))}">
@@ -566,6 +572,11 @@
         return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="18" ${body}/>
           <path d="M${x + 18} ${y} H${x + w - 18} a18 18 0 0 1 18 18 V${y + 54} H${x} V${y + 18} a18 18 0 0 1 18 -18Z" fill="${kind === 'plate' ? '#000' : c.cardD}" opacity="${kind === 'plate' ? .25 : 1}"/>
           <text x="${x + 28}" y="${y + 37}" ${fontAttr(S.roles.R2.zh)} font-size="26" fill="${c.title || c.text}">${esc(title)}</text>`;
+      }
+      if (kind === 'riso') {
+        return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${dark ? c.term : c.paper}" stroke="${c.ink}" stroke-width="4"/>
+          <path d="M${x + 10} ${y} H${x + w - 10} a10 10 0 0 1 10 10 V${y + 54} H${x} V${y + 10} a10 10 0 0 1 10 -10Z" fill="${c.pink}" style="mix-blend-mode:multiply"/>
+          ${title ? staticRun(title, x + 26, y + 39, R('R2'), 30, c.paper, 'start') : ''}`;
       }
       // outline:粗描边圆角窗口,马卡龙色标题栏
       return `<rect x="${x + 7}" y="${y + 9}" width="${w}" height="${h}" rx="22" fill="${c.ink}"/>
@@ -723,6 +734,13 @@
         const [st, lL, lR] = sproutD(x, cy - r), sprout = `<path d="${st}" fill="none" stroke="${bd}" stroke-width="8" stroke-linecap="round"/><path d="${lL}" fill="${bd}"/><path d="${lR}" fill="${bd}"/>`;
         return `${sprout}<circle cx="${x}" cy="${cy}" r="${r}" fill="${bd}"/>${eye(x - 26)}${eye(x + 26)}<path d="M${x - 18},${cy + 30} Q${x},${cy + 42} ${x + 18},${cy + 30}" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/>`;
       }
+      if (b === 'riso') {
+        const [st, lL, lR] = sproutD(x, cy - r);
+        return `<path d="${st}" fill="none" stroke="${c.ink}" stroke-width="7" stroke-linecap="round"/><path d="${lL}" fill="${c.pink}" style="mix-blend-mode:multiply"/><path d="${lR}" fill="${c.pink}" style="mix-blend-mode:multiply"/>
+          <circle cx="${x}" cy="${cy}" r="${r}" fill="url(#vc-ht-b-9)" stroke="${c.ink}" stroke-width="5"/>
+          <circle cx="${x - 30}" cy="${cy - 12}" r="10" fill="${c.ink}"/><circle cx="${x + 30}" cy="${cy - 12}" r="10" fill="${c.ink}"/>
+          <path d="M${x - 14},${cy + 22} Q${x},${cy + 32} ${x + 14},${cy + 22}" fill="none" stroke="${c.ink}" stroke-width="5" stroke-linecap="round"/>`;
+      }
       const stroke = b === 'outline' ? ` stroke="${c.ink}" stroke-width="${c.lw}"` : b === 'note' ? ` stroke="${c.ink}" stroke-width="3"` : '';
       const shade = b === 'flat' ? `<path d="M${x},${cy - r} A${r},${r} 0 0 1 ${x},${cy + r} Z" fill="#000" opacity=".14"/>` : '';
       const rim = b === 'advisor' ? `<circle cx="${x}" cy="${cy}" r="${r + 6}" fill="none" stroke="url(#vc-gold)" stroke-width="6"/>`
@@ -762,7 +780,7 @@
 
     // ---------- 转场:A、B 是两个镜头的画面函数 fn(t) → 整屏 SVG ----------
     // 参数默认取 design/camera-transitions.md 转场库(出处见那张表);t0 = 转场开始。
-    const TX_DUR = { 'slide-push': .5, 'blur-push': .55, 'zoom-through': 1.2, morph: .9, fade: .35, 'fill-zoom': .7, bands: .5 };
+    const TX_DUR = { roller: 1.1, 'slide-push': .5, 'blur-push': .55, 'zoom-through': 1.2, morph: .9, fade: .35, 'fill-zoom': .7, bands: .5 };
     const scaleAt = (cx, cy, s, inner) => `<g transform="translate(${f1(cx)},${f1(cy)}) scale(${f3(s)}) translate(${f1(-cx)},${f1(-cy)})">${inner}</g>`;
     const blurG = (b, inner, op = 1) => {
       if (op <= 0) return '';
@@ -794,6 +812,13 @@
         const k3 = seg(p, .24, 1), cover = ease.expoInOut(k3) >= .999;
         return (cover ? B(t) : A(t)) + (cover ? '' : cols.map((c2, i) => band(seg(p, i * .12, i * .12 + .76), c2)).join(''));
       }
+      if (kind === 'roller') {   // 孔版印刷的滚筒刮过:前沿左边是新镜头,右边还是旧镜头(不是到中点整屏硬切)。o.band 带宽,o.x0/x1 扫的范围
+        const bw = o.band ?? 120, X0 = o.x0 ?? 0, X1 = o.x1 ?? 1920, x = lerp(X0 - bw, X1 + bw, ease.inOut(p)), ca = id('ra'), cb = id('rb');
+        const ink = (S.inks && S.inks.b) || S.c.accent, edge = (S.inks && S.inks.p) || S.c.marker || ink;
+        return `<clipPath id="${cb}"><rect x="-10" y="-10" width="${f1(Math.max(0, x - bw + 10))}" height="1100"/></clipPath><clipPath id="${ca}"><rect x="${f1(x - bw)}" y="-10" width="${f1(Math.max(0, 1940 - x + bw))}" height="1100"/></clipPath>
+          <g clip-path="url(#${ca})">${A(t)}</g><g clip-path="url(#${cb})">${B(t)}</g>
+          <rect x="${f1(x - bw)}" y="0" width="${bw}" height="1080" fill="${ink}"/><rect x="${f1(x - bw - 36)}" y="0" width="36" height="1080" fill="${S.riso ? 'url(#vc-ht-p-12)' : edge}" style="mix-blend-mode:multiply"/>`;
+      }
       if (kind === 'slide-push') {   // 新面板推入、旧面板推出,品牌色竖条领路;cubic-bezier(.7,0,.2,1)
         const k = ease.push(p), W = 1920, bw = o.bar ?? 28, x = W * (1 - k);
         return `<g transform="translate(${f1(x - W)},0)">${A(t)}</g><g transform="translate(${f1(x)},0)">${B(t)}</g>
@@ -817,8 +842,28 @@
     }
 
     // ---------- 公共 defs 与底子 ----------
-    function defs() {
-      return `<filter id="vc-soft" x="-10%" y="-10%" width="120%" height="130%"><feGaussianBlur stdDeviation="9"/></filter>
+    // 孔版印刷:每种油墨 21 档网点(7px 网格;蓝 15°、粉 75°,同真机的网角错开)+ 两档颗粒;frame = 帧号(颗粒 12 帧/秒换位)
+    function risoDefs(frame = 0) {
+      const C = 7, P = S.c.paper || S.c.bg; let out = '';
+      Object.entries(S.inks).forEach(([k, col], ii) => {
+        const ang = [15, 75, 45, 0][ii] || 0;
+        for (let i = 1; i < 20; i++) {
+          const v = i / 20;
+          const body = v <= .5 ? `<circle cx="${C / 2}" cy="${C / 2}" r="${f2(Math.sqrt(v * C * C / Math.PI))}" fill="${col}"/>`
+            : `<path fill-rule="evenodd" fill="${col}" d="M0,0H${C}V${C}H0Z ${[[0, 0], [C, 0], [0, C], [C, C]].map(([x, y]) => { const r = f2(Math.sqrt((1 - v) * C * C / Math.PI)); return `M${x + +r},${y} A${r},${r} 0 1 0 ${x - r},${y} A${r},${r} 0 1 0 ${x + +r},${y}Z`; }).join(' ')}"/>`;
+          out += `<pattern id="vc-ht-${k}-${i}" width="${C}" height="${C}" patternUnits="userSpaceOnUse" patternTransform="rotate(${ang})">${body}</pattern>`;
+        }
+      });
+      const seed = 3 + (Math.floor(frame / 2.5) % 9);   // 30 帧 → 12 帧/秒换位
+      // 范围按物体自己的边框(默认 -10%/120%):写成画面坐标的话,放进平移过的组里会把字裁掉(第 11 期实测「托盘标签字不见了」)
+      const grain = (id, cut) => `<filter id="${id}" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="1.15" numOctaves="1" seed="${seed}" result="n"/>
+        <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -14 ${cut}" result="m"/><feFlood flood-color="${P}" result="pp"/>
+        <feComposite in="pp" in2="m" operator="in" result="sp"/><feComposite in="sp" in2="SourceAlpha" operator="in" result="sp2"/>
+        <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="sp2"/></feMerge></filter>`;
+      return out + grain('vc-riso-s', 5.4) + grain('vc-riso-l', 4.0);   // 强档给色块、轻档给字(字上颗粒重了会「看着花」)
+    }
+    function defs(o = {}) {
+      return `${S.riso ? risoDefs(o.frame || 0) : ''}<filter id="vc-soft" x="-10%" y="-10%" width="120%" height="130%"><feGaussianBlur stdDeviation="9"/></filter>
         <filter id="vc-glow" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
         <filter id="vc-smudge" filterUnits="userSpaceOnUse" x="-200" y="-200" width="2320" height="1480"><feGaussianBlur stdDeviation="22"/></filter>
         <filter id="vc-chalk" x="-5%" y="-10%" width="110%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="1.2" numOctaves="2" seed="4" result="n"/>
@@ -844,6 +889,7 @@
       if (b === 'grid') s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-grid)" opacity=".5"/>`;
       if (b === 'dots') s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-dots)" opacity=".5"/>`;
       if (b === 'game') s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-hex)" opacity=".35"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-vig)"/>`;
+      if (b === 'riso') s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-grain)" opacity=".05" style="mix-blend-mode:multiply"/>`;   // 米白纸 + 一点纤维
       if (b === 'solid') s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-grain)" opacity=".06" style="mix-blend-mode:overlay"/>`;
       if (b === 'chalkboard') {   // 黑板:深绿板 + 颗粒 + 板擦擦过的灰白痕;整屏时加木框
         s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c.bg}"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-grain)" opacity=".1" style="mix-blend-mode:screen"/>`
@@ -872,11 +918,16 @@
     }
 
     // 粉笔画风:对外导出的组件统一套粉笔颗粒滤镜(内部互相调用不重复套;章节进度条是频道统一的,不套)
-    const ck = fn => S.chalk ? (...a) => { const v = fn(...a); return v ? `<g filter="url(#vc-chalk)">${v}</g>` : v; } : fn;
+    const ck = fn => S.chalk ? (...a) => { const v = fn(...a); return v ? `<g filter="url(#vc-chalk)">${v}</g>` : v; }
+      : S.riso ? (...a) => { const v = fn(...a); return v ? `<g filter="url(#vc-riso-l)">${v}</g>` : v; } : fn;   // 孔版印刷:组件上的字只套轻颗粒
+    // 孔版印刷:tone(油墨, 0–1) → 网点填充;ink(油墨, 内容) → 这一版油墨:正片叠底 + 强颗粒 + 套色错位。
+    // 同一版里后画的纸色(S.c.paper)会盖掉先画的墨(= 真印刷里「这里不上墨」);跨版叠在一起就是叠印出的第三色。
+    const tone = (k, v) => { const col = S.inks ? S.inks[k] : S.c.accent; if (!S.riso || v >= .975) return col; const i = Math.round(clamp(v) * 20); return i <= 0 ? 'none' : `url(#vc-ht-${k}-${i})`; };
+    const ink = (k, inner, o = {}) => { const [dx, dy] = (S.misreg && S.misreg[k]) || [0, 0]; const g = o.grain === 'none' ? '' : ` filter="url(#vc-riso-${o.grain === 'light' ? 'l' : 's'})"`; return `<g style="mix-blend-mode:multiply"${g}>${dx || dy ? `<g transform="translate(${dx},${dy})">${inner}</g>` : inner}</g>`; };
     return {
       S, lang, begin: () => { UID = 0; }, R, layout, width, wrap, fit, dur, markUnder: ['marker', 'block'].includes(S.carriers.mark),   // 这两种批注要压在字下面
       panel: ck((x, y, w, h, title = '', dark = false) => frame(x, y, w, h, title, S.carriers.panel || S.carriers.window, dark)),   // 信息面板;画风可单独给 panel 造型
-      transition, subtitle, txDur: k => TX_DUR[k], sketch: ck(sketch), hatch: ck(hatch), marker, mascot: ck(mascot),
+      tone, ink, transition, subtitle, txDur: k => TX_DUR[k], sketch: ck(sketch), hatch: ck(hatch), marker, mascot: ck(mascot),
       text: ck(text), textFit: ck(textFit), mark: ck(mark), stamp: ck(stamp), counter: ck(counter), bubble: ck(bubble), chat: ck(chat), terminal: ck(terminal), chapterBar, panGroup, defs, backdrop,
     };
   };

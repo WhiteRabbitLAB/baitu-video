@@ -117,7 +117,8 @@ export const manifestPath = o => { const { dir } = episodePaths(o); return path.
 export function episodeChars(o) {
   const { page, brief, dir } = episodePaths(o);
   let text = fs.readFileSync(page, 'utf8') + fs.readFileSync(path.join(ENGINE, 'vc/styles.js'), 'utf8');
-  if (fs.existsSync(brief)) for (const f of fs.readdirSync(brief)) if (/\.(txt|md|json)$/.test(f)) text += fs.readFileSync(path.join(brief, f), 'utf8');
+  // brief 里的 txt / md / json 都可能有上屏的字(分镜、竖版配置……);事实表不上屏,不算
+  if (fs.existsSync(brief)) for (const f of fs.readdirSync(brief)) if (/\.(txt|md|json)$/.test(f) && f !== 'facts.md') text += fs.readFileSync(path.join(brief, f), 'utf8');
   for (const f of fs.readdirSync(dir)) if (f.startsWith(`data-${o.ep}`) && f.endsWith('.js')) text += fs.readFileSync(path.join(dir, f), 'utf8');
   return charsOf(text);
 }

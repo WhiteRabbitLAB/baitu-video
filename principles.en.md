@@ -19,6 +19,7 @@ How to tell: ask "what happens if this isn't followed?" — something goes wrong
 Distilled from a dozen-plus videos across the author's two channels; not tied to any channel. Your channel's own rules go in profiles/.
 
 ## Content
+- **The fact sheet is a hard rule, never skipped**: `<brief>/facts.md`, every row with a source you actually checked (link, book + page, paper); anything written from memory is "unverified" and stays out of the script until checked. Acceptance item 14 checks it (a missing sheet or missing source fails; "unverified" rows are flagged so you confirm none made it into the script). Added after the 2026-10-09 model tests, where some runs wrote sources from memory without looking anything up.
 - Every number and every quoted line in narration and on screen must trace to a "verified" row in the fact sheet; if it doesn't, delete it or mark it "inference / rhetoric".
 - Separate objective measurement from self-report, correlation from causation, large samples from small experiments; the limits themselves make good content.
 - Check viral numbers against primary sources. Family records and legends are reported as such, never upgraded to settled fact.
@@ -32,6 +33,8 @@ Distilled from a dozen-plus videos across the author's two channels; not tied to
 
 ## Visuals
 - **Choose fonts by writing source** (text-roles.md, design/fonts.md); one source, one font, throughout the video.
+- **Composition (default, added 2026-10-09)**: give every shot one subject (the main drawing + its key labels) and scale it up to fill about 60–80% of the usable frame (above the subtitle band), centred; don't leave the drawing tucked into the top half with an empty bottom, or a whole screen holding one line of text. Small text such as titles and corner labels goes to the edges. Whiteboard / chalkboard styles may leave white space, but the subject itself must be big. Acceptance item 12 ("frame fill") flags a median below 25%.
+- **Don't repeat the subtitles on screen**: the subtitles already show the narration; on-screen text is for what the narration can't carry — names, numbers, short keywords (a few words), legends. Writing the narrated sentence out again wastes the picture (acceptance item 13 flags it).
 - Keep the picture crisp: no SVG displacement-jitter filters (the fuzzy edges look blurry).
 - Number animations show only real values — no flashing intermediate or out-of-range values.
 - Curves without real data are drawn as schematic shapes with a permanent "schematic" label.

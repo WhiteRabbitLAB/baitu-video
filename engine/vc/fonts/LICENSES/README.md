@@ -7,6 +7,7 @@ These are subsets (modified versions) of the original fonts, cut to the characte
 |---|---|---|---|
 | Anton | OFL-1.1 | Anton.txt | — |
 | Caveat Brush | OFL-1.1 | CaveatBrush.txt | — |
+| Cormorant Italic | OFL-1.1 | CormorantItalic.txt | — |
 | Jason Handwriting 1 | OFL-1.1 | JasonHandwriting1.txt | — |
 | JetBrains Mono | OFL-1.1 | JetBrainsMono.txt | — |
 | Kalam | OFL-1.1 | Kalam.txt | — |

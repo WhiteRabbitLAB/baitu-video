@@ -161,11 +161,37 @@
       "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/anton/OFL.txt"
     },
     {
+      "family": "Cormorant Italic",
+      "file": "CormorantGaramond-Italic[wght].ttf",
+      "variable": true,
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/cormorantgaramond/CormorantGaramond-Italic%5Bwght%5D.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/cormorantgaramond/OFL.txt",
+      "_note": "Cormorant Garamond 的斜体单独当一个族用(组件只写族名和字重,不写 font-style):拉丁学名按生物学惯例排斜体。OFL 原文无保留名(2026-10-09 读过)"
+    },
+    {
       "family": "Special Elite",
       "file": "SpecialElite-Regular.ttf",
       "license": "Apache-2.0",
       "url": "https://raw.githubusercontent.com/google/fonts/main/apache/specialelite/SpecialElite-Regular.ttf",
       "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/apache/specialelite/LICENSE.txt"
+    },
+    {
+      "family": "Long Cang",
+      "file": "LongCang-Regular.ttf",
+      "license": "OFL-1.1",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/longcang/LongCang-Regular.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/longcang/OFL.txt",
+      "_note": "钢笔硬笔(档案、实验室的表格填写)。简体「时」画成了繁体「時」,用前放大看样张(design/fonts.md)"
+    },
+    {
+      "family": "Zhuque Fangsong",
+      "file": "ZhuqueFangsong-Regular.ttf",
+      "license": "OFL-1.1",
+      "url": "https://github.com/TrionesType/zhuque/releases/download/v0.212/ZhuqueFangsong-v0.212.zip",
+      "zip": "ZhuqueFangsong-Regular.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/TrionesType/zhuque/main/LICENSE.txt",
+      "_note": "中文打字机 · 仿宋印刷(档案打字稿、老表格)。许可证没有声明保留名(2026-10-09 读过 LICENSE.txt)"
     }
   ]
 }

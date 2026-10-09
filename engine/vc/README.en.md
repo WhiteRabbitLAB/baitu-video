@@ -7,7 +7,7 @@ Visual components shared by every channel. Components only know text roles R1–
 | File | What it does |
 |---|---|
 | `vc.js` | The components (pure functions returning SVG strings, 1920×1080 coordinates, reproducible frame by frame) |
-| `styles.js` | The style looks: paper skeuomorphic `paper-skeuo`, game skeuomorphic `game-ui`, flat geometric `flat-geometric`, flat illustration `flat-illustration`, cartoon UI `cartoon-ui`, dark tech `tech-ui`, whiteboard `whiteboard`, dark math `dark-math`, chalkboard `chalkboard`, kinetic type `kinetic` (10 in all; thumbnails in ../../styles/INDEX.md) |
+| `styles.js` | The style looks: paper skeuomorphic `paper-skeuo`, game skeuomorphic `game-ui`, flat geometric `flat-geometric`, flat illustration `flat-illustration`, cartoon UI `cartoon-ui`, dark tech `tech-ui`, whiteboard `whiteboard`, dark math `dark-math`, chalkboard `chalkboard`, kinetic type `kinetic`, Risograph `risograph` (11 in all; thumbnails in ../../styles/INDEX.md) |
 | `demo.html` | Demo page: one row per component, switchable style, Chinese / English, timeline |
 | `thumbs.html` / `thumbs.mjs` | Style thumbnails: the same scene, only the style changes; `node engine/vc/thumbs.mjs` → `.claude/skills/baitu-video/styles/thumbs/` |
 | `transitions.html` / `measure-tx.mjs` | Transition demos (morph, zoom-through, slide-push, blur-push…) and transition measurement (with a linear-fade positive control): `node engine/vc/measure-tx.mjs paper-skeuo` |
@@ -51,7 +51,8 @@ Episode fonts: `node <engine>/cli.mjs fonts <ep>` cuts them for the styles the p
 | Terminal window | `kit.terminal(x, y, w, h, [{cmd,t0}/{out,t0}], t)` | commands and output | Device screen / dark window / thick-outline window |
 | Chapter progress bar | `kit.chapterBar(t, [{name,start,end}])` | channel-wide | Only the accent color |
 | Paragraph-start pan | `VC.pan(t, starts)` / `kit.panGroup(t, starts, [fn])` | — | Not style-dependent; default 1.2 s + motion blur |
-| Transitions | `kit.transition(id, t, t0, A, B, params)`; id = `slide-push` / `blur-push` / `zoom-through` (`{cx,cy,r0}`) / `morph` (`{from,to}` paths + colors) / `fade` / `fill-zoom` / `bands` | — | slide-push's leading bar takes the accent color; zoom-through's opening background takes the style's background |
+| Transitions | `kit.transition(id, t, t0, A, B, params)`; id = `roller` (roller sweep: new shot left of the leading edge, old shot right of it, `{band,x0,x1}`) / `slide-push` / `blur-push` / `zoom-through` (`{cx,cy,r0}`) / `morph` (`{from,to}` paths + colors) / `fade` / `fill-zoom` / `bands` | — | slide-push's leading bar takes the accent color; zoom-through's opening background takes the style's background |
+| Ink plates (Risograph) | `kit.ink('b'\|'p', content, {grain:'strong'\|'light'\|'none'})`; halftone fill `kit.tone('b', 0–1)`; page `<defs>${kit.defs({frame})}</defs>` (grain re-seeded by frame number) | — | Halftone and grain only exist in `riso` styles; elsewhere `tone` returns the solid color and `ink` only multiplies |
 | Morphing | `VC.morphPath(dA, dB, k)`, `VC.shape.rect / circle` | — | Interpolates any two closed paths |
 
 ## Rules
@@ -64,7 +65,7 @@ Episode fonts: `node <engine>/cli.mjs fonts <ep>` cuts them for the styles the p
 - Older videos (N1–N9, A1–A6) weren't moved to these components; each is still its own big HTML.
 - **Text of unpredictable length always uses `textFit`**: titles, thumbnail text, data-driven labels, every line in a vertical cut. It shrinks the size by real widths (default at most two lines, at least 0.6×), and `ok=false` warns in the console — then change the text or the layout instead of forcing it.
 - **Line-breaking rules (shared by `wrap` / `fit` / bubbles / dialogs)**: Chinese breaks at word boundaries (the browser's `Intl.Segmenter`), never splitting "第 + number + measure word" (e.g. 第 114 卷); punctuation and closing quotes never start a line, opening quotes never end one. For two lines it picks among word boundaries: lines close in length, the first not shorter than the second, preferring breaks after commas / colons / spaces, never inside quotes or brackets.
-- **Stress-test page `fit-test.html`**: a set of "unfriendly inputs" (very long titles, mixed Chinese and English, long punctuated sentences, long numbers); `?style=&w=&h=` changes style and size; controls `&bad` (no fit — should report out of frame) and `&overlap` (deliberate overlap — should report overlap). After changing layout code, run `engine/tools/check-text-bounds.mjs` over 10 styles × landscape and vertical; only all zeros passes (all zeros measured on 2026-10-07).
+- **Stress-test page `fit-test.html`**: a set of "unfriendly inputs" (very long titles, mixed Chinese and English, long punctuated sentences, long numbers); `?style=&w=&h=` changes style and size; controls `&bad` (no fit — should report out of frame) and `&overlap` (deliberate overlap — should report overlap). After changing layout code, run `engine/tools/check-text-bounds.mjs` over 11 styles × landscape and vertical; only all zeros passes (all zeros measured on 2026-10-07).
 
 ## In a finished video (the first made with these components, 2026-10-07)
 The first full video built with these components (12 shots, paper-skeuo). Practices worth copying:

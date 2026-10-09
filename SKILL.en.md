@@ -2,7 +2,7 @@
 
 中文:[SKILL.md](SKILL.md)
 
-Any topic. This method was distilled from the author's two channels — nutrition science (10 videos) and practical AI (6 videos plus a 17-minute history feature). Formats, scenes and styles are written so they don't depend on the topic; cases from either channel carry over to the other.
+Any topic. This method was distilled from the author's two channels — nutrition science (11 videos) and practical AI (6 videos plus a 17-minute history feature). Formats, scenes and styles are written so they don't depend on the topic; cases from either channel carry over to the other.
 
 ## Read this first: the skill is a floor, not a ceiling
 Rules come in three weights: **hard rules** (facts, safety, platform rules, the decision-maker's calls — always follow), **capability limits** (set because a model couldn't do something at the time; dated, re-test and lift them when models improve), and **defaults** (parameters, templates, skeletons — a starting point, not a cap; do better when you can and leave a record of the comparison). See the top of [principles.md](principles.en.md).
@@ -45,6 +45,7 @@ The commands, shared visual components and check tools all live in [engine/](eng
 | Making an episode from scratch | [pipeline.md](pipeline.en.md) + [principles.md](principles.en.md) + your channel profile |
 | Choosing format / scene / style | The four questions in [catalog/](catalog/README.en.md) first; then the three library INDEX pages |
 | Deciding on-screen text | [text-roles.md](text-roles.en.md) → the scene's writing-source table → [design/fonts.md](design/fonts.en.md) |
+| Writing the page, calling components (hand-drawn lines, hatching, stamps, bubbles, transitions…) | The component table in [engine/vc/README.en.md](engine/vc/README.en.md) + the demo page `engine/vc/demo.html`; composition and "don't repeat the subtitles on screen" are in [principles.md](principles.en.md) § Visuals. No need to read the `vc.js` source |
 | Joining shots and poses | [transitions.md](transitions.en.md) + the camera & transition library [design/camera-transitions.md](design/camera-transitions.en.md) (every parameter has a reference) |
 | Character acting | [characters/act-pipeline.md](characters/act-pipeline.en.md) |
 | Before delivery | [acceptance.md](acceptance.en.md) |
@@ -66,6 +67,6 @@ After every episode, write what you learned back into the matching file.
 
 The to-do list (`TODO.md`) is the author's internal record and isn't in the open-source release; the public style roadmap is [styles/ROADMAP.md](styles/ROADMAP.en.md).
 
-- Scenes and styles are separate in the library; older episode pages were "one big HTML per episode" with both mixed together. **Common components are now shared, style-swappable code in `engine/vc/`** (components only know text roles; looks come from `styles.js`, one set for each of 10 styles; thumbnails in [styles/INDEX.md](styles/INDEX.en.md)); one finished video (N10) was built entirely with it.
+- Scenes and styles are separate in the library; older episode pages were "one big HTML per episode" with both mixed together. **Common components are now shared, style-swappable code in `engine/vc/`** (components only know text roles; looks come from `styles.js`, one set for each of 11 styles; thumbnails in [styles/INDEX.md](styles/INDEX.en.md)); one finished video (N10) was built entirely with it.
 - Unverified: the same scene in a different style in a real video; mixing several styles in one cut; two or more characters in one shot; lip-sync to narration; character acting in a finished video.
 - Formats compiled from the AI channel's scripts, handover notes and font tables (story-method-test, howto-guide, product-review, timeline-epic) and scenes (terminal-tech, field-notebook, gallery-wall) haven't been used in a new video yet; gallery-wall's page was deleted, so its font table is entirely inferred.

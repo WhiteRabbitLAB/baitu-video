@@ -275,4 +275,35 @@
       bar: { font: 'Noto Sans SC:900', accent: c.marker, track: '#fff', text: '#fff', ink: '#000', shade: .3 },
     };
   }
+  // ---------------- 孔版印刷 Risograph:两种油墨(蓝 / 荧光粉)、网点、颗粒、套色错位,米白纸 ----------------
+  // riso: true ⇒ 对外组件统一套轻颗粒(vc-riso-l);页面里的大色块用 kit.ink(油墨, 内容) 分版叠印、kit.tone(油墨, 深浅) 出网点。
+  // 规矩(第 11 期样片 owner 2026-10-08 反馈后定):中文一律直立黑体(斜体 + 颗粒 + 重影会「看着花」);字上的颗粒只用轻档;
+  //   套色错位固定不逐帧抖;双色重影只给开头那一个大标题。颜色即含义:粉只给「重点 / 要警惕的量」,其余都是蓝。
+  {
+    const c = {
+      bg: '#F3EEE3', paper: '#F3EEE3', ink: '#0078BF', text: '#0078BF', muted: '#4F93C7', accent: '#FF48B0', pink: '#FF48B0', mark: '#FF48B0', marker: '#FF9ACF',
+      line: '#0078BF', card: '#F3EEE3', cardD: '#FF48B0', title: '#F3EEE3', bubble: '#F3EEE3', chatU: '#DCEAF4', chatA: '#F3EEE3', chatTxt: '#0078BF',
+      term: '#0078BF', termTxt: '#F3EEE3', termHi: '#FF9ACF', surface: '#F3EEE3', edge: '#0078BF', lw: 4,
+    };
+    const H = 'Noto Sans SC:900', B = 'Noto Sans SC:500', A = 'Anton:400', M = 'Space Mono:700';
+    VC.styles['risograph'] = {
+      id: 'risograph', name: '孔版印刷', nameEn: 'Risograph', c, vig: 0, riso: true,
+      inks: { b: c.ink, p: c.pink }, misreg: { p: [3, -2] },   // 每种油墨一个色;粉版固定错位(px)
+      roles: {
+        R1: { zh: H, en: A, size: 88, fill: c.ink, entrance: 'fadeUp' },
+        R2: { zh: H, en: A, size: 52, fill: c.ink, entrance: 'fadeUp' },
+        R3: { zh: B, en: 'Space Mono:400', size: 28, fill: c.ink, entrance: 'fadeUp' },
+        R4: { zh: H, en: A, size: 130, fill: c.pink },
+        R5: { zh: B, en: 'Space Mono:400', size: 38, fill: c.ink, entrance: 'type', cps: 16, cpsEn: 36 },
+        R6: { zh: H, en: A, size: 44, fill: c.pink, entrance: 'pop' },
+        R7: { zh: B, en: B, size: 36, fill: c.ink, entrance: 'static' },
+        R8: { zh: H, en: 'Cormorant Italic:700', size: 44, fill: c.ink, entrance: 'fadeUp' },   // 本画风没有手写层:手记改成印刷字;拉丁学名走 en(斜体)
+        R9: { zh: H, en: A, size: 50, fill: c.pink },
+        R10: { zh: B, en: 'Space Mono:400', size: 22, fill: c.ink, entrance: 'fadeUp' },
+      },
+      mono: { zh: B, en: 'Space Mono:400' },
+      carriers: { backdrop: 'riso', mark: 'marker', stamp: 'ink', counter: 'print', bubble: 'riso', window: 'riso' },
+      bar: { font: H, accent: c.pink, track: c.ink, text: c.ink, ink: c.paper, shade: 0 },
+    };
+  }
 })();

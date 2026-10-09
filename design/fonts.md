@@ -39,6 +39,7 @@
 | 科技界面标题 | Space Grotesk | 科技终端 |
 | 终端 · 代码 · 实测数字 | JetBrains Mono | 科技终端、实验记录 |
 | 旧书铅字 · 杂志衬线 · 展签 | Cormorant Garamond(正 / 斜) | 实验记录、品牌字标 |
+| 拉丁学名(生物学惯例斜体) | Cormorant 斜体(引擎族名 `Cormorant Italic`,fonts.json 已登记) | 孔版印刷(第 11 期) |
 | 英文手写(圆珠笔 / 记录本) | Caveat、Kalam | 实验记录英文版 |
 | 英文马克笔 / 红笔 | Caveat Brush | 实验记录英文版 |
 | 粉笔黑板 | 手写:Gochi Hand(备选 Patrick Hand、Architects Daughter);板书标题:Fredericka the Great、Cabin Sketch Bold | 样张 |

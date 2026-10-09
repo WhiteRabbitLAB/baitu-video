@@ -7,7 +7,7 @@ description: 用代码做讲解视频的完整方法,不限话题(科普、AI �
 
 English: [SKILL.en.md](SKILL.en.md)
 
-不限话题。目前沉淀自作者的两个频道:营养科普(10 部)和 AI 用法(6 部 + 一部 17 分钟通史长片),片型、场景、画风都写成了与话题无关的形式,两边的案例互相可借。
+不限话题。目前沉淀自作者的两个频道:营养科普(11 部)和 AI 用法(6 部 + 一部 17 分钟通史长片),片型、场景、画风都写成了与话题无关的形式,两边的案例互相可借。
 
 ## 用之前先知道:skill 是地板,不是天花板
 规矩分三种分量:**硬规矩**(事实、安全、平台、决策者决定,必须守)、**能力边界**(当时的模型做不到才定的,标了日期,模型变强就重测放开)、**默认值**(参数、模板、骨架——起点不是上限,能做得更好就做,留痕对比)。详见 [principles.md](principles.md) 开头。
@@ -51,6 +51,7 @@ English: [SKILL.en.md](SKILL.en.md)
 | 从零做一期 | [pipeline.md](pipeline.md) + [principles.md](principles.md) + 本频道配置 |
 | 选片型 / 场景 / 画风 | 先走 [catalog/](catalog/README.md) 四个问题;再看三个库的 INDEX |
 | 画面上的字怎么定 | [text-roles.md](text-roles.md) → 场景文件的书写来源表 → [design/fonts.md](design/fonts.md) |
+| 写页面、调组件(手绘线、排线、印章、气泡、转场……) | [engine/vc/README.md](engine/vc/README.md) 组件表 + 演示页 `engine/vc/demo.html`;构图与「画面不复述字幕」见 [principles.md](principles.md) §画面。不用翻 `vc.js` 源码 |
 | 镜头之间、姿势之间怎么接 | [transitions.md](transitions.md) + 运镜与转场库 [design/camera-transitions.md](design/camera-transitions.md)(参数都有参考出处) |
 | 角色表演 | [characters/act-pipeline.md](characters/act-pipeline.md) |
 | 交付前 | [acceptance.md](acceptance.md) |
@@ -73,6 +74,6 @@ English: [SKILL.en.md](SKILL.en.md)
 待办清单(按建议顺序编号):`TODO.md`(作者的内部记录,开源版里没有;公开的画风路线图见 [styles/ROADMAP.md](styles/ROADMAP.md))。
 
 
-- 场景和画风在库里是分开的;往期页面是「一期一个大 HTML」,两者写在一起。**常用组件已抽成可换画风的共享代码 `engine/vc/`**(组件只认文字角色,外观由 `styles.js` 提供,10 种画风各一套,缩略图见 [styles/INDEX.md](styles/INDEX.md));已有一部正片(N10)整片用它做。
+- 场景和画风在库里是分开的;往期页面是「一期一个大 HTML」,两者写在一起。**常用组件已抽成可换画风的共享代码 `engine/vc/`**(组件只认文字角色,外观由 `styles.js` 提供,11 种画风各一套,缩略图见 [styles/INDEX.md](styles/INDEX.md));已有一部正片(N10)整片用它做。
 - 未验证:同一场景换画风实拍;多画风混剪;两个以上角色同框;角色口型对配音;角色表演进正片。
 - 按 AI 用法频道的稿子、交接文档、字体表整理的片型(story-method-test、howto-guide、product-review、timeline-epic)和场景(terminal-tech、field-notebook、gallery-wall)还没在新片里用过;gallery-wall 的画面页已删,它的字体表整表是推断。

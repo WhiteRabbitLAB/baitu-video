@@ -41,6 +41,7 @@ The "Used in" column lists fonts already used in finished videos; anything witho
 | Tech UI titles | Space Grotesk | tech terminal |
 | Terminal · code · test numbers | JetBrains Mono | tech terminal, lab notes |
 | Old book type · magazine serif · wall labels | Cormorant Garamond (roman / italic) | lab notes, brand wordmark |
+| Latin species names (italic by biological convention) | Cormorant Italic (engine family `Cormorant Italic`, registered in fonts.json) | Risograph (episode 11) |
 | English handwriting (ballpoint / notebook) | Caveat, Kalam | lab notes, English version |
 | English marker / red pen | Caveat Brush | lab notes, English version |
 | Chalkboard | Handwriting: Gochi Hand (alternatives Patrick Hand, Architects Daughter); board titles: Fredericka the Great, Cabin Sketch Bold | samples |

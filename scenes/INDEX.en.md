@@ -22,6 +22,7 @@ A scene does **not** decide how things are drawn — that's the style (../styles
 | [terminal-tech](terminal-tech.en.md) | Tech terminal | Dark UI, terminal windows, data panels | tech-ui | product-review, howto-guide | full video ×2 |
 | [field-notebook](field-notebook.en.md) | Paper lab notes + screen dialog | Paper is what people wrote; the screen is what the machine said | paper-skeuo | story-method-test | full video (zh + en) |
 | [gallery-wall](gallery-wall.en.md) | Paintings and labels | Public-domain masterpieces + wall labels + comparison wall | paper-skeuo | story-method-test | full video (zh + en; page deleted) |
+| [deep-sea-section](deep-sea-section.en.md) | Deep-sea section | Vertical seawater cross-section + depth ruler; the camera dives with the narration; each creature at its real depth | risograph | spread-history, mechanism, case-file | full video |
 
 ## Adding a scene
 1. Copy [_template.md](_template.en.md).
