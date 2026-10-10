@@ -74,6 +74,6 @@ English: [SKILL.en.md](SKILL.en.md)
 待办清单(按建议顺序编号):`TODO.md`(作者的内部记录,开源版里没有;公开的画风路线图见 [styles/ROADMAP.md](styles/ROADMAP.md))。
 
 
-- 场景和画风在库里是分开的;往期页面是「一期一个大 HTML」,两者写在一起。**常用组件已抽成可换画风的共享代码 `engine/vc/`**(组件只认文字角色,外观由 `styles.js` 提供,11 种画风各一套,缩略图见 [styles/INDEX.md](styles/INDEX.md));已有一部正片(N10)整片用它做。
+- 场景和画风在库里是分开的;往期页面是「一期一个大 HTML」,两者写在一起。**常用组件已抽成可换画风的共享代码 `engine/vc/`**(组件只认文字角色,外观由 `styles.js` 提供,12 种画风各一套,缩略图见 [styles/INDEX.md](styles/INDEX.md));已有一部正片(N10)整片用它做。
 - 未验证:同一场景换画风实拍;多画风混剪;两个以上角色同框;角色口型对配音;角色表演进正片。
 - 按 AI 用法频道的稿子、交接文档、字体表整理的片型(story-method-test、howto-guide、product-review、timeline-epic)和场景(terminal-tech、field-notebook、gallery-wall)还没在新片里用过;gallery-wall 的画面页已删,它的字体表整表是推断。

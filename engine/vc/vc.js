@@ -110,7 +110,8 @@
   // ---------- 字体与测宽 ----------
   // 字体写法 'Noto Serif SC:900';测宽用 canvas measureText(真实字宽,字体加载完后才准 ⇒ VC.ready 之后清缓存)
   const fontOf = spec => { const [fam, w = '400'] = String(spec).split(':'); return { fam, w }; };
-  const fontAttr = spec => { const f = fontOf(spec); return `font-family="${f.fam}, Noto Sans SC, sans-serif" font-weight="${f.w}"`; };
+  // 族名必须加引号:不加引号时,族名里以数字开头的词(「Fusion Pixel 12」的 12、「Jason Handwriting 1」的 1)让整条声明作废,浏览器静默换成默认字体(2026-10-10 实测踩中)
+  const fontAttr = spec => { const f = fontOf(spec); return `font-family="'${f.fam}', 'Noto Sans SC', sans-serif" font-weight="${f.w}"`; };
   const ctx = document.createElement('canvas').getContext('2d');
   const MC = new Map();
   function adv(c, spec) {
@@ -136,6 +137,19 @@
       try { const got = await document.fonts.load(`${f.w} 40px "${f.fam}"`, sample); res[spec] = got.length; } catch (e) { res[spec] = -1; }
     }));
     await document.fonts.ready;
+    // 加载到 ≠ 画面用上了:SVG 的 font-family 写错(如族名没加引号)时浏览器静默换默认字体,上面的计数照样是绿的(2026-10-10 踩中)。
+    // 同一串字:SVG 按 fontAttr 实际画出来的宽度 vs canvas 按这个族量的宽度,差 2% 以上 = 画面没用上这个字体 ⇒ 记 0,渲染器拒绝开工
+    if (typeof document !== 'undefined' && document.body) {
+      const probe = [...sample].slice(0, 12).join(''), NS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NS, 'svg');
+      svg.setAttribute('style', 'position:absolute;left:-9999px;top:0;visibility:hidden'); document.body.appendChild(svg);
+      for (const spec of Object.keys(res)) {
+        if (res[spec] <= 0) continue;
+        const f = fontOf(spec); svg.innerHTML = `<text ${fontAttr(spec)} font-size="100">${esc(probe)}</text>`;
+        const drawn = svg.firstChild.getComputedTextLength(); ctx.font = `${f.w} 100px "${f.fam}"`; const meant = ctx.measureText(probe).width;
+        if (meant > 0 && Math.abs(drawn - meant) / meant > .02) { res[spec] = 0; console.warn(`[VC.ready] ${spec}:画面没用上这个字体(画出 ${drawn.toFixed(0)} vs 应为 ${meant.toFixed(0)})`); }
+      }
+      svg.remove();
+    }
     MC.clear();
     return res;   // 每个字体加载到的 face 数;0 = 没加载上(页面应报错,别静默用替代字体)
   };
@@ -176,6 +190,8 @@
     let UID = 0;
     const id = p => `vc${p}${UID++}`;
     const R = r => { const x = S.roles[r]; if (!x) throw new Error(`画风 ${styleId} 没给角色 ${r}`); return x; };
+    // 点阵字(S.pixel = 字模格数,如 12):字号只能是它的整数倍,否则笔画落在半像素上会糊
+    const snap = v => S.pixel ? Math.max(S.pixel, Math.floor(v / S.pixel + 1e-6) * S.pixel) : v;
 
     // 一行字排版:逐字给出位置、宽度、字体(中文字用 zh 字体,其余用 en 字体)
     function layout(s, role, size, ls = 0) {
@@ -226,10 +242,11 @@
     // balance:行数定了以后找最窄的折法,让几行长短接近(不出现「一长行 + 孤零零两个字」)。
     // 返回 { size, lines, ok, lh };ok=false 表示缩到 min 倍还放不下 —— 要改字或改版面,别硬塞。
     function fit(role, s, maxW, o = {}) {
-      const base = o.size || R(role).size, maxLines = o.maxLines ?? 2, min = o.min ?? .6, lhK = o.lh ?? 1.25;
+      const base = snap(o.size || R(role).size), maxLines = o.maxLines ?? 2, min = o.min ?? .6, lhK = o.lh ?? 1.25;
       const fits = (sz, ls) => ls.length <= maxLines && ls.every(l => width(role, l, sz) <= maxW + .5);
       let size = base, lines = wrap(s, role, size, maxW), ok = fits(size, lines);
-      while (!ok && size * .95 >= base * min) { size *= .95; lines = wrap(s, role, size, maxW); ok = fits(size, lines); }
+      const next = v => S.pixel ? v - S.pixel : v * .95;   // 点阵字一档一档(12 的倍数)往下缩
+      while (!ok && next(size) >= Math.max(base * min, S.pixel || 0)) { size = next(size); lines = wrap(s, role, size, maxW); ok = fits(size, lines); }
       if (ok && lines.length === 2 && o.balance !== false) {
         // 两行:在词边界里挑断点 —— 两行越接近越好;第一行比第二行短要扣分(头轻脚重);断在标点 / 空格后加分(读着顺)
         const u = units(s), total = width(role, s, size); let best = null;
@@ -258,7 +275,7 @@
 
     // 角色的书写速度(字 / 秒);英文按字母,约为中文 2.2 倍
     const cps = (r, s) => hasCJK(s) ? (r.cps || 10) : (r.cpsEn || (r.cps || 10) * 2.2);
-    const dur = (role, s) => { const r = R(role), n = [...s].filter(c => c !== ' ').length; return r.entrance === 'hand' || r.entrance === 'type' || r.entrance === 'write' ? n / cps(r, s) : .45; };
+    const dur = (role, s) => { const r = R(role), n = [...s].filter(c => c !== ' ').length; return r.entrance === 'hand' || r.entrance === 'type' || r.entrance === 'write' ? n / cps(r, s) : r.entrance === 'print' ? (r.printDur ?? .3) : .45; };
 
     // ---------- 出场方式 ----------
     // 手写:每字固定种子的微小不规则(角度 ±2°、上下 ±3%、大小 ±4%、墨色 ±15%,× r.jit),逐字左→右擦出,一行匀速
@@ -322,7 +339,7 @@
 
     // 角色文字:出场方式由画风决定(手写 / 打字 / 淡入上滑 / 弹出 / 静态)
     function text(role, s, x, y, t, t0 = -1e9, o = {}) {
-      const r = R(role), size = o.size || r.size, fill = o.fill || r.fill, anchor = o.anchor || 'start';
+      const r = R(role), size = snap(o.size || r.size), fill = o.fill || r.fill, anchor = o.anchor || 'start';
       const ent = o.entrance || r.entrance || 'static', d = o.dur ?? dur(role, s);
       if (t < t0) return '';
       if (ent === 'hand') return handRun(s, x, y, t, t0, d, r, size, fill, anchor);
@@ -338,6 +355,11 @@
         return `<g opacity="${f3(clamp(k1 * 2.5))}" transform="translate(${f1(cx + jx)},${f1(cy + jy)}) scale(${f3(sc)}) translate(${f1(-cx)},${f1(-cy)})">${body}</g>`;
       }
       if (ent === 'fadeUp') { const k = ease.out(seg(t, t0, t0 + .45)); return `<g opacity="${f3(k)}" transform="translate(0,${f1(16 * (1 - k))})">${body}</g>`; }
+      if (ent === 'print') {   // 热敏打印:一行字从上往下逐像素行扫出(打印头一行一行走纸),匀速、不缓动;扫完即定
+        const k = seg(t, t0, t0 + d); if (k >= 1) return body;
+        const px = size / (S.pixel || 12), top = y - size * .92, hh = Math.ceil(k * 12) * px * 1.05, w = width(role, s, size), x0 = ax(x, w, anchor), cid = id('pr');
+        return `<clipPath id="${cid}"><rect x="${f1(x0 - 4)}" y="${f1(top)}" width="${f1(w + 8)}" height="${f1(hh)}"/></clipPath><g clip-path="url(#${cid})">${body}</g>`;
+      }
       if (ent === 'pop') { const k = seg(t, t0, t0 + .4), w = width(role, s, size), cx = ax(x, w, anchor) + w / 2; return `<g opacity="${f3(clamp(k * 3))}" transform="translate(${f1(cx)},${f1(y)}) scale(${f3(Math.max(.001, ease.back(k)))}) translate(${f1(-cx)},${f1(-y)})">${body}</g>`; }
       return body;
     }
@@ -573,6 +595,13 @@
           <path d="M${x + 18} ${y} H${x + w - 18} a18 18 0 0 1 18 18 V${y + 54} H${x} V${y + 18} a18 18 0 0 1 18 -18Z" fill="${kind === 'plate' ? '#000' : c.cardD}" opacity="${kind === 'plate' ? .25 : 1}"/>
           <text x="${x + 28}" y="${y + 37}" ${fontAttr(S.roles.R2.zh)} font-size="26" fill="${c.title || c.text}">${esc(title)}</text>`;
       }
+      if (kind === 'receipt') {   // 热敏小票:米白纸条、两侧微卷的阴影、底边撕口锯齿;标题居中 + 一条虚线
+        let d = `M${x},${y} H${x + w} V${y + h}`; const n = Math.max(8, Math.round(w / 20));
+        for (let i = 1; i <= n; i++) d += ` L${f1(x + w - i * w / n)},${f1(y + h + (i % 2 ? 12 : 0))}`;
+        d += 'Z';
+        return `<path d="${d}" fill="#000" opacity=".35" filter="url(#vc-soft)" transform="translate(6,12)"/><path d="${d}" fill="${c.paper}"/><path d="${d}" fill="url(#vc-curl)"/>
+          ${title ? staticRun(title, x + w / 2, y + 60, R('R2'), snap(36), c.ink, 'middle') + `<path d="M${x + 36} ${y + 86} H${x + w - 36}" stroke="${c.ink}" stroke-width="3" stroke-dasharray="9 7"/>` : ''}`;
+      }
       if (kind === 'riso') {
         return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${dark ? c.term : c.paper}" stroke="${c.ink}" stroke-width="4"/>
           <path d="M${x + 10} ${y} H${x + w - 10} a10 10 0 0 1 10 10 V${y + 54} H${x} V${y + 10} a10 10 0 0 1 10 -10Z" fill="${c.pink}" style="mix-blend-mode:multiply"/>
@@ -664,7 +693,7 @@
       const cur = labs.find(l => l.cur);
       labs.forEach(l => {   // 放不下、或和当前章节标签重叠的就不写
         if (!l.cur && (l.w > l.seg - 6 || (cur && l.x < cur.x + cur.w + 12 && cur.x < l.x + l.w + 12))) return;
-        out.push(`<text x="${f1(l.x)}" y="${Y - 10}" font-family="${fontOf(font).fam}, sans-serif" font-weight="${l.cur ? 900 : 500}" font-size="${FS}" fill="${S.bar.text}" opacity="${l.cur ? 1 : .62}" stroke="${ink}" stroke-width="5" stroke-linejoin="round" paint-order="stroke fill">${esc(l.s)}</text>`);
+        out.push(`<text x="${f1(l.x)}" y="${Y - 10}" font-family="'${fontOf(font).fam}', sans-serif" font-weight="${l.cur ? 900 : 500}" font-size="${FS}" fill="${S.bar.text}" opacity="${l.cur ? 1 : .62}" stroke="${ink}" stroke-width="5" stroke-linejoin="round" paint-order="stroke fill">${esc(l.s)}</text>`);
       });
       return out.join('');
     }
@@ -863,7 +892,9 @@
       return out + grain('vc-riso-s', 5.4) + grain('vc-riso-l', 4.0);   // 强档给色块、轻档给字(字上颗粒重了会「看着花」)
     }
     function defs(o = {}) {
-      return `${S.riso ? risoDefs(o.frame || 0) : ''}<filter id="vc-soft" x="-10%" y="-10%" width="120%" height="130%"><feGaussianBlur stdDeviation="9"/></filter>
+      return `${S.riso ? risoDefs(o.frame || 0) : ''}${S.thermal ? `<filter id="vc-thermal" x="0" y="0" width="1" height="1"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="1" seed="4" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.9 1.35" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>
+        <linearGradient id="vc-curl" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".10"/><stop offset=".08" stop-color="#000" stop-opacity="0"/><stop offset=".92" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".12"/></linearGradient>
+        <pattern id="vc-counter" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="${S.c.bg}"/><rect width="3" height="3" fill="${S.c.bg2 || S.c.bg}"/></pattern>` : ''}<filter id="vc-soft" x="-10%" y="-10%" width="120%" height="130%"><feGaussianBlur stdDeviation="9"/></filter>
         <filter id="vc-glow" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
         <filter id="vc-smudge" filterUnits="userSpaceOnUse" x="-200" y="-200" width="2320" height="1480"><feGaussianBlur stdDeviation="22"/></filter>
         <filter id="vc-chalk" x="-5%" y="-10%" width="110%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="1.2" numOctaves="2" seed="4" result="n"/>
@@ -890,6 +921,7 @@
       if (b === 'dots') s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-dots)" opacity=".5"/>`;
       if (b === 'game') s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-hex)" opacity=".35"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-vig)"/>`;
       if (b === 'riso') s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-grain)" opacity=".05" style="mix-blend-mode:multiply"/>`;   // 米白纸 + 一点纤维
+      if (b === 'counter') s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-counter)"/>`;   // 热敏小票:收银台面(深灰细格)
       if (b === 'solid') s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-grain)" opacity=".06" style="mix-blend-mode:overlay"/>`;
       if (b === 'chalkboard') {   // 黑板:深绿板 + 颗粒 + 板擦擦过的灰白痕;整屏时加木框
         s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c.bg}"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-grain)" opacity=".1" style="mix-blend-mode:screen"/>`
@@ -919,13 +951,14 @@
 
     // 粉笔画风:对外导出的组件统一套粉笔颗粒滤镜(内部互相调用不重复套;章节进度条是频道统一的,不套)
     const ck = fn => S.chalk ? (...a) => { const v = fn(...a); return v ? `<g filter="url(#vc-chalk)">${v}</g>` : v; }
-      : S.riso ? (...a) => { const v = fn(...a); return v ? `<g filter="url(#vc-riso-l)">${v}</g>` : v; } : fn;   // 孔版印刷:组件上的字只套轻颗粒
+      : S.riso ? (...a) => { const v = fn(...a); return v ? `<g filter="url(#vc-riso-l)">${v}</g>` : v; }
+      : S.thermal ? (...a) => { const v = fn(...a); return v ? `<g filter="url(#vc-thermal)">${v}</g>` : v; } : fn;   // 孔版印刷:组件上的字只套轻颗粒;热敏小票:墨迹斑驳
     // 孔版印刷:tone(油墨, 0–1) → 网点填充;ink(油墨, 内容) → 这一版油墨:正片叠底 + 强颗粒 + 套色错位。
     // 同一版里后画的纸色(S.c.paper)会盖掉先画的墨(= 真印刷里「这里不上墨」);跨版叠在一起就是叠印出的第三色。
     const tone = (k, v) => { const col = S.inks ? S.inks[k] : S.c.accent; if (!S.riso || v >= .975) return col; const i = Math.round(clamp(v) * 20); return i <= 0 ? 'none' : `url(#vc-ht-${k}-${i})`; };
     const ink = (k, inner, o = {}) => { const [dx, dy] = (S.misreg && S.misreg[k]) || [0, 0]; const g = o.grain === 'none' ? '' : ` filter="url(#vc-riso-${o.grain === 'light' ? 'l' : 's'})"`; return `<g style="mix-blend-mode:multiply"${g}>${dx || dy ? `<g transform="translate(${dx},${dy})">${inner}</g>` : inner}</g>`; };
     return {
-      S, lang, begin: () => { UID = 0; }, R, layout, width, wrap, fit, dur, markUnder: ['marker', 'block'].includes(S.carriers.mark),   // 这两种批注要压在字下面
+      S, lang, begin: () => { UID = 0; }, R, layout, width, wrap, fit, dur, snap, markUnder: ['marker', 'block'].includes(S.carriers.mark),   // 这两种批注要压在字下面
       panel: ck((x, y, w, h, title = '', dark = false) => frame(x, y, w, h, title, S.carriers.panel || S.carriers.window, dark)),   // 信息面板;画风可单独给 panel 造型
       tone, ink, transition, subtitle, txDur: k => TX_DUR[k], sketch: ck(sketch), hatch: ck(hatch), marker, mascot: ck(mascot),
       text: ck(text), textFit: ck(textFit), mark: ck(mark), stamp: ck(stamp), counter: ck(counter), bubble: ck(bubble), chat: ck(chat), terminal: ck(terminal), chapterBar, panGroup, defs, backdrop,

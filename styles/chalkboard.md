@@ -29,5 +29,6 @@
 [空场景](samples/chalkboard-1-scene.jpg) · [文字角色 R1–R10](samples/chalkboard-2-roles.jpg) · [角色](samples/chalkboard-3-character.jpg)。重出:`node engine/vc/samples.mjs chalkboard`。
 
 ## 踩坑
+- **2026-10-10 修:粉笔字之前一直没生效。** `vc.js` 写 `font-family` 时族名没加引号,「Jason Handwriting 1」里的 `1` 让整条声明作废,浏览器静默换成思源黑体 —— 10-07 入库的三张样张其实是黑体加粉笔颗粒,字体检查却是绿的(它只查「加载到几个」,不查画面用没用上)。加引号后重出了样张,现在才是真正的粉笔手写字;决策者那次看的是旧样张。
 - 板擦雾用模糊滤镜时,滤镜范围要按画面设(`filterUnits="userSpaceOnUse"`):接近水平的线外框很扁,按比例设范围会被切成一条硬边的横带(第一版实测)。
 - 红铅笔那种「正片叠底」批注在深色板上看不见,换成不叠底的粉笔圈。

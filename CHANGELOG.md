@@ -1,5 +1,25 @@
 # Changelog / 更新说明
 
+## 2026-10-10
+
+### New / 新增
+- **Thermal receipt style** (`thermal`, 12th style): off-white thermal paper strips, bitmap text printed line by line (the `print` entrance scans each line top to bottom like a print head), black + red only — the metaphor is a bill. Receipt panels (curl shadow, torn zigzag edge, centered title + dashed rule), a checkout-counter backdrop, an ink-mottle filter on text only (never the paper). Bitmap sizes snap to multiples of 12 (`pixel: 12`); `fit` shrinks one 12px step at a time. Three sample frames, a thumbnail, and frames from a full video in the README. Used for a full video.
+  **热敏小票画风**(`thermal`,第 12 种):米白热敏纸条、点阵字逐行打出(`print` 出场像打印头一样从上往下扫)、只用黑和红,比喻是「账」。小票面板(卷边阴影、撕口锯齿、居中标题 + 虚线)、收银台面底子、只给字的墨迹斑驳(纸面不进滤镜)。点阵字号自动吸附 12 的倍数,`fit` 一档 12px 往下缩。三张样张、缩略图,README 配了整片截图。已做过一部整片。
+- Font: **Fusion Pixel 12** (OFL) registered in `fonts.json`.
+  字体:`fonts.json` 登记缝合像素 Fusion Pixel 12(OFL)。
+
+### Fixes / 修复
+- **Font family names are now quoted** in every SVG `font-family`. Unquoted, a family name with a word starting with a digit (`Fusion Pixel 12`, `Jason Handwriting 1`) makes the whole declaration invalid and the browser silently falls back to a default sans — so the chalkboard and whiteboard styles never actually showed their handwriting font since they were added. Their sample frames and thumbnails are re-rendered.
+  **SVG 的 font-family 族名统一加引号**:族名里有以数字开头的词时,不加引号整条作废、浏览器静默换默认黑体——黑板粉笔、白板手绘从入库起手写字体就没生效。样张与缩略图已重出。
+- **`VC.ready` now checks the font is really drawn**: it compares the width the SVG actually draws with the width the font should give; a mismatch over 2% counts the font as not loaded and the renderer refuses to start. (Loaded ≠ used: the counter used to stay green through the bug above.)
+  **`VC.ready` 现在核对字体真画上了**:比较 SVG 实际画出的宽度和这个字体应有的宽度,差 2% 以上记为没加载,渲染器拒绝开工(「加载到」不等于「画面用上了」,上面那个 bug 期间计数一直是绿的)。
+
+### Tools / 工具
+- `check-echo --all` lists every second where on-screen text repeats the subtitle (default still shows the first 8) — handy while rewriting labels.
+  `check-echo --all` 列出全部「画面抄字幕」的秒(默认仍只列前 8 条),整改时用。
+- README: style count, scene count (deep-sea section) and acceptance count (14) brought up to date.
+  README:画风数、场景数(补上深海剖面)、验收项数(14)改成最新。
+
 ## 2026-10-09
 
 ### New / 新增

@@ -67,6 +67,6 @@ After every episode, write what you learned back into the matching file.
 
 The to-do list (`TODO.md`) is the author's internal record and isn't in the open-source release; the public style roadmap is [styles/ROADMAP.md](styles/ROADMAP.en.md).
 
-- Scenes and styles are separate in the library; older episode pages were "one big HTML per episode" with both mixed together. **Common components are now shared, style-swappable code in `engine/vc/`** (components only know text roles; looks come from `styles.js`, one set for each of 11 styles; thumbnails in [styles/INDEX.md](styles/INDEX.en.md)); one finished video (N10) was built entirely with it.
+- Scenes and styles are separate in the library; older episode pages were "one big HTML per episode" with both mixed together. **Common components are now shared, style-swappable code in `engine/vc/`** (components only know text roles; looks come from `styles.js`, one set for each of 12 styles; thumbnails in [styles/INDEX.md](styles/INDEX.en.md)); one finished video (N10) was built entirely with it.
 - Unverified: the same scene in a different style in a real video; mixing several styles in one cut; two or more characters in one shot; lip-sync to narration; character acting in a finished video.
 - Formats compiled from the AI channel's scripts, handover notes and font tables (story-method-test, howto-guide, product-review, timeline-epic) and scenes (terminal-tech, field-notebook, gallery-wall) haven't been used in a new video yet; gallery-wall's page was deleted, so its font table is entirely inferred.

@@ -1,6 +1,6 @@
 # baitu-video
 
-**Make explainer videos with code — any topic, any of 11 visual styles, narrated, subtitled, rendered and checked by one engine.**
+**Make explainer videos with code — any topic, any of 12 visual styles, narrated, subtitled, rendered and checked by one engine.**
 A [Claude Code](https://claude.com/claude-code) skill: the method (formats, scenes, styles, a design library) plus the engine that turns a script into a finished MP4.
 
 中文说明:[README.zh.md](README.zh.md)
@@ -18,19 +18,23 @@ One page, one timeline: `?lang=en` switches to the English narration, subtitles 
 
 The whole example — both languages, both orientations — runs from [examples/sky-demo](examples/sky-demo/README.md) with no API key.
 
-## Eleven styles, one scene
+## Twelve styles, one scene
 The same scene and content with only the style layer swapped — switching style is one line (`VC.kit('whiteboard')`).
 
-![Eleven styles side by side](styles/thumbs/_all.jpg)
+![Twelve styles side by side](styles/thumbs/_all.jpg)
 
-paper skeuomorphic · game UI · flat geometric · flat illustration · cartoon UI · dark tech · whiteboard · dark math · chalkboard · kinetic type · risograph — details in [styles/INDEX.en.md](styles/INDEX.en.md).
+paper skeuomorphic · game UI · flat geometric · flat illustration · cartoon UI · dark tech · whiteboard · dark math · chalkboard · kinetic type · risograph · thermal receipt — details in [styles/INDEX.en.md](styles/INDEX.en.md).
+
+**New: thermal receipt** (`thermal`) — off-white thermal paper strips, bitmap text printed line by line, black and red only; the metaphor is a bill, made for "looks the same, adds up differently" comparisons. Two frames from a full video made with it (6 minutes, landscape):
+
+![Frames from a full video in the thermal receipt style](styles/samples/thermal-film.jpg)
 
 ## Scene templates
-Eleven ready-made visual worlds, each with its own writing sources, components and signature moves. Below: screenshots from finished videos the author made with them (most are Chinese-language videos):
+Twelve ready-made visual worlds, each with its own writing sources, components and signature moves. Below: screenshots from finished videos the author made with eleven of them (most are Chinese-language videos):
 
-![Eleven scene templates](scenes/thumbs/_all.en.jpg)
+![Scene templates](scenes/thumbs/_all.en.jpg)
 
-case files · 1944 lab desk · data dashboard · strategy game · anatomy diagram · editing desk · info cards · side-scrolling landscape · tech terminal · paper lab notes + screen dialog · paintings and labels — details in [scenes/INDEX.en.md](scenes/INDEX.en.md); simpler demo frames on one neutral topic are in [scenes/demo/](scenes/demo/_all.en.jpg). Narrative formats (true-experiment story, scenario guide, concept lesson, versus, list…) are in [formats/INDEX.en.md](formats/INDEX.en.md).
+case files · 1944 lab desk · data dashboard · strategy game · anatomy diagram · editing desk · info cards · side-scrolling landscape · tech terminal · paper lab notes + screen dialog · paintings and labels · deep-sea section — details in [scenes/INDEX.en.md](scenes/INDEX.en.md); simpler demo frames on one neutral topic are in [scenes/demo/](scenes/demo/_all.en.jpg). Narrative formats (true-experiment story, scenario guide, concept lesson, versus, list…) are in [formats/INDEX.en.md](formats/INDEX.en.md).
 
 ## How it works
 A video is chosen by four questions — **what** (explainer, true story, tutorial, comparison…), **which field**, **what feel**, **which platforms** — and built from four independent layers:
@@ -39,7 +43,7 @@ A video is chosen by four questions — **what** (explainer, true story, tutoria
 |---|---|---|
 | Format | The narrative skeleton (12 formats: true-experiment story, story → method → test, scenario guide, concept lesson, versus, list…) | [formats/](formats/INDEX.en.md) |
 | Scene | The visual world and its writing sources (case files, lab desk, strategy game, terminal, whiteboard…) | [scenes/](scenes/INDEX.en.md) |
-| Style | How it's drawn (11 styles) | [styles/](styles/INDEX.en.md) |
+| Style | How it's drawn (12 styles) | [styles/](styles/INDEX.en.md) |
 | Channel profile | Your channel's own settings: voice, subtitles, platform rules, preferences | [profiles/](profiles/README.md) |
 
 The page is plain HTML/SVG where `render(t)` draws the frame for time `t`; the engine renders it frame by frame with headless Chromium and hands everything else — narration, subtitles, mixing, thumbnails, vertical cut, acceptance — to one CLI.
@@ -87,7 +91,7 @@ node $E subs lesson1                     # subtitles
 node $E fonts lesson1                    # subset fonts for this page
 node $E shot lesson1 3 8                 # look at two frames
 node $E render lesson1 && node $E mix lesson1
-node $E accept lesson1                   # 11 acceptance checks → out/lesson1/acceptance/summary.md
+node $E accept lesson1                   # 14 acceptance checks → out/lesson1/acceptance/summary.md
 ```
 Or just ask Claude Code to "make an explainer video about …" — the skill tells it how. Full walkthrough: [engine/README.en.md](engine/README.en.md) · pipeline: [pipeline.en.md](pipeline.en.md).
 

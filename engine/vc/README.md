@@ -5,7 +5,7 @@
 | 文件 | 管什么 |
 |---|---|
 | `vc.js` | 组件(纯函数,返回 SVG 字符串,1920×1080 坐标,逐帧可复现) |
-| `styles.js` | 画风外观表:纸面拟物 `paper-skeuo`、游戏拟物 `game-ui`、扁平几何 `flat-geometric`、扁平插画 `flat-illustration`、卡通界面 `cartoon-ui`、科技深色 `tech-ui`、白板手绘 `whiteboard`、黑底数学 `dark-math`、黑板粉笔 `chalkboard`、动态文字 `kinetic`、孔版印刷 `risograph`(共 11 种,缩略图见 ../../styles/INDEX.md) |
+| `styles.js` | 画风外观表:纸面拟物 `paper-skeuo`、游戏拟物 `game-ui`、扁平几何 `flat-geometric`、扁平插画 `flat-illustration`、卡通界面 `cartoon-ui`、科技深色 `tech-ui`、白板手绘 `whiteboard`、黑底数学 `dark-math`、黑板粉笔 `chalkboard`、动态文字 `kinetic`、孔版印刷 `risograph`、热敏小票 `thermal`(共 12 种,缩略图见 ../../styles/INDEX.md) |
 | `demo.html` | 演示页:每个组件一行,可切换画风、中英文、时间轴 |
 | `thumbs.html` / `thumbs.mjs` | 画风缩略图:同一场景只换画风;`node engine/vc/thumbs.mjs` → `.claude/skills/baitu-video/styles/thumbs/` |
 | `transitions.html` / `measure-tx.mjs` | 转场演示(morph、zoom-through、slide-push、blur-push)与量转场(带线性淡化阳性对照):`node engine/vc/measure-tx.mjs paper-skeuo` |
@@ -52,6 +52,7 @@ function render(t) {
 | 转场 | `kit.transition(id, t, t0, A, B, 参数)`;id = `roller`(滚筒刮过:前沿左边新、右边旧,`{band,x0,x1}`)/ `slide-push` / `blur-push` / `zoom-through`(`{cx,cy,r0}`)/ `morph`(`{from,to}` 路径 + 颜色)/ `fade` | — | slide-push 的领路竖条取强调色;zoom-through 的开口底子取画风底 |
 | 油墨分版(孔版印刷) | `kit.ink('b'\|'p', 内容, {grain:'strong'\|'light'\|'none'})`;网点填充 `kit.tone('b', 0–1)`;页面 `<defs>${kit.defs({frame})}</defs>`(颗粒按帧号换位) | — | 只在 `riso` 画风里有网点与颗粒;其他画风里 `tone` 返回实色、`ink` 只做正片叠底 |
 | 形变 | `VC.morphPath(dA, dB, k)`、`VC.shape.rect / circle` | — | 任意两条闭合路径插值 |
+| 发光的线 | `kit.glow(路径 d 或数组, t, t0, 时长, {col, w, k, hot, tip})` | — | 宽辉光 + 中辉光 + 线 + 可选白芯;时长 > 0 时按长度画出,笔尖带一颗亮点。星夜光点的线稿(食物、天平、数轴、山脊)都用它;带 `data-over` |
 
 ## 规矩
 - **数字只在真实值之间变化**:`counter` 的每个 key 都必须是事实表里的值;按位滚动、缓出无过冲,任何一帧都不会整串出现 key 以外的数。
@@ -63,7 +64,7 @@ function render(t) {
 - 旧片(N1–N9、A1–A6)没有改用这套组件,仍是各自的大 HTML。
 - **长度不固定的字一律用 `textFit`**:标题、封面字、从数据来的标签、竖版里的任何一句。它按真实字宽缩字号(默认最多两行、最小 0.6 倍),`ok=false` 会在控制台告警——这时改字或改版面,别硬塞。
 - **折行规矩(`wrap` / `fit` / 气泡 / 对话框共用)**:中文按词断(浏览器分词 `Intl.Segmenter`),「第 114 卷」这类「第 + 数字 + 量词」不拆;句读和右引号不放行首,左引号不放行尾。两行时在词边界里挑断点:两行接近、第一行不短于第二行、优先断在逗号 / 冒号 / 空格后、不断在引号括号里。
-- **压测页 `fit-test.html`**:一组「不友好输入」(超长标题、中英混排、带标点长句、长数字),`?style=&w=&h=` 换画风画幅;对照开关 `&bad`(不用 fit,应报出画)、`&overlap`(故意叠字,应报叠字)。改了排版相关代码,11 种画风 × 横竖屏都跑一遍 `engine/tools/check-text-bounds.mjs`,全 0 才算过(2026-10-07 实测全 0)。
+- **压测页 `fit-test.html`**:一组「不友好输入」(超长标题、中英混排、带标点长句、长数字),`?style=&w=&h=` 换画风画幅;对照开关 `&bad`(不用 fit,应报出画)、`&overlap`(故意叠字,应报叠字)。改了排版相关代码,12 种画风 × 横竖屏都跑一遍 `engine/tools/check-text-bounds.mjs`,全 0 才算过(2026-10-07 实测全 0;2026-10-10 加热敏小票后 24 组全 0)。**阳性对照要真打到这个画风上**:某画风字号偏小时 `&bad` 可能恰好不出画(热敏小票 R1 72px 就是),临时把 `&bad` 的字号提到 96 再跑。
 
 ## 正片实战(第一部用这套组件的正片,2026-10-07)
 第一次用这套组件做整片(12 个镜头,paper-skeuo 外观)。可以照着抄的做法:

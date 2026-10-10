@@ -208,6 +208,15 @@
       "zip": "ZhuqueFangsong-Regular.ttf",
       "licenseUrl": "https://raw.githubusercontent.com/TrionesType/zhuque/main/LICENSE.txt",
       "_note": "中文打字机 · 仿宋印刷(档案打字稿、老表格)。许可证没有声明保留名(2026-10-09 读过 LICENSE.txt)"
+    },
+    {
+      "family": "Fusion Pixel 12",
+      "file": "fusion-pixel/fusion-pixel-12px-proportional-zh_hans.ttf",
+      "license": "OFL-1.1",
+      "url": "https://github.com/TakWolf/fusion-pixel-font/releases/download/2026.09.25/fusion-pixel-font-12px-proportional-ttf-v2026.09.25.zip",
+      "zip": "fusion-pixel-12px-proportional-zh_hans.ttf",
+      "licenseUrl": "https://raw.githubusercontent.com/TakWolf/fusion-pixel-font/master/LICENSE-OFL",
+      "_note": "点阵字(热敏小票 thermal):字号必须是 12 的整数倍(24/36/48/72/96…)才不糊,画风里 pixel:12 自动吸附。压缩包里另有 ark-pixel / cubic-11 / galmuri 三份子许可,均无保留字体名(2026-10-10 读过)"
     }
   ]
 }

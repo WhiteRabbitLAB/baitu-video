@@ -306,4 +306,37 @@
       bar: { font: H, accent: c.pink, track: c.ink, text: c.ink, ink: c.paper, shade: 0 },
     };
   }
+  // ---------------- 热敏小票 Thermal receipt:收银台面 + 米白热敏纸条,点阵字逐行打出,黑 + 红两色(双色热敏纸) ----------------
+  // 第 13 期定(owner 2026-10-10 从三张新画风静帧里选 A)。比喻:「账单」——打印机打出来的是机器记的账,人在上面用圆珠笔写、用红章盖。
+  // 规矩:点阵字字号只能是 12 的整数倍(pixel:12,kit 自动吸附;24/36/48/72/96/144);组件上的字套墨迹斑驳(thermal:true);
+  //   颜色即含义:红只给「身体的账 / 要警惕的量 / 印章」,其余都是黑。
+  //   画风默认是浅色台面(底子与小票同一明暗,通用组件放哪都看得清);深色收银台是场景的选择:页面自己铺深色台面,台面上的字传 c.paper。
+  {
+    const c = {
+      bg: '#D9D3C6', bg2: '#D5CFC1', paper: '#F6F3EC', ink: '#1D1C1A', text: '#1D1C1A', muted: '#6D6A64', accent: '#C8312B', red: '#C8312B',
+      desk: '#2A2B2E', desk2: '#2D2E31',   // 场景用的深色收银台(第 13 期)
+      pen: '#24324C', note: '#F6F3EC', tape: '#E9DDB4', line: '#1D1C1A', card: '#F6F3EC', cardD: '#1D1C1A', title: '#F6F3EC',
+      bezel: '#18191B', screen: '#0F1F1B', scrTxt: '#8FB8A8', scrHi: '#6FD6A8', scrGrid: '#24443B', chatU: '#E9E4D8', chatA: '#F6F3EC', chatTxt: '#1D1C1A',
+      term: '#18191B', termTxt: '#F6F3EC', termHi: '#C8312B', surface: '#F6F3EC', edge: '#1D1C1A', lw: 3,
+    };
+    const P = 'Fusion Pixel 12:400';
+    VC.styles['thermal'] = {
+      id: 'thermal', name: '热敏小票', nameEn: 'Thermal receipt', c, vig: .2, thermal: true, pixel: 12,
+      roles: {
+        R1: { zh: P, en: P, size: 72, fill: c.ink, entrance: 'print', printDur: .35 },
+        R2: { zh: P, en: P, size: 36, fill: c.ink, entrance: 'print' },
+        R3: { zh: P, en: P, size: 24, fill: c.ink, entrance: 'print', printDur: .2 },
+        R4: { zh: P, en: P, size: 96, fill: c.ink },
+        R5: { zh: 'Noto Serif SC:500', en: 'Noto Serif SC:500', size: 36, fill: c.ink, entrance: 'fadeUp' },   // 期刊 / 新闻稿原文:复印件上的印刷体,不是小票打的
+        R6: { zh: 'Zhi Mang Xing:400', en: 'Caveat Brush:400', size: 44, fill: c.red, entrance: 'hand', cps: 6, blend: 'multiply' },   // 红笔在小票上圈改
+        R7: { zh: 'Xiaolai:400', en: 'Kalam:400', size: 36, fill: c.pen, entrance: 'static', zhUI: 'Noto Sans SC:500', enUI: 'Noto Sans SC:500' },
+        R8: { zh: 'Xiaolai:400', en: 'Kalam:400', size: 44, fill: c.pen, entrance: 'hand', cps: 8, cpsEn: 18, jit: 1 },   // 圆珠笔手记
+        R9: { zh: 'Noto Sans SC:900', en: 'Noto Sans SC:900', size: 44, fill: c.red },   // 红色印章
+        R10: { zh: P, en: P, size: 24, fill: c.muted, entrance: 'print', printDur: .2 },
+      },
+      mono: { zh: P, en: P },
+      carriers: { backdrop: 'counter', mark: 'pencil', stamp: 'ink', counter: 'print', bubble: 'note', window: 'bezel', panel: 'receipt' },
+      bar: { font: 'Noto Sans SC:900', accent: c.red, track: c.ink, text: c.ink, ink: c.paper, shade: 0 },
+    };
+  }
 })();

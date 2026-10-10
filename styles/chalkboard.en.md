@@ -31,5 +31,6 @@ Samples: info cards. Suggested: concept lessons, teacher-style mechanism explain
 [Empty scene](samples/chalkboard-1-scene.jpg) · [Text roles R1–R10](samples/chalkboard-2-roles.jpg) · [Character](samples/chalkboard-3-character.jpg). Regenerate: `node engine/vc/samples.mjs chalkboard`.
 
 ## Pitfalls
+- **Fixed 2026-10-10: the chalk font never actually rendered.** `vc.js` wrote `font-family` without quoting the family name; the `1` in "Jason Handwriting 1" invalidated the whole declaration and the browser silently fell back to Noto Sans SC. The three samples from 2026-10-07 were really a sans with chalk grain, while the font check stayed green (it only checks how many faces loaded, not whether the drawing uses them). Names are quoted now and the samples were re-rendered with real chalk handwriting; the decision-maker had reviewed the old samples.
 - When the eraser haze uses a blur filter, set the filter region in user space (`filterUnits="userSpaceOnUse"`): a nearly horizontal line has a very flat bounding box, and a proportional region clips it into a hard-edged band (seen in the first version).
 - Red-pencil "multiply" annotations disappear on a dark board; switch to a non-multiplied chalk circle.

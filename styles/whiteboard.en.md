@@ -45,5 +45,6 @@ Samples: info cards (thumbs). Suggested: concept lessons (../formats/concept-les
 [Empty scene](samples/whiteboard-1-scene.jpg) · [Text roles R1–R10](samples/whiteboard-2-roles.jpg) · [Character (half drawn / finished)](samples/whiteboard-3-character.jpg). Regenerate: `node engine/vc/samples.mjs whiteboard`.
 
 ## Pitfalls
+- **Fixed 2026-10-10: the marker handwriting never actually rendered.** Same bug as chalkboard: `vc.js` didn't quote the family name, the `1` in "Jason Handwriting 1" invalidated the declaration and the browser silently used Noto Sans SC; the 2026-10-07 samples were really a sans. Names are quoted and samples re-rendered; `VC.ready` now compares the drawn width with the width that font should give, and reports the font as unused (the renderer refuses to start) when they differ.
 - Erase marks that are too strong look dirty (the first version at 4.5% opacity was rejected; now 2.2%).
 - The annotation color needs its own setting (`c.mark` = red), or it follows the accent color and becomes a blue circle.

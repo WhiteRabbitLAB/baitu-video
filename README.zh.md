@@ -1,6 +1,6 @@
 # baitu-video
 
-**用代码做讲解视频:任何话题、11 种画风,配音、字幕、渲染、验收由一个引擎跑完。**
+**用代码做讲解视频:任何话题、12 种画风,配音、字幕、渲染、验收由一个引擎跑完。**
 一个 [Claude Code](https://claude.com/claude-code) skill:方法(片型、场景、画风、设计库)加上把稿子变成成片 MP4 的引擎。
 
 English: [README.md](README.md)
@@ -18,19 +18,23 @@ English: [README.md](README.md)
 
 整个示例(两种语言、两种画幅)在 [examples/sky-demo](examples/sky-demo/README.md),不要任何密钥就能跑。
 
-## 十一种画风,同一个场景
+## 十二种画风,同一个场景
 同一个场景、同一段内容,只换画风层——换画风只改一行(`VC.kit('whiteboard')`)。
 
-![十一种画风并排](styles/thumbs/_all.jpg)
+![十二种画风并排](styles/thumbs/_all.jpg)
 
-纸面拟物 · 游戏界面 · 扁平几何 · 扁平插画 · 卡通界面 · 科技深色 · 白板手绘 · 黑底数学 · 黑板粉笔 · 动态文字 · 孔版印刷 —— 详见 [styles/INDEX.md](styles/INDEX.md)。
+纸面拟物 · 游戏界面 · 扁平几何 · 扁平插画 · 卡通界面 · 科技深色 · 白板手绘 · 黑底数学 · 黑板粉笔 · 动态文字 · 孔版印刷 · 热敏小票 —— 详见 [styles/INDEX.md](styles/INDEX.md)。
+
+**新画风:热敏小票**(`thermal`)—— 米白热敏纸条、点阵字一行一行打出来、只用黑和红两色,比喻是「账」:适合「表面一样、算下来不一样」的对比题。下图是用它做的一部整片(6 分钟横版)里的两帧:
+
+![热敏小票画风的成片截图](styles/samples/thermal-film.jpg)
 
 ## 场景模板
-11 个现成的画面世界,各有自己的书写来源、组件和签名动作。下图是作者用它们做的已发布成片截图:
+12 个现成的画面世界,各有自己的书写来源、组件和签名动作。下图是作者用其中 11 个做的成片截图:
 
-![11 个场景模板](scenes/thumbs/_all.jpg)
+![场景模板](scenes/thumbs/_all.jpg)
 
-档案案卷 · 1944 实验桌 · 数据看板 · 策略游戏 · 解剖图解 · 剪辑台 · 信息卡片 · 横版风景 · 科技终端 · 纸面记录 + 屏幕对话框 · 画作与展签 —— 详见 [scenes/INDEX.md](scenes/INDEX.md);同一个中性题目的简化示范帧在 [scenes/demo/](scenes/demo/_all.jpg)。叙事片型(真实实验纪实、场景攻略、概念教学、A vs B、清单……)见 [formats/INDEX.md](formats/INDEX.md)。
+档案案卷 · 1944 实验桌 · 数据看板 · 策略游戏 · 解剖图解 · 剪辑台 · 信息卡片 · 横版风景 · 科技终端 · 纸面记录 + 屏幕对话框 · 画作与展签 · 深海剖面 —— 详见 [scenes/INDEX.md](scenes/INDEX.md);同一个中性题目的简化示范帧在 [scenes/demo/](scenes/demo/_all.jpg)。叙事片型(真实实验纪实、场景攻略、概念教学、A vs B、清单……)见 [formats/INDEX.md](formats/INDEX.md)。
 
 ## 怎么运作
 做一期先回答四个问题——**做什么**(科普、故事纪实、教程、对比评测……)、**什么行业**、**什么感觉**、**发哪些平台**——再由四个互相独立的层拼起来:
@@ -39,7 +43,7 @@ English: [README.md](README.md)
 |---|---|---|
 | 片型 | 叙事骨架(12 种:真实实验纪实、故事引出方法 + 实测、场景攻略、概念教学、A vs B、清单……) | [formats/](formats/INDEX.md) |
 | 场景 | 画面是个什么世界、里面谁在用什么写字(档案、实验桌、策略游戏、终端、白板……) | [scenes/](scenes/INDEX.md) |
-| 画风 | 怎么画(11 种) | [styles/](styles/INDEX.md) |
+| 画风 | 怎么画(12 种) | [styles/](styles/INDEX.md) |
 | 频道配置 | 只属于你频道的设定:配音、字幕、平台规矩、偏好 | [profiles/](profiles/README.md) |
 
 画面就是普通的 HTML/SVG 页面,`render(t)` 画出第 t 秒的那一帧;引擎用无头 Chromium 逐帧渲染,配音、字幕、混音、封面、竖版、验收都交给同一个命令行。
@@ -87,7 +91,7 @@ node $E subs lesson1                     # 字幕
 node $E fonts lesson1                    # 按页面切字体
 node $E shot lesson1 3 8                 # 截两帧看看
 node $E render lesson1 && node $E mix lesson1
-node $E accept lesson1                   # 11 项验收 → out/lesson1/acceptance/summary.md
+node $E accept lesson1                   # 14 项验收 → out/lesson1/acceptance/summary.md
 ```
 也可以直接跟 Claude Code 说「做一期讲 …… 的讲解视频」,skill 会告诉它怎么做。完整步骤:[engine/README.md](engine/README.md) · 流程:[pipeline.md](pipeline.md)。
 

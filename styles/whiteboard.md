@@ -43,5 +43,6 @@
 [空场景](samples/whiteboard-1-scene.jpg) · [文字角色 R1–R10](samples/whiteboard-2-roles.jpg) · [角色(画到一半 / 画完)](samples/whiteboard-3-character.jpg)。重出:`node engine/vc/samples.mjs whiteboard`。
 
 ## 踩坑
+- **2026-10-10 修:马克笔手写字之前一直没生效。** 和黑板粉笔同一个 bug:`vc.js` 写 `font-family` 时族名没加引号,「Jason Handwriting 1」的 `1` 让整条声明作废,浏览器静默换成思源黑体;10-07 的样张其实是黑体。已加引号并重出样张;`VC.ready` 现在会比对「画出来的宽度」和「这个字体应有的宽度」,对不上就判字体没用上、渲染器拒绝开工。
 - 擦痕太浓会像脏(第一版 4.5% 不透明度被自己否掉,改 2.2%)。
 - 批注默认色要单独设(`c.mark` = 红),否则跟着强调色变成蓝圈。
