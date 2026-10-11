@@ -9,8 +9,11 @@
 @font-face{font-family:'Kalam';src:url(./fonts/vc-Kalam-400.woff2) format('woff2');font-weight:400;font-display:block}
 @font-face{font-family:'LXGW Marker Gothic';src:url(./fonts/vc-LXGWMarkerGothic-400.woff2) format('woff2');font-weight:400;font-display:block}
 @font-face{font-family:'Ma Shan Zheng';src:url(./fonts/vc-MaShanZheng-400.woff2) format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'Noto Sans SC';src:url(./fonts/vc-NotoSansSC-300.woff2) format('woff2');font-weight:300;font-display:block}
+@font-face{font-family:'Noto Sans SC';src:url(./fonts/vc-NotoSansSC-400.woff2) format('woff2');font-weight:400;font-display:block}
 @font-face{font-family:'Noto Sans SC';src:url(./fonts/vc-NotoSansSC-500.woff2) format('woff2');font-weight:500;font-display:block}
 @font-face{font-family:'Noto Sans SC';src:url(./fonts/vc-NotoSansSC-900.woff2) format('woff2');font-weight:900;font-display:block}
+@font-face{font-family:'Noto Serif SC';src:url(./fonts/vc-NotoSerifSC-300.woff2) format('woff2');font-weight:300;font-display:block}
 @font-face{font-family:'Noto Serif SC';src:url(./fonts/vc-NotoSerifSC-500.woff2) format('woff2');font-weight:500;font-display:block}
 @font-face{font-family:'Noto Serif SC';src:url(./fonts/vc-NotoSerifSC-900.woff2) format('woff2');font-weight:900;font-display:block}
 @font-face{font-family:'Quicksand';src:url(./fonts/vc-Quicksand-700.woff2) format('woff2');font-weight:700;font-display:block}

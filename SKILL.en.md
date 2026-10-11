@@ -48,6 +48,7 @@ The commands, shared visual components and check tools all live in [engine/](eng
 | Writing the page, calling components (hand-drawn lines, hatching, stamps, bubbles, transitions…) | The component table in [engine/vc/README.en.md](engine/vc/README.en.md) + the demo page `engine/vc/demo.html`; composition and "don't repeat the subtitles on screen" are in [principles.md](principles.en.md) § Visuals. No need to read the `vc.js` source |
 | Joining shots and poses | [transitions.md](transitions.en.md) + the camera & transition library [design/camera-transitions.md](design/camera-transitions.en.md) (every parameter has a reference) |
 | Character acting | [characters/act-pipeline.md](characters/act-pipeline.en.md) |
+| Using existing live-action footage (public domain / commercially licensed) layered with animation | [design/live-footage.md](design/live-footage.en.md) |
 | Before delivery | [acceptance.md](acceptance.en.md) |
 
 ## Room to grow: every library can be extended
@@ -67,6 +68,6 @@ After every episode, write what you learned back into the matching file.
 
 The to-do list (`TODO.md`) is the author's internal record and isn't in the open-source release; the public style roadmap is [styles/ROADMAP.md](styles/ROADMAP.en.md).
 
-- Scenes and styles are separate in the library; older episode pages were "one big HTML per episode" with both mixed together. **Common components are now shared, style-swappable code in `engine/vc/`** (components only know text roles; looks come from `styles.js`, one set for each of 12 styles; thumbnails in [styles/INDEX.md](styles/INDEX.en.md)); one finished video (N10) was built entirely with it.
+- Scenes and styles are separate in the library; older episode pages were "one big HTML per episode" with both mixed together. **Common components are now shared, style-swappable code in `engine/vc/`** (components only know text roles; looks come from `styles.js`, one set for each of 14 styles; thumbnails in [styles/INDEX.md](styles/INDEX.en.md)); one finished video (N10) was built entirely with it.
 - Unverified: the same scene in a different style in a real video; mixing several styles in one cut; two or more characters in one shot; lip-sync to narration; character acting in a finished video.
 - Formats compiled from the AI channel's scripts, handover notes and font tables (story-method-test, howto-guide, product-review, timeline-epic) and scenes (terminal-tech, field-notebook, gallery-wall) haven't been used in a new video yet; gallery-wall's page was deleted, so its font table is entirely inferred.

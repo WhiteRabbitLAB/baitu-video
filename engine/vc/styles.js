@@ -339,4 +339,74 @@
       bar: { font: 'Noto Sans SC:900', accent: c.red, track: c.ink, text: c.ink, ink: c.paper, shade: 0 },
     };
   }
+  // ---------------- 星夜光点 Starlight:近黑星空底、发光光点、冷暖两色细线、细衬线字 + 中英双语 ----------------
+  // 参考:抖音「Vibe 知识大赏|信息论」(2026-09,owner 2026-10-10 让拆解;画面逐帧看过,只学做法不搬素材)。
+  // 颜色即含义:暖金只给「这期的核心量 / 答案 / 惊奇」,冷蓝给结构(数轴、示意线稿),红只给噪声 / 要警惕的量,其余是暖白。
+  // 字:中文思源黑体 300(大字)/ 400(小字,300 在 30px 以下太虚),整组带霓虹辉光(neon:true ⇒ 组件统一套 vc-neon);
+  //   第一版用思源宋体细体,owner 2026-10-10 看第二版样片:「上边配的字体有点不搭」—— 宋体的书卷气和霓虹线稿是两套东西;
+  //   四种字体并排对比后定了「思源黑体细体 + 霓虹辉光」(笔画粗细一致,和发光线稿最接近)。
+  //   英文与数字也走思源黑体(和标签同一套;衬线数字混在黑体里像两套字)。原文 R5 仍用思源宋体 300 + STIX(印刷原件)。
+  //   Cormorant 斜体只给页面上的英文副字幕整行用:它的数字是悬挂式的,混进中文句子里像下标(样张实测)。
+  // 出场方式 glow:从虚到实、从暗到亮(光聚起来),不弹不甩。
+  {
+    const c = {
+      bg: '#05070D', bg2: '#0E1830', ink: '#05070D', text: '#EEEAE2', muted: '#8C95A8', line: '#56769E', cool: '#86B6E6', star: '#D6E4FF',
+      accent: '#F2C27A', glow: '#F2C27A', warm: '#FFB45E', mark: '#F2C27A', marker: '#F2C27A', red: '#E8646E',
+      card: '#0A1020', cardD: '#121C33', edge: '#2B3C5A', surface: '#0A1020', title: '#EEEAE2', bubble: '#05070D',
+      chatU: '#13213A', chatA: '#0A1020', chatTxt: '#EEEAE2', term: '#03050A', termTxt: '#D8DCE6', termHi: '#F2C27A', lw: 2,
+    };
+    const L = 'Noto Sans SC:300', M = 'Noto Sans SC:400', Q = 'Noto Serif SC:300', X = 'STIX Two Text:400';
+    VC.styles['starlight'] = {
+      id: 'starlight', name: '星夜光点', nameEn: 'Starlight', c, vig: .55, neon: true,
+      roles: {
+        R1: { zh: L, en: L, size: 96, fill: c.text, entrance: 'glow', glowDur: 1.1 },
+        R2: { zh: L, en: L, size: 56, fill: c.text, entrance: 'glow' },
+        R3: { zh: M, en: M, size: 30, fill: c.muted, entrance: 'fadeUp' },
+        R4: { zh: L, en: L, size: 150, fill: c.text },
+        R5: { zh: Q, en: X, size: 42, fill: c.text, entrance: 'glow' },   // 原文 / 引语:印刷原件用宋体
+        R6: { zh: M, en: M, size: 40, fill: c.accent, entrance: 'glow' },
+        R7: { zh: M, en: M, size: 34, fill: c.text, entrance: 'static' },
+        R8: { zh: M, en: M, size: 38, fill: c.cool, entrance: 'glow' },   // 本画风没有手写层:手记改成冷蓝细字亮起
+        R9: { zh: M, en: M, size: 34, fill: c.accent },
+        R10: { zh: M, en: M, size: 22, fill: c.muted, entrance: 'fadeUp' },
+      },
+      mono: { zh: 'Noto Sans SC:500', en: 'JetBrains Mono:400' },
+      carriers: { backdrop: 'starfield', mark: 'glow', stamp: 'chip', counter: 'glow', bubble: 'line', window: 'line' },
+      bar: { font: 'Noto Sans SC:900', accent: c.accent, track: '#8C95A8', text: '#fff', ink: '#000', shade: .3 },
+    };
+  }
+  // ---------------- 体育转播 Broadcast:夜场看台 + 电视包装条(比分板、裁判条、场边 LED 广告板),斜黑体队名 + Anton 比分 ----------------
+  // 第 14 期定(owner 2026-10-11 从六张新画风静帧里选 F「对抗赛」)。比喻:「比赛」—— 两组 = 两支队,结果 = 比分,统计判定 = 裁判条,资助方 = 场边赞助广告。
+  // 颜色即含义:两队各一种颜色(橙 / 蓝,页面传 c.home / c.away),黄只给「转播包装」(时间标签、裁判、赞助板),其余白。
+  // 字:中文思源黑体 900(电视包装字);比分与大数字 Anton(窄体粗);说明小字思源黑体 500。
+  // 出场方式 wipe:被遮罩从左擦出来 + 往右滑 24px 落定(角标、下三分之一条);不弹不甩。
+  // 比喻的分寸(本画风的硬规矩):统计上「不显著」只能写「判不出谁赢 / 不显著」,不写「打平 / 平局」——不显著 ≠ 证明一样。
+  {
+    const c = {
+      bg: '#070B14', bg2: '#0D1B33', ink: '#070B14', text: '#FFFFFF', muted: '#AAB6CC', accent: '#FFD23F', glow: '#FFD23F', mark: '#FFD23F', marker: '#FFD23F',
+      home: '#FF7A2F', away: '#3D8BFF', grass: '#2C7A3A', grass2: '#1F5C2B', navy: '#0D1B33', navy2: '#14284A', led: '#05070B', red: '#E5484D',
+      surface: '#0D1B33', edge: '#2A3B5E', card: '#0D1B33', cardD: '#14284A', title: '#FFFFFF', win: '#0D1B33', dot: '#2A3B5E', line: '#2A3B5E',
+      slabTxt: '#0D1B33', chatU: '#14284A', chatA: '#0D1B33', chatTxt: '#FFFFFF', term: '#05070B', termTxt: '#E8EEF9', termHi: '#FFD23F', lw: 3,
+      crowd: ['#C94B4B', '#E8E2D0', '#4B6FC9', '#D9A441'],
+    };
+    const H = 'Noto Sans SC:900', B = 'Noto Sans SC:500', A = 'Anton:400';
+    VC.styles['broadcast'] = {
+      id: 'broadcast', name: '体育转播', nameEn: 'Sports broadcast', c, vig: .45,
+      roles: {
+        R1: { zh: H, en: H, size: 88, fill: c.text, entrance: 'wipe' },
+        R2: { zh: H, en: H, size: 52, fill: c.text, entrance: 'wipe' },
+        R3: { zh: B, en: B, size: 30, fill: c.muted, entrance: 'wipe', wipeDur: .3 },
+        R4: { zh: H, en: A, size: 160, fill: c.text },
+        R5: { zh: 'Noto Serif SC:500', en: 'Noto Serif SC:500', size: 40, fill: c.text, entrance: 'fadeUp' },   // 论文原文:印刷体,不是转播包装
+        R6: { zh: H, en: H, size: 44, fill: c.accent, entrance: 'wipe' },
+        R7: { zh: B, en: B, size: 36, fill: c.text, entrance: 'static' },
+        R8: { zh: B, en: B, size: 40, fill: c.accent, entrance: 'wipe' },   // 本画风没有手写层:解说的补充字用黄色小字擦入
+        R9: { zh: H, en: H, size: 44, fill: c.navy },
+        R10: { zh: B, en: B, size: 24, fill: c.muted, entrance: 'wipe', wipeDur: .3 },
+      },
+      mono: { zh: B, en: 'JetBrains Mono:400' },
+      carriers: { backdrop: 'stadium', mark: 'box', stamp: 'slab', counter: 'punch', bubble: 'card', window: 'win', panel: 'flat' },
+      bar: { font: H, accent: c.accent, track: '#8C9BB8', text: '#fff', ink: '#000', shade: .3 },
+    };
+  }
 })();

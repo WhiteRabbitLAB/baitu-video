@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>观众动手组件</title>
+<!-- 「观众动手」五件套 + 倒数 + 光点 / 飘尘,一屏六格。?style=<id>(默认 starlight)&t=秒(默认 99 = 全部揭晓;取中途看「还没揭晓」的样子,如 t=3)。
+     每格的时间各自从 0 起算;写镜头时照这里抄调用方式。 -->
+<link rel="stylesheet" href="fonts.css">
+<style>body{margin:0;background:#222}svg{display:block;width:1920px;height:1080px}</style>
+</head>
+<body>
+<svg id="stage" width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="vc.js"></script>
+<script src="styles.js"></script>
+<script>
+const Q = new URLSearchParams(location.search), STYLE = Q.get('style') || 'starlight', T0 = +(Q.get('t') ?? 99);
+const kit = VC.kit(STYLE), c = kit.S.c, LBL = 'Noto Sans SC:500';
+const CELLS = [[60, 110], [680, 110], [1300, 110], [60, 600], [680, 600], [1300, 600]], CW = 560, CH = 430;
+const head = (i, s) => `<text x="${CELLS[i][0]}" y="${CELLS[i][1] - 24}" ${VC.fontAttr(LBL)} font-size="22" fill="${c.muted}">${VC.esc(s)}</text>`;
+function frame(t) {
+  const o = [kit.backdrop(0, 0, 1920, 1080), kit.particles(t, { n: 50 })];
+  o.push(`<text x="60" y="52" ${VC.fontAttr('Noto Sans SC:900')} font-size="28" fill="${c.text || c.ink}">${VC.esc(kit.S.name)} · 观众动手</text>`);
+  // 1 二选一 + 倒数:先出两个框,倒数 3 秒,再揭晓
+  { const [x, y] = CELLS[0]; o.push(head(0, '1 二选一 choice + 倒数 countdown'));
+    o.push(kit.choice([{ x, y, w: 260, h: 300, label: '一碗粥' }, { x: x + 300, y, w: 260, h: 300, label: '两个蛋' }], t, { t0: .2, tReveal: 4.4, pick: 1, labelSize: 34 }));
+    o.push(kit.countdown(x + 280, y + 380, t, 1, { n: 3, r: 34 })); }
+  // 2 数轴猜数:观众先猜(? 落在 300),光点从 0 滑到答案 508
+  { const [x, y] = CELLS[1]; o.push(head(1, '2 数轴猜数 numberLine'));
+    o.push(kit.numberLine(x + 20, y + 250, CW - 80, 0, 1000, t, { t0: .2, ticks: [0, 250, 500, 750, 1000], guesses: [{ v: 300, t: 1.4 }], answer: { v: 508, from: 0, t: 2.4 }, answerSize: 96, unit: '千卡' })); }
+  // 3 填空:空闪着,观众先接,再落下答案
+  { const [x, y] = CELLS[2]; o.push(head(2, '3 填空 blank'));
+    o.push(kit.blank('一日三', '餐', x + CW / 2, y + 230, t, { t0: .2, tFill: 2.6, size: 72 })); }
+  // 4 乱序字:先读乱的,再归位
+  { const [x, y] = CELLS[3]; o.push(head(3, '4 乱序字 scramble'));
+    o.push(kit.scramble('汉字的序顺不影响阅读', '汉字的顺序不影响阅读', x + CW / 2, y + 230, t, { t0: .2, tFix: 2.4, size: 44 })); }
+  // 5 遮挡:盖住几个字,观众照样补全,再揭开
+  { const [x, y] = CELLS[4]; o.push(head(4, '5 遮挡 mask'));
+    o.push(kit.mask('下一站是终点站请带好随身物品', [0, 4, 10], x + CW / 2, y + 230, t, { t0: .2, tReveal: 2.6, size: 36 })); }
+  // 6 光点 + 飘尘
+  { const [x, y] = CELLS[5]; o.push(head(5, '6 光点 orb · 飘尘 particles'));
+    o.push(kit.orb(x + 160, y + 210, 10, { k: Math.min(1, t / .6) }), kit.orb(x + 400, y + 210, 10, { k: Math.min(1, t / .6), col: c.cool || c.accent })); }
+  return o.join('');
+}
+const stage = document.getElementById('stage');
+window.renderAt = t => { kit.begin(); stage.innerHTML = `<defs>${kit.defs()}</defs>${frame(t)}`; };
+const ALL = ['观众动手二选一倒数数轴猜数填空乱序字遮挡光点飘尘', '一碗粥两个蛋千卡?', '一日三餐', '汉字的顺序不影响阅读', '下一站是终点站请带好随身物品', kit.S.name];
+window.quizReady = VC.ready(kit, ALL, [LBL, 'Noto Sans SC:900']).then(r => { window.renderAt(T0); return r; });
+</script>
+</body>
+</html>

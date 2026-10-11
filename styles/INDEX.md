@@ -17,11 +17,13 @@
 | ![kinetic](thumbs/kinetic.jpg) | [kinetic](kinetic.md) | 动态文字 | 字就是演员:关键词甩入砸下、钉住;黄 + 红橙 | 样张(信息卡片) | 能 | 样张(待决策者看) |
 | ![risograph](thumbs/risograph.jpg) | [risograph](risograph.md) | 孔版印刷 | 蓝 + 荧光粉两种油墨叠印、网点、颗粒、印刷白边;颜色即含义 | 深海剖面、新闻要点卡、标签特写、点阵图 | 能 | 整片 ×1(2026-10-09) |
 | ![thermal](thumbs/thermal.jpg) | [thermal](thermal.md) | 热敏小票 | 米白热敏纸条、点阵字逐行打出、黑 + 红两色;比喻是「账」 | 收银台小票、清单、账单对比 | 能 | 整片 ×1(2026-10-10) |
+| ![starlight](thumbs/starlight.jpg) | [starlight](starlight.md) | 星夜光点 | 近黑星空、发光光点当主角、冷蓝细线 + 暖金答案、细黑体霓虹字 + 中英双语;配「观众动手」先猜再揭晓 | 二选一 + 数轴猜数(样片) | 能 | 样张 + 样片(2026-10-10,待决策者看) |
+| ![broadcast](thumbs/broadcast.jpg) | [broadcast](broadcast.md) | 体育转播 | 夜场看台 + 电视包装条:比分板、裁判条、场边 LED 赞助板;两队各一色,黄只给包装;比喻是「比赛」 | 终场比分、赛程条、赛后复核、其他赛区 | 能 | 整片 ×1(2026-10-11) |
 
 候选画风、入库标准(三张样张)和更新节奏见 [ROADMAP.md](ROADMAP.md)。
 
 **缩略图**(2026-10-07):同一个场景(信息卡片)、同一段内容、同一套版面,只换画风层,全部并排见 [thumbs/_all.jpg](thumbs/_all.jpg)。
-由 `engine/vc/thumbs.html` 生成(`node engine/vc/thumbs.mjs`);场景函数里只调组件和文字角色,不写颜色和字体,所以这十二张同时证明了「换画风 = 只换 `engine/vc/styles.js` 的一套外观」。
+由 `engine/vc/thumbs.html` 生成(`node engine/vc/thumbs.mjs`);场景函数里只调组件和文字角色,不写颜色和字体,所以这十四张同时证明了「换画风 = 只换 `engine/vc/styles.js` 的一套外观」。
 注意:缩略图是共享组件的第一版外观,比各画风的整片简单(没有游戏的地形与迷雾、没有插画的骨骼角色、角色是统一的占位:圆身子 + 头顶小芽,故意不像任何动物——频道吉祥物各用各的);新加画风时在 `styles.js` 加一套再重跑即可。
 
 ## 判断:纯代码能不能做细

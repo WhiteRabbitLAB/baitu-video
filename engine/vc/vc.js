@@ -139,8 +139,10 @@
     await document.fonts.ready;
     // 加载到 ≠ 画面用上了:SVG 的 font-family 写错(如族名没加引号)时浏览器静默换默认字体,上面的计数照样是绿的(2026-10-10 踩中)。
     // 同一串字:SVG 按 fontAttr 实际画出来的宽度 vs canvas 按这个族量的宽度,差 2% 以上 = 画面没用上这个字体 ⇒ 记 0,渲染器拒绝开工
+    // 探针串只留字母、数字、汉字:①换行排在最前时 SVG 吞掉首尾空白、canvas 按一个空格量 ⇒ 差一个空格宽,12 个字体全被误判;
+    // ②破折号「—」在中文页里 SVG 按全角排(100)、canvas 按比例宽(90)⇒ 思源宋体再被误判(都是 2026-10-10 一部实拍整片的页面实测)
     if (typeof document !== 'undefined' && document.body) {
-      const probe = [...sample].slice(0, 12).join(''), NS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NS, 'svg');
+      const probe = [...sample].filter(c => /[\p{L}\p{N}]/u.test(c)).slice(0, 12).join(''), NS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NS, 'svg');
       svg.setAttribute('style', 'position:absolute;left:-9999px;top:0;visibility:hidden'); document.body.appendChild(svg);
       for (const spec of Object.keys(res)) {
         if (res[spec] <= 0) continue;
@@ -355,10 +357,20 @@
         return `<g opacity="${f3(clamp(k1 * 2.5))}" transform="translate(${f1(cx + jx)},${f1(cy + jy)}) scale(${f3(sc)}) translate(${f1(-cx)},${f1(-cy)})">${body}</g>`;
       }
       if (ent === 'fadeUp') { const k = ease.out(seg(t, t0, t0 + .45)); return `<g opacity="${f3(k)}" transform="translate(0,${f1(16 * (1 - k))})">${body}</g>`; }
+      if (ent === 'wipe') {   // 体育转播:包装字被一道遮罩从左擦出来,同时往右滑 24px 落定(电视角标、下三分之一条的手感);0.35s expoOut
+        const k = ease.expoOut(seg(t, t0, t0 + (r.wipeDur ?? .35))); if (k >= 1) return body;
+        const w = width(role, s, size), x0 = ax(x, w, anchor), cid = id('wp');
+        return `<clipPath id="${cid}"><rect x="${f1(x0 - 8)}" y="${f1(y - size * 1.1)}" width="${f1((w + 16) * k)}" height="${f1(size * 1.5)}"/></clipPath><g clip-path="url(#${cid})"><g transform="translate(${f1(-24 * (1 - k))},0)">${body}</g></g>`;
+      }
       if (ent === 'print') {   // 热敏打印:一行字从上往下逐像素行扫出(打印头一行一行走纸),匀速、不缓动;扫完即定
         const k = seg(t, t0, t0 + d); if (k >= 1) return body;
         const px = size / (S.pixel || 12), top = y - size * .92, hh = Math.ceil(k * 12) * px * 1.05, w = width(role, s, size), x0 = ax(x, w, anchor), cid = id('pr');
         return `<clipPath id="${cid}"><rect x="${f1(x0 - 4)}" y="${f1(top)}" width="${f1(w + 8)}" height="${f1(hh)}"/></clipPath><g clip-path="url(#${cid})">${body}</g>`;
+      }
+      if (ent === 'glow') {   // 星夜光点:光聚起来 —— 从虚到实、从暗到亮,不位移;r.glowDur 默认 .9s
+        const k = ease.out(seg(t, t0, t0 + (o.dur ?? r.glowDur ?? .9))); if (k >= 1) return body;
+        const fid = id('gw'), b = 9 * (1 - k);
+        return b < .3 ? `<g opacity="${f3(k)}">${body}</g>` : `<filter id="${fid}" x="-10%" y="-40%" width="120%" height="180%"><feGaussianBlur stdDeviation="${f2(b)}"/></filter><g filter="url(#${fid})" opacity="${f3(k)}">${body}</g>`;
       }
       if (ent === 'pop') { const k = seg(t, t0, t0 + .4), w = width(role, s, size), cx = ax(x, w, anchor) + w / 2; return `<g opacity="${f3(clamp(k * 3))}" transform="translate(${f1(cx)},${f1(y)}) scale(${f3(Math.max(.001, ease.back(k)))}) translate(${f1(-cx)},${f1(-y)})">${body}</g>`; }
       return body;
@@ -782,6 +794,132 @@
         <path d="M${x - 14},${cy + 22} Q${x},${cy + 32} ${x + 14},${cy + 22}" fill="none" stroke="${c.ink}" stroke-width="5" stroke-linecap="round"/>`;
     }
 
+    // ---------- 光点与飘尘(星夜光点画风的主角,任何画风都能用;颜色默认取 S.c.glow) ----------
+    // orb:一个会发光的点。o.k = 亮度 0–1;o.col 颜色;o.core 芯的颜色
+    function orb(x, y, r, o = {}) {
+      const k = o.k ?? 1; if (k <= 0) return '';
+      const col = o.col || S.c.glow || S.c.accent, gid = id('ob');
+      return `<radialGradient id="${gid}"><stop offset="0" stop-color="${col}" stop-opacity=".55"/><stop offset=".35" stop-color="${col}" stop-opacity=".18"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></radialGradient>
+        <g data-over="光晕" opacity="${f3(k)}"><circle cx="${f1(x)}" cy="${f1(y)}" r="${f1(r * 5)}" fill="url(#${gid})"/><circle cx="${f1(x)}" cy="${f1(y)}" r="${f1(r * 1.5)}" fill="${col}" opacity=".5" filter="url(#vc-glow)"/>
+        <circle cx="${f1(x)}" cy="${f1(y)}" r="${f1(r)}" fill="${o.core || '#FFF8EC'}"/></g>`;
+    }
+    // glow:发光的线(一条或多条路径):外层宽模糊辉光 + 线本身 + 可选白芯;dur > 0 时按长度画出来,笔尖带一颗亮点。
+    // o:{col, w(线宽,默认 2), k(整体亮度 0–1), hot(加白芯), tip(画的时候笔尖亮点,默认 true)}。带 data-over:光线不算「字压素材」
+    function glow(d, t, t0 = -1e9, dur = 0, o = {}) {
+      const ds = [].concat(d), k = dur > 0 ? ease.inOut(seg(t, t0, t0 + dur)) : (t >= t0 ? 1 : 0); if (k <= 0 || (o.k ?? 1) <= 0) return '';
+      const col = o.col || S.c.cool || S.c.line || S.c.accent, w = o.w || 2, dash = k < 1 ? ` pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="${f3(1 - k)}"` : '';
+      // 滤镜区域用画面坐标(vc-bloom*):按包围盒比例算的话,水平 / 竖直的直线包围盒高或宽为 0,辉光整个消失(样片实测)
+      const p = (sw, c2, a, blur) => ds.map(x => `<path d="${x}" fill="none" stroke="${c2}" stroke-width="${f1(sw)}" stroke-linecap="round" stroke-linejoin="round" opacity="${a}"${dash}${blur ? ` filter="url(#vc-bloom${blur === 's' ? '-s' : ''})"` : ''}/>`).join('');
+      let out = p(w * 5, col, .6, 'b') + p(w * 2.2, col, .55, 's') + p(w, col, .95) + (o.hot ? p(w * .45, '#FFFFFF', .75) : '');
+      if (k < 1 && o.tip !== false) { const tp = VC.pathPoint(ds[0], k); out += orb(tp.x, tp.y, w * 1.6, { col }); }
+      return `<g data-over="光线" opacity="${f3(o.k ?? 1)}">${out}</g>`;
+    }
+    // particles:缓慢上飘、明灭的微尘(逐帧可复现)。o:{n, x, y, w, h, speed(px/s), seed, col, r}
+    function particles(t, o = {}) {
+      const n = o.n ?? 60, X = o.x ?? 0, Y = o.y ?? 0, W = o.w ?? 1920, H = o.h ?? 1080, sp = o.speed ?? 12, sd = o.seed ?? 3, col = o.col || S.c.star || S.c.muted || '#fff';
+      let out = '';
+      for (let i = 0; i < n; i++) {
+        const px = X + h2(i, sd, 71) * W + Math.sin(t * .3 + i) * 6, py = Y + ((h2(i, sd, 72) * H - t * sp * (.5 + h2(i, sd, 73))) % H + H) % H;
+        const tw = .35 + .65 * (.5 + .5 * Math.sin(t * (1 + h2(i, sd, 74) * 2) + i * 2.1));
+        out += `<circle cx="${f1(px)}" cy="${f1(py)}" r="${f2((o.r ?? 1.4) * (.6 + h2(i, sd, 75)))}" fill="${col}" opacity="${f2(tw * .6)}"/>`;
+      }
+      return `<g data-over="飘尘">${out}</g>`;
+    }
+
+    // ---------- 观众动手:让观众先猜 / 先选 / 先读,再揭晓(设计见 design/components.md「观众动手」) ----------
+    // 共同约定:t0 = 出场;揭晓时刻由调用方按配音时间轴给;揭晓前给观众留够想的时间(倒数 countdown)。
+    // 倒数:一圈细环 n 秒走完,中间数字 n…1;走完收掉。o:{n:3, r:46, label(环下面一行小字, R10)}
+    function countdown(x, y, t, t0, o = {}) {
+      const n = o.n ?? 3, r = o.r ?? 46; if (t < t0 || t > t0 + n + .35) return '';
+      const e = t - t0, i = Math.min(n - 1, Math.floor(e)), k = e >= n ? 1 : e - i, out_ = 1 - seg(t, t0 + n, t0 + n + .35);
+      const col = o.color || S.c.accent, a = -Math.PI / 2, a2 = a + 2 * Math.PI * (1 - (e >= n ? 0 : (i + k) / n));
+      const arc = e >= n ? '' : `<path d="M${f1(x + r * Math.cos(a))},${f1(y + r * Math.sin(a))} A${r},${r} 0 ${a2 - a > Math.PI ? 1 : 0} 1 ${f1(x + r * Math.cos(a2))},${f1(y + r * Math.sin(a2))}" fill="none" stroke="${col}" stroke-width="3" stroke-linecap="round"/>`;
+      const num = e >= n ? '' : staticRun(String(n - i), x, y + R('R2').size * .34 * .8, R('R2'), R('R2').size * .8, S.c.text || S.c.ink, 'middle');
+      return `<g opacity="${f3(clamp(e / .3) * out_)}"><circle cx="${f1(x)}" cy="${f1(y)}" r="${r}" fill="none" stroke="${S.c.line || S.c.muted}" stroke-opacity=".35" stroke-width="2"/>${arc}
+        <g opacity="${f3(1 - .5 * Math.max(0, k - .7) / .3)}">${num}</g>${o.label ? text('R10', o.label, x, y + r + 40, t, t0, { anchor: 'middle' }) : ''}</g>`;
+    }
+    // 二选一 / 多选一:每项一个框(画风的窗口造型)+ 角标字母 + 底部标签;揭晓时选中项描边发光,其余变暗。
+    // items:[{x,y,w,h,label,tag,inner:t=>SVG}];o:{t0, gap:.25(逐个出场间隔), tReveal, pick(选中项下标)}
+    function choice(items, t, o = {}) {
+      const t0 = o.t0 ?? -1e9; if (t < t0) return '';
+      const col = o.color || S.c.accent, kr = o.tReveal == null ? 0 : ease.out(seg(t, o.tReveal, o.tReveal + .6));
+      return items.map((it, i) => {
+        const ti = t0 + i * (o.gap ?? .25), k = ease.out(seg(t, ti, ti + .5)); if (k <= 0) return '';
+        const picked = i === o.pick, dim = o.pick == null ? 1 : picked ? 1 : 1 - .6 * kr;
+        const tag = it.tag ?? String.fromCharCode(65 + i), tr = 26, size = R('R10').size * 1.2;
+        const hi = picked && kr > 0 ? `<rect data-over="选中框" x="${f1(it.x - 6)}" y="${f1(it.y - 6)}" width="${f1(it.w + 12)}" height="${f1(it.h + 12)}" rx="20" fill="none" stroke="${col}" stroke-width="10" opacity="${f2(.45 * kr)}" filter="url(#vc-glow)"/>
+          <rect data-over="选中框" x="${f1(it.x - 6)}" y="${f1(it.y - 6)}" width="${f1(it.w + 12)}" height="${f1(it.h + 12)}" rx="20" fill="none" stroke="${col}" stroke-width="2.5" opacity="${f2(kr)}"/>` : '';
+        return `<g opacity="${f3(k * dim)}" transform="translate(0,${f1(14 * (1 - k))})">${frame(it.x, it.y, it.w, it.h, '', S.carriers.window, false)}${hi}
+          <circle cx="${f1(it.x + 34)}" cy="${f1(it.y + 34)}" r="${tr}" fill="none" stroke="${picked && kr > 0 ? col : (S.c.line || S.c.muted)}" stroke-width="2"/><g>${staticRun(tag, it.x + 34, it.y + 34 + size * .34, R('R10'), size, picked && kr > 0 ? col : (S.c.text || S.c.ink), 'middle')}</g>
+          <g>${it.inner ? it.inner(t) : ''}</g>${it.label ? `<g>${staticRun(it.label, it.x + it.w / 2, it.y + it.h - 36, R('R2'), o.labelSize || R('R2').size * .75, picked && kr > 0 ? col : (S.c.text || S.c.ink), 'middle')}</g>` : ''}</g>`;   // 角标、内容、标签各包一层:检查器按父节点合并同串字
+      }).join('');
+    }
+    // 数轴猜数:横轴从左画到右,刻度与数字逐个亮;o.guesses = [{v, t}] 在轴上落一个「?」小环(给观众一个可比的位置);
+    // o.answer = {v, t, from}:一个光点从 from 滑到 v(1.2s),落地后答案数字亮起(数字只出现真实值,不滚中间数)。
+    // o:{t0, ticks:[数…], fmt:v=>串, unit, label(轴下方说明 R10), answerFmt}
+    function numberLine(x, y, w, lo, hi, t, o = {}) {
+      const t0 = o.t0 ?? -1e9; if (t < t0) return '';
+      const X = v => x + (v - lo) / (hi - lo) * w, ka = ease.inOut(seg(t, t0, t0 + .9)), lc = S.c.line || S.c.muted, fmt = o.fmt || (v => String(v));
+      let out = `<path d="M${f1(x)},${f1(y)} L${f1(x + w * ka)},${f1(y)}" stroke="${lc}" stroke-width="2" stroke-linecap="round"/>`;
+      (o.ticks || []).forEach((v, i) => {
+        const kt = seg(t, t0 + .2 + .7 * (v - lo) / (hi - lo), t0 + .5 + .7 * (v - lo) / (hi - lo)); if (kt <= 0) return;
+        out += `<g opacity="${f3(kt)}"><path d="M${f1(X(v))},${f1(y - 10)} V${f1(y + 10)}" stroke="${lc}" stroke-width="2"/>${staticRun(fmt(v), X(v), y + 52, R('R10'), R('R10').size * 1.1, S.c.muted || lc, 'middle')}</g>`;
+      });
+      if (o.unit) out += text('R10', o.unit, x + w + 28, y + 8, t, t0 + 1);
+      if (o.label) out += text('R10', o.label, x + w / 2, y + 108, t, t0 + 1, { anchor: 'middle' });
+      (o.guesses || []).forEach(g => {
+        const kg = ease.out(seg(t, g.t, g.t + .4)); if (kg <= 0) return;
+        out += `<g opacity="${f3(kg)}"><circle cx="${f1(X(g.v))}" cy="${f1(y)}" r="${f1(16 * kg)}" fill="none" stroke="${S.c.cool || lc}" stroke-width="2.5"/>${staticRun('?', X(g.v), y - 34, R('R2'), R('R2').size * .7, S.c.cool || lc, 'middle')}</g>`;
+      });
+      const A = o.answer;
+      if (A && t >= A.t) {
+        const km = ease.inOut(seg(t, A.t, A.t + 1.2)), v = lerp(A.from ?? (lo + hi) / 2, A.v, km), land = seg(t, A.t + 1.2, A.t + 1.6);
+        out += orb(X(v), y, 9 + 5 * Math.sin(Math.PI * land), { k: clamp((t - A.t) / .3) });
+        if (km >= 1) out += text('R4', (o.answerFmt || fmt)(A.v), X(A.v), y - 70, t, A.t + 1.2, { anchor: 'middle', entrance: 'glow', size: o.answerSize, fill: S.c.accent });
+      }
+      return out;
+    }
+    // 填空:前半句 + 一个闪着的空(下划线);tFill 时答案落进空里(答案用强调色)。观众在空闪的时候自己先接上。
+    // o:{t0, tFill, role:'R1', anchor:'middle', blank(空的宽度,默认按答案宽 + 0.4 字), fill}
+    function blank(prefix, answer, x, y, t, o = {}) {
+      const t0 = o.t0 ?? -1e9; if (t < t0) return '';
+      const role = o.role || 'R1', r = R(role), size = snap(o.size || r.size), pw = width(role, prefix, size), bw = o.blank ?? (width(role, answer || '口', size) + size * .4);
+      const x0 = ax(x, pw + bw, o.anchor || 'middle'), filled = o.tFill != null && t >= o.tFill;
+      const blink = filled ? 1 - seg(t, o.tFill, o.tFill + .4) : (Math.floor((t - t0) * 1.6) % 2 === 0 ? 1 : .25);
+      return text(role, prefix, x0, y, t, t0, { size })
+        + `<path d="M${f1(x0 + pw + size * .15)},${f1(y + size * .18)} h${f1(bw - size * .3)}" stroke="${o.fill || S.c.accent}" stroke-width="${f1(Math.max(2, size * .04))}" opacity="${f3(blink * seg(t, t0 + dur(role, prefix) * .6, t0 + dur(role, prefix)))}"/>`
+        + (filled ? text(role, answer, x0 + pw + bw / 2, y, t, o.tFill, { size, anchor: 'middle', fill: o.fill || S.c.accent }) : '');
+    }
+    // 乱序字:先摆出打乱的字(观众会发现自己照样读得懂),tFix 时每个字沿小弧线滑回正确位置。wrong 与 right 必须是同一组字。
+    // o:{t0, tFix, dur:1.2, role:'R2', anchor:'middle', hi(挪动的字在途中用强调色)}
+    function scramble(wrong, right, x, y, t, o = {}) {
+      const t0 = o.t0 ?? -1e9; if (t < t0) return '';
+      const role = o.role || 'R2', r = R(role), size = snap(o.size || r.size), LW = layout(wrong, r, size), LR = layout(right, r, size);
+      const used = new Set(), from = LR.g.map(g => { const j = LW.g.findIndex((h, jj) => !used.has(jj) && h.c === g.c); used.add(j); return j; });
+      if (from.includes(-1)) throw new Error('scramble:两串不是同一组字');
+      const x0w = ax(x, LW.w, o.anchor || 'middle'), x0r = ax(x, LR.w, o.anchor || 'middle'), kin = ease.out(seg(t, t0, t0 + .6));
+      const km = o.tFix == null ? 0 : ease.inOut(seg(t, o.tFix, o.tFix + (o.dur ?? 1.2)));
+      return `<g opacity="${f3(kin)}">${LR.g.map((g, i) => {
+        if (g.c === ' ') return '';
+        const sx = x0w + LW.g[from[i]].x, tx = x0r + g.x, moving = Math.abs(sx - tx) > 1, gx = lerp(sx, tx, km), gy = y - (moving ? Math.sin(Math.PI * km) * size * .45 : 0);
+        const col = moving && km > 0 && km < 1 && o.hi !== false ? S.c.accent : (o.fill || r.fill);
+        return `<text x="${f1(gx)}" y="${f1(gy)}" ${fontAttr(g.spec)} font-size="${size}" fill="${col}">${esc(g.c)}</text>`;
+      }).join('')}</g>`;
+    }
+    // 遮挡:一句话里有几个字被色块盖住(观众照样能补全);tReveal 时色块逐个收掉露出原字。
+    // idx = 被盖住的字的下标数组;o:{t0, tReveal, role:'R2', anchor:'middle', color}
+    function mask(s, idx, x, y, t, o = {}) {
+      const t0 = o.t0 ?? -1e9; if (t < t0) return '';
+      const role = o.role || 'R2', r = R(role), size = snap(o.size || r.size), L = layout(s, r, size), x0 = ax(x, L.w, o.anchor || 'middle');
+      const col = o.color || S.c.red || S.c.accent;
+      const blocks = idx.map((i, n) => {
+        const g = L.g[i]; if (!g) return '';
+        const kr = o.tReveal == null ? 0 : ease.out(seg(t, o.tReveal + n * .12, o.tReveal + n * .12 + .35)), bw = (g.w + size * .08) * (1 - kr);
+        return bw < .5 ? '' : `<rect data-over="遮挡块" x="${f1(x0 + g.x - size * .04 + (g.w + size * .08) * kr / 2)}" y="${f1(y - size * .9)}" width="${f1(bw)}" height="${f1(size * 1.08)}" rx="${f1(size * .06)}" fill="${col}"/>`;
+      }).join('');
+      return text(role, s, x0, y, t, t0, { size }) + (t >= t0 + .2 ? blocks : '');
+    }
+
     // ---------- 字幕:按 subs 生成的 window.SUBS 画当前那一条(频道统一的规格,不随画风换) ----------
     // o:{ font:'Noto Sans SC:900', size:52, y:1040(最后一行基线), x:960, fill:'#fff', stroke:'#000', strokeWidth:10, box:false(true = 半透明黑底条),
     //     maxW(一行最宽,默认 1800;竖版传 960)}——超宽就在最靠中间的空格处折成两行,还超就整体缩字号
@@ -910,7 +1048,12 @@
         <linearGradient id="vc-sky" x1="0" y1="0" x2="0" y2="1">${(S.c.sky3 || ['#000', '#000', '#000']).map((col, i) => `<stop offset="${[0, .62, 1][i]}" stop-color="${col}"/>`).join('')}</linearGradient>
         <linearGradient id="vc-fog" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${S.c.fog || '#fff'}" stop-opacity="0"/><stop offset=".55" stop-color="${S.c.fog || '#fff'}" stop-opacity=".32"/><stop offset="1" stop-color="${S.c.fog || '#fff'}" stop-opacity="0"/></linearGradient>
         <radialGradient id="vc-sun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="${S.c.sun || '#fff'}" stop-opacity=".9"/><stop offset="1" stop-color="${S.c.sun || '#fff'}" stop-opacity="0"/></radialGradient>
-        <pattern id="vc-dots" width="36" height="36" patternUnits="userSpaceOnUse"><circle cx="18" cy="18" r="2.4" fill="${S.c.dots || '#000'}"/></pattern>`;
+        <pattern id="vc-dots" width="36" height="36" patternUnits="userSpaceOnUse"><circle cx="18" cy="18" r="2.4" fill="${S.c.dots || '#000'}"/></pattern>
+        <radialGradient id="vc-nebula" cx=".5" cy=".46" r=".62"><stop offset="0" stop-color="${S.c.bg2 || S.c.bg}" stop-opacity=".95"/><stop offset="1" stop-color="${S.c.bg}" stop-opacity="0"/></radialGradient>
+        <filter id="vc-soft-s" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="2.2"/></filter>
+        <filter id="vc-bloom" filterUnits="userSpaceOnUse" x="-400" y="-400" width="2720" height="1880"><feGaussianBlur stdDeviation="9"/></filter>
+        <filter id="vc-bloom-s" filterUnits="userSpaceOnUse" x="-400" y="-400" width="2720" height="1880"><feGaussianBlur stdDeviation="3"/></filter>
+        <filter id="vc-neon" filterUnits="userSpaceOnUse" x="-400" y="-400" width="2720" height="1880"><feGaussianBlur in="SourceGraphic" stdDeviation="12" result="b1"/><feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="b2"/><feMerge><feMergeNode in="b1"/><feMergeNode in="b1"/><feMergeNode in="b2"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
     }
     // 底子:画风的「桌面 / 屏幕 / 纸」(场景可以盖掉它,演示页用)
     function backdrop(x, y, w, h) {
@@ -922,7 +1065,25 @@
       if (b === 'game') s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-hex)" opacity=".35"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-vig)"/>`;
       if (b === 'riso') s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-grain)" opacity=".05" style="mix-blend-mode:multiply"/>`;   // 米白纸 + 一点纤维
       if (b === 'counter') s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-counter)"/>`;   // 热敏小票:收银台面(深灰细格)
+      if (b === 'stadium') {   // 体育转播:夜场看台 —— 深蓝黑底 + 固定种子的虚化人群色点 + 顶上一排泛光灯 + 暗角(静止;页面要球场草皮自己铺)
+        // 人群只在上半屏(看台),越往下越淡;下半屏留给内容。泛光灯只是顶边几颗小亮点,不成大灰盘
+        const n = Math.round(w * h / (1920 * 1080) * 200), cols = c.crowd || ['#C94B4B', '#E8E2D0', '#4B6FC9', '#D9A441'];
+        for (let i = 0; i < n; i++) { const v = h2(i, 6, 71); s += `<circle cx="${f1(x + h2(i, 5, 71) * w)}" cy="${f1(y + v * h * .5)}" r="${f1(3 + h2(i, 7, 71) * 5)}" fill="${cols[i % cols.length]}" opacity="${f2((.05 + h2(i, 8, 71) * .1) * (1 - v * .7))}"/>`; }
+        const nl = Math.max(1, Math.round(w / 480));
+        for (let i = 0; i < nl; i++) { const lx = x + (i + .5) * w / nl; s += `<circle cx="${f1(lx)}" cy="${f1(y + 24)}" r="36" fill="#fff" opacity=".035"/><circle cx="${f1(lx)}" cy="${f1(y + 24)}" r="7" fill="#fff" opacity=".35"/>`; }
+        s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-vig)"/>`;
+      }
       if (b === 'solid') s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-grain)" opacity=".06" style="mix-blend-mode:overlay"/>`;
+      if (b === 'starfield') {   // 星夜光点:近黑底 + 中间一团很淡的深蓝星云 + 固定种子的星点(静止;要闪 / 要飘用 kit.particles)+ 暗角
+        s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-nebula)"/>`;
+        const n = Math.round(w * h / (1920 * 1080) * 240);
+        for (let i = 0; i < n; i++) {
+          const sx = x + h2(i, 5, 61) * w, sy = y + h2(i, 6, 61) * h, big = h2(i, 7, 61) > .965, r = big ? 1.6 + h2(i, 8, 61) * 1.2 : .5 + h2(i, 8, 61) * .9;
+          s += `<circle cx="${f1(sx)}" cy="${f1(sy)}" r="${f2(r)}" fill="${c.star || '#fff'}" opacity="${f2(big ? .55 + h2(i, 9, 61) * .3 : .1 + h2(i, 9, 61) * .35)}"${big ? ' filter="url(#vc-soft-s)"' : ''}/>`;
+          if (big) s += `<circle cx="${f1(sx)}" cy="${f1(sy)}" r="${f2(r * .55)}" fill="#fff" opacity=".9"/>`;
+        }
+        s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-grain)" opacity=".05" style="mix-blend-mode:overlay"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-vig)"/>`;
+      }
       if (b === 'chalkboard') {   // 黑板:深绿板 + 颗粒 + 板擦擦过的灰白痕;整屏时加木框
         s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c.bg}"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-grain)" opacity=".1" style="mix-blend-mode:screen"/>`
           + [0, 1, 2, 3, 4].map(i => `<path d="${VC.wobblyLine(x + w * (.05 + h2(i, 3, 51) * .5), y + h * (.15 + h2(i, 4, 51) * .7), x + w * (.4 + h2(i, 5, 51) * .55), y + h * (.1 + h2(i, 6, 51) * .8), i + 19, 10)}" stroke="#FFFFFF" stroke-width="${60 + i * 18}" opacity=".04" fill="none" stroke-linecap="round" filter="url(#vc-smudge)"/>`).join('');
@@ -952,7 +1113,8 @@
     // 粉笔画风:对外导出的组件统一套粉笔颗粒滤镜(内部互相调用不重复套;章节进度条是频道统一的,不套)
     const ck = fn => S.chalk ? (...a) => { const v = fn(...a); return v ? `<g filter="url(#vc-chalk)">${v}</g>` : v; }
       : S.riso ? (...a) => { const v = fn(...a); return v ? `<g filter="url(#vc-riso-l)">${v}</g>` : v; }
-      : S.thermal ? (...a) => { const v = fn(...a); return v ? `<g filter="url(#vc-thermal)">${v}</g>` : v; } : fn;   // 孔版印刷:组件上的字只套轻颗粒;热敏小票:墨迹斑驳
+      : S.thermal ? (...a) => { const v = fn(...a); return v ? `<g filter="url(#vc-thermal)">${v}</g>` : v; }
+      : S.neon ? (...a) => { const v = fn(...a); return v ? `<g filter="url(#vc-neon)">${v}</g>` : v; } : fn;   // 星夜光点:字和组件整组霓虹辉光(两层模糊叠在原图下)   // 孔版印刷:组件上的字只套轻颗粒;热敏小票:墨迹斑驳
     // 孔版印刷:tone(油墨, 0–1) → 网点填充;ink(油墨, 内容) → 这一版油墨:正片叠底 + 强颗粒 + 套色错位。
     // 同一版里后画的纸色(S.c.paper)会盖掉先画的墨(= 真印刷里「这里不上墨」);跨版叠在一起就是叠印出的第三色。
     const tone = (k, v) => { const col = S.inks ? S.inks[k] : S.c.accent; if (!S.riso || v >= .975) return col; const i = Math.round(clamp(v) * 20); return i <= 0 ? 'none' : `url(#vc-ht-${k}-${i})`; };
@@ -962,6 +1124,7 @@
       panel: ck((x, y, w, h, title = '', dark = false) => frame(x, y, w, h, title, S.carriers.panel || S.carriers.window, dark)),   // 信息面板;画风可单独给 panel 造型
       tone, ink, transition, subtitle, txDur: k => TX_DUR[k], sketch: ck(sketch), hatch: ck(hatch), marker, mascot: ck(mascot),
       text: ck(text), textFit: ck(textFit), mark: ck(mark), stamp: ck(stamp), counter: ck(counter), bubble: ck(bubble), chat: ck(chat), terminal: ck(terminal), chapterBar, panGroup, defs, backdrop,
+      orb, glow, particles, countdown: ck(countdown), choice: ck(choice), numberLine: ck(numberLine), blank: ck(blank), scramble: ck(scramble), mask: ck(mask),   // 光点、飘尘;观众动手五件套 + 倒数
     };
   };
 })();

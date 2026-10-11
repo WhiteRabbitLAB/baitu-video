@@ -1,6 +1,6 @@
 # baitu-video
 
-**Make explainer videos with code — any topic, any of 12 visual styles, narrated, subtitled, rendered and checked by one engine.**
+**Make explainer videos with code — any topic, any of 14 visual styles, narrated, subtitled, rendered and checked by one engine.**
 A [Claude Code](https://claude.com/claude-code) skill: the method (formats, scenes, styles, a design library) plus the engine that turns a script into a finished MP4.
 
 中文说明:[README.zh.md](README.zh.md)
@@ -18,14 +18,18 @@ One page, one timeline: `?lang=en` switches to the English narration, subtitles 
 
 The whole example — both languages, both orientations — runs from [examples/sky-demo](examples/sky-demo/README.md) with no API key.
 
-## Twelve styles, one scene
+## Fourteen styles, one scene
 The same scene and content with only the style layer swapped — switching style is one line (`VC.kit('whiteboard')`).
 
-![Twelve styles side by side](styles/thumbs/_all.jpg)
+![Fourteen styles side by side](styles/thumbs/_all.jpg)
 
-paper skeuomorphic · game UI · flat geometric · flat illustration · cartoon UI · dark tech · whiteboard · dark math · chalkboard · kinetic type · risograph · thermal receipt — details in [styles/INDEX.en.md](styles/INDEX.en.md).
+paper skeuomorphic · game UI · flat geometric · flat illustration · cartoon UI · dark tech · whiteboard · dark math · chalkboard · kinetic type · risograph · thermal receipt · starlight · sports broadcast — details in [styles/INDEX.en.md](styles/INDEX.en.md).
 
-**New: thermal receipt** (`thermal`) — off-white thermal paper strips, bitmap text printed line by line, black and red only; the metaphor is a bill, made for "looks the same, adds up differently" comparisons. Two frames from a full video made with it (6 minutes, landscape):
+**New: starlight** (`starlight`) — a near-black night sky, glowing line art and points of light, cool blue for structure and warm gold only for the answer, light sans type with a neon glow. It comes with a new set of audience-participation components (choice, countdown, number-line guess, fill the blank, scramble, mask; demo page `engine/vc/quiz.html`): let viewers choose or guess first, pause the narration with a countdown, then reveal. Two frames from a 41-second sample (a choice on a glowing balance, a point gliding to the answer):
+
+![Frames from a sample in the starlight style](styles/samples/starlight-film.jpg)
+
+**Thermal receipt** (`thermal`) — off-white thermal paper strips, bitmap text printed line by line, black and red only; the metaphor is a bill, made for "looks the same, adds up differently" comparisons. Two frames from a full video made with it (6 minutes, landscape):
 
 ![Frames from a full video in the thermal receipt style](styles/samples/thermal-film.jpg)
 
@@ -43,7 +47,7 @@ A video is chosen by four questions — **what** (explainer, true story, tutoria
 |---|---|---|
 | Format | The narrative skeleton (12 formats: true-experiment story, story → method → test, scenario guide, concept lesson, versus, list…) | [formats/](formats/INDEX.en.md) |
 | Scene | The visual world and its writing sources (case files, lab desk, strategy game, terminal, whiteboard…) | [scenes/](scenes/INDEX.en.md) |
-| Style | How it's drawn (12 styles) | [styles/](styles/INDEX.en.md) |
+| Style | How it's drawn (14 styles) | [styles/](styles/INDEX.en.md) |
 | Channel profile | Your channel's own settings: voice, subtitles, platform rules, preferences | [profiles/](profiles/README.md) |
 
 The page is plain HTML/SVG where `render(t)` draws the frame for time `t`; the engine renders it frame by frame with headless Chromium and hands everything else — narration, subtitles, mixing, thumbnails, vertical cut, acceptance — to one CLI.

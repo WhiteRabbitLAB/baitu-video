@@ -1,6 +1,7 @@
 // 混音 + 合成成片
 //  配音:两遍 loudnorm 到 -16 LUFS(TP -1.5);音效:积分响度对齐到「配音 − 8 LU」= -24 LUFS
-//  背景音乐:<brief>/bgm.mp3 存在才加(-24dB,人声出现时 sidechaincompress 压低);不存在就不加
+//  背景音乐:<brief>/bgm.mp3 存在才加(默认 -24dB,人声出现时 sidechaincompress 压低);不存在就不加
+//    增益可在 <brief>/bgm.json 里改:{ "gainDb": -12 }(背景乐本身较轻时用;目标是无人声处比配音低约 15 LU)
 //  总线:amix(不自动归一)→ 再两遍 loudnorm 到 -16 LUFS → 48kHz 立体声;AAC 进 mp4
 import { execFileSync, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -36,8 +37,9 @@ export function mix(o) {
   let filter;
   if (fs.existsSync(bgm)) {
     const bi = mixIn.length; inputs.push('-stream_loop', '-1', '-i', bgm);
-    filter = `[0:a]asplit=2[v][sc];[${bi}:a]volume=-24dB,aresample=48000[b];[b][sc]sidechaincompress=threshold=0.02:ratio=6:attack=20:release=400[bd];[v]${mixIn.slice(1).join('')}[bd]amix=inputs=${mixIn.length + 1}:normalize=0:duration=first[m]`;
-    rep.bgm = 'present';
+    const bcfg = path.join(brief, 'bgm.json'), gain = fs.existsSync(bcfg) ? (JSON.parse(fs.readFileSync(bcfg, 'utf8')).gainDb ?? -24) : -24;
+    filter = `[0:a]asplit=2[v][sc];[${bi}:a]volume=${gain}dB,aresample=48000[b];[b][sc]sidechaincompress=threshold=0.02:ratio=6:attack=20:release=400[bd];[v]${mixIn.slice(1).join('')}[bd]amix=inputs=${mixIn.length + 1}:normalize=0:duration=first[m]`;
+    rep.bgm = { present: true, gainDb: gain };
   } else { filter = `${mixIn.join('')}amix=inputs=${mixIn.length}:normalize=0:duration=first[m]`; rep.bgm = 'absent(没有 bgm.mp3,不加背景音乐)'; }
   ff([...inputs, '-filter_complex', filter, '-map', '[m]', '-ac', '2', '-ar', '48000', path.join(TMP, 'mix-pre.wav')]);
   rep.master = norm2(path.join(TMP, 'mix-pre.wav'), path.join(TMP, `mix${suf}.wav`), -16, ['-ac', '2']);

@@ -25,6 +25,7 @@ The "first implemented" column only says which episode a component came from (th
 | Terminal window | Commands and output | — | — | — | — | A1, A2 (our own style, not imitating real products) |
 | Comparison wall | Several generations under the same conditions | Photos pinned to a wall / exhibition wall | — | Grid cards | — | A5 (prompts archived verbatim) |
 | Photo + caption | R3/R10 | Old photo + printed caption (with the real year) | — | — | — | A6 |
+| Audience participation (choice / number-line guess / fill the blank / scramble / mask + countdown) | question R2, ticks R10, answer R4 | the style's own window shape + accent-outline reveal (dedicated looks still to do) | ← | ← | ← | Starlight sample (2026-10-10); shared code `kit.choice / numberLine / blank / scramble / mask / countdown`, demo `engine/vc/quiz.html`. Method: let viewers guess / choose / read first, pause the narration 3–4s with a countdown, then reveal |
 
 ## Adding a component
 Add a row describing its look in at least two styles; once built, add the implementation path.

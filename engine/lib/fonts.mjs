@@ -100,7 +100,7 @@ const charsOf = text => [...new Set([...text + ASCII].filter(c => c.codePointAt(
 export async function fontsDemo() {
   const VCD = path.join(ENGINE, 'vc');
   let text = '';
-  for (const f of ['demo.html', 'thumbs.html', 'transitions.html', 'roles.html', 'fit-test.html', 'scene-gallery.html', 'styles.js', 'vc.js']) if (fs.existsSync(path.join(VCD, f))) text += fs.readFileSync(path.join(VCD, f), 'utf8');
+  for (const f of ['demo.html', 'thumbs.html', 'transitions.html', 'roles.html', 'fit-test.html', 'scene-gallery.html', 'quiz.html', 'styles.js', 'vc.js']) if (fs.existsSync(path.join(VCD, f))) text += fs.readFileSync(path.join(VCD, f), 'utf8');
   const specs = Object.values(styleFonts()).flat();
   fs.rmSync(path.join(VCD, 'fonts'), { recursive: true, force: true });
   const { css, report } = await subset(specs, charsOf(text), path.join(VCD, 'fonts'), './fonts', 'vc-');

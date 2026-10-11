@@ -5,8 +5,11 @@
 | 文件 | 管什么 |
 |---|---|
 | `vc.js` | 组件(纯函数,返回 SVG 字符串,1920×1080 坐标,逐帧可复现) |
-| `styles.js` | 画风外观表:纸面拟物 `paper-skeuo`、游戏拟物 `game-ui`、扁平几何 `flat-geometric`、扁平插画 `flat-illustration`、卡通界面 `cartoon-ui`、科技深色 `tech-ui`、白板手绘 `whiteboard`、黑底数学 `dark-math`、黑板粉笔 `chalkboard`、动态文字 `kinetic`、孔版印刷 `risograph`、热敏小票 `thermal`(共 12 种,缩略图见 ../../styles/INDEX.md) |
+| `styles.js` | 画风外观表:纸面拟物 `paper-skeuo`、游戏拟物 `game-ui`、扁平几何 `flat-geometric`、扁平插画 `flat-illustration`、卡通界面 `cartoon-ui`、科技深色 `tech-ui`、白板手绘 `whiteboard`、黑底数学 `dark-math`、黑板粉笔 `chalkboard`、动态文字 `kinetic`、孔版印刷 `risograph`、热敏小票 `thermal`、星夜光点 `starlight`、体育转播 `broadcast`(共 14 种,缩略图见 ../../styles/INDEX.md) |
 | `demo.html` | 演示页:每个组件一行,可切换画风、中英文、时间轴 |
+| `receipt.js` | 小票部件:热敏小票画风的附加模块(第 13 期整片抽出),`const rc = VC.receipt(kit, {onPrint, onFeed})`;组件见下表「小票」三行 |
+| `broadcast.js` | 转播部件:体育转播画风的附加模块(第 14 期整片抽出),`const bc = VC.broadcast(kit, {onCue, onText, ledY})`;组件见下表「转播」三行 |
+| `quiz.html` | 「观众动手」组件一屏六格(二选一 + 倒数、数轴猜数、填空、乱序字、遮挡、光点):`?style=<id>&t=秒`(默认 99 = 全部揭晓;`t=2.2` 看揭晓前) |
 | `thumbs.html` / `thumbs.mjs` | 画风缩略图:同一场景只换画风;`node engine/vc/thumbs.mjs` → `.claude/skills/baitu-video/styles/thumbs/` |
 | `transitions.html` / `measure-tx.mjs` | 转场演示(morph、zoom-through、slide-push、blur-push)与量转场(带线性淡化阳性对照):`node engine/vc/measure-tx.mjs paper-skeuo` |
 | 字体 | `fonts.css` + `fonts/`:引擎自带的子集字体(画风表用到的全部字体,按演示页的字切);重切:`node <engine>/cli.mjs fonts-demo`。每期正片用 `fonts <期>` |
@@ -52,7 +55,20 @@ function render(t) {
 | 转场 | `kit.transition(id, t, t0, A, B, 参数)`;id = `roller`(滚筒刮过:前沿左边新、右边旧,`{band,x0,x1}`)/ `slide-push` / `blur-push` / `zoom-through`(`{cx,cy,r0}`)/ `morph`(`{from,to}` 路径 + 颜色)/ `fade` | — | slide-push 的领路竖条取强调色;zoom-through 的开口底子取画风底 |
 | 油墨分版(孔版印刷) | `kit.ink('b'\|'p', 内容, {grain:'strong'\|'light'\|'none'})`;网点填充 `kit.tone('b', 0–1)`;页面 `<defs>${kit.defs({frame})}</defs>`(颗粒按帧号换位) | — | 只在 `riso` 画风里有网点与颗粒;其他画风里 `tone` 返回实色、`ink` 只做正片叠底 |
 | 形变 | `VC.morphPath(dA, dB, k)`、`VC.shape.rect / circle` | — | 任意两条闭合路径插值 |
+| 小票(附加模块 `receipt.js`) | `rc.build(t, x, w, [{t0, h, d:(t, y) => SVG}], {top, lead, pad, slot})` 边打边长的小票;行:`rc.hd`(标题)/ `ln` / `row2`(左右两栏)/ `ctr` / `dashed`(虚线);零件 `rc.slot`(出纸口)/ `strip`(纸条)/ `rule`;`onPrint(t0, 字数)` / `onFeed(t0)` 给音效登记 | R1 标题 48 · R2 正文 36 · R3 注释 24 | 纸条随行数长出来,字被纸裁住,墨迹滤镜只套字;裁剪区编号随 `kit.begin()` 归零(几张小票同帧横移不撞 id)。别的画风也能用:纸取 `c.paper`(没有就 `c.card`),不加卷边阴影和墨迹 |
+| 1 位像素图、条码、点阵图 | `rc.sprite(名字或行数组, x, y, px)`、`rc.sprites([名字…], x, y, px)`(图库 `VC.receipt.SPRITES`:19 个食物 / 物件,`'#'` = 一个点);`rc.barcode(x, y, w, h, seed)`、`rc.dotBar`(网点条)、`rc.dotCurve(x, y, w, h, [[横坐标, 0–1]…], fill, 粗点, xMax)`、`rc.dotScatter(x, y, w, h, t, t0, 往上?)` | — | 热敏打印机只会打点:图标、曲线都由方点组成;按论文描述画的走向要在画面上标「示意」 |
+| 走纸转场 | `rc.feed(t, t0, A, B, {dur: .9, under})` | — | 镜头往下摇:旧画面往上出画、新画面从下面上来(`under` 垫台面,只铺在新画面那一屏里,不盖旧画面);不像「撕下」那样斜着扫过字幕带 |
+| 转播:球场与包装条(附加模块 `broadcast.js`) | `bc.pitch()` 草皮、`bc.led(t, 字, t0, 色)` 场边 LED 板(换广告 = 从左往右点亮 0.6s)、`bc.tab(cx, y, 字, t, t0, {anchor,w,size,fill,ink})` 时间标签、`bc.head(t, t0, 标签, 标题)`、`bc.refBar(cx, y, 字, t, t0, {w,label})` 裁判条、`bc.infoRow(x, y, w, 标签, 字, t, t0)` 信息条、`bc.steps(t, t0, [项…], 当前)` 编号步骤条、`bc.chip` / `pill` / `pills` 小胶囊、`bc.wipe(t, t0, x, y, w, h, SVG)` 任意一块擦出来 | R2 包装字 · R3 小字 | 包装条从左往右擦出来(expoOut),不弹(编号步骤条是淡入);裁剪区编号随 `kit.begin()` 归零。`onCue(种类, t0)` 登记音效:swish 擦入 / ding 裁判 / buzz LED / push + tick 漏斗 / tx 字擦入;`onText(字)` 收画面字给 `VC.ready`;`bc.text` = 带这两个钩子的 `kit.text` |
+| 转播:比分 | `bc.scoreboard(x, y, w, h, 主队, 客队, t, {scoreAt,scoreIn,scoreSize,nameSize})`(队 = `{name, col, sub, score}`)、`bc.miniBoard({x,y,w,tab,home,away,scores,sub,ref,t0,tScore,tRef,note}, t)` 小比分板(两个时间点并排)、`bc.team(字, 色, x, y, 字号, anchor)` 斜体队名、`bc.fixture(x, y, A, B, 色A, 色B, t, t0, 划掉时刻)` 对阵行 | R4 比分(Anton)· R2 队名 | 中文没有真斜体,队名整组 `skewX(-10)`;比分是两组平均值。**不显著只写「不显著」,不写「打平」** |
+| 转播:漏斗、结果行、点阵 | `bc.funnel(cx, y, w, 标签, 人数, t, t0, 色)` 选拔漏斗一级、`bc.result(y, 赛区, t0, [[字,t0]…], [结果,t0], 色, [注,t0], t)` 其他赛区结果行、`bc.tip(y, 编号, 字, 小字, t, t0, t1, 色)` 建议行、`bc.dots({x,y,n,keep}, t, t0, t1)` 人点阵(`VC.broadcast.pick(n, 留下, 种子)` 固定种子挑人) | R2 · R3 · R4 | 人数变少用点阵变暗,不滚数字。别的画风也能用:板子取 `c.navy`(没有就用转播的深蓝一套,不退到浅色的 `c.surface` / `c.card`),板上的普通字白色、次要字浅灰,比分用队色,比分板上的队名白色、对阵行的队名用队色(画风没有 `c.home` / `c.away` 时用转播的橙 / 蓝);画布用 `{W, H}` 传,LED 板默认离底 290,两侧广告字放不下时只排中间一遍 |
 | 发光的线 | `kit.glow(路径 d 或数组, t, t0, 时长, {col, w, k, hot, tip})` | — | 宽辉光 + 中辉光 + 线 + 可选白芯;时长 > 0 时按长度画出,笔尖带一颗亮点。星夜光点的线稿(食物、天平、数轴、山脊)都用它;带 `data-over` |
+| 光点 / 飘尘 | `kit.orb(x, y, r, {k, col})`;`kit.particles(t, {n, x, y, w, h, speed, seed})` | — | 光点默认取 `c.glow`;都带 `data-over`,检查器不算「字压素材」。星夜光点画风的主角,任何画风都能用 |
+| 观众动手:倒数 | `kit.countdown(x, y, t, t0, {n:3, r, label})` | R2 数字 / R10 | 一圈细环 n 秒走完;问完问题、配音停顿时放(`narration.json` 的 `gapAfter` 留出几秒) |
+| 观众动手:二选一 | `kit.choice([{x,y,w,h,label,tag,inner:t=>SVG}], t, {t0, gap, tReveal, pick})` | R2 标签 / R10 角标 | 框 = 画风的窗口造型;揭晓时选中项描边 + 辉光(强调色),其余变暗 |
+| 观众动手:数轴猜数 | `kit.numberLine(x, y, w, lo, hi, t, {t0, ticks, unit, label, guesses:[{v,t}], answer:{v,from,t}, answerSize})` | R10 刻度 / R4 答案 | 光点从 from 滑到答案(1.2s),落地后答案数字亮起;**数字只出现真实值,不滚中间数** |
+| 观众动手:填空 | `kit.blank(前半句, 答案, x, y, t, {t0, tFill, role, size})` | 任一 R(默认 R1) | 空(下划线)闪着,观众先接上;tFill 时答案用强调色落进空里 |
+| 观众动手:乱序字 | `kit.scramble(乱序串, 正确串, x, y, t, {t0, tFix, dur, role})` | 任一 R(默认 R2) | 先读乱的(观众会发现照样读得懂),再沿小弧线归位;两串必须是同一组字 |
+| 观众动手:遮挡 | `kit.mask(句子, [被盖的字的下标], x, y, t, {t0, tReveal, role, color})` | 任一 R(默认 R2) | 色块完全盖住字(带 `data-over`),揭晓时逐个收掉 |
 
 ## 规矩
 - **数字只在真实值之间变化**:`counter` 的每个 key 都必须是事实表里的值;按位滚动、缓出无过冲,任何一帧都不会整串出现 key 以外的数。

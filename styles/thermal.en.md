@@ -12,6 +12,7 @@ The style's default is a **light counter** (#D9D3C6, the same lightness as the r
 - Strip: `kit.panel(x, y, w, h, title)` draws a receipt (drop shadow + curled-edge shading + zigzag bottom + centered title + dashed rule).
 - Counter: a fine 6px checker in light or dark, `backdrop: 'counter'`.
 - 1-bit pixel icons: icons on the receipt are built from square pixels (a thermal printer can only print black dots), about 7px per cell.
+- **Receipt parts live in the add-on module `engine/vc/receipt.js`** (pulled out of the episode 13 full video): `const rc = VC.receipt(kit)` → `rc.build` a receipt that grows as it prints (line helpers `rc.hd / ln / row2 / ctr / dashed`), `rc.slot` printer slot, `rc.sprite / sprites` pixel icons (library `VC.receipt.SPRITES`), `rc.barcode`, `rc.dotCurve / dotScatter / dotBar` dot plots, `rc.feed` paper-feed transition. Usage: the three "receipt" rows in `engine/vc/README.en.md`. After the extraction the episode 13 page uses it: of 128 sampled frames, the 126 outside transitions are byte-identical (the other 2 are the transition fix described below), 278 sound cues identical (positive control: changing the strip shadow made 110 frames differ).
 
 ## Type
 - **Printed by the printer** (R1–R4, R10): **Fusion Pixel 12px**. Bitmap type **must be set at multiples of 12** (24 / 36 / 48 / 72 / 96 / 144) or strokes land on half pixels and blur — the style sets `pixel: 12`, so `kit.text` / `kit.fit` snap automatically, and `fit` shrinks in steps of 12.
@@ -29,7 +30,7 @@ The style's default is a **light counter** (#D9D3C6, the same lightness as the r
 ## Motion
 - Receipts are **printed**: new content appears as the printer feeds paper (the strip grows downward, text scans in line by line) — no fades.
 - Strips can be torn, curled, stacked and flipped (the back is another bill, e.g. the ingredient list); stamps land with a shake.
-- Suggested transitions: feed (a new strip pushes out of the slot and shoves the old one off frame), tear-off (the old strip is torn along the zigzag). [ours] to be added as `kit.transition` kinds.
+- Transitions: **paper feed** `rc.feed` (the camera tilts down: the old frame leaves upward, the new printer slot comes up from below — the full video uses it); tear-off (the old strip torn along the zigzag) sweeps diagonally across the subtitle band, so use it only where there are no subtitles.
 
 ## Characters
 - Code-drawn: 1-bit pixel icons (black dots are all a thermal printer can do); the placeholder character is red with an ink outline.
@@ -55,7 +56,8 @@ Frames from the full video (episode 13: opening + four comparison strips):
 ## Learned on the full video (episode 13)
 - **Three text tiers on a receipt**: title 48, body 36, notes 24 (all multiples of 12). Keep body at 36 or more; 24 is for notes and units only.
 - **Receipts invite copying the subtitles**: a list naturally takes one sentence per line, and narration lines creep in (the first acceptance run flagged 43 seconds of echo). Rewriting them as bill-style short labels ("order: random", "kcal per gram = drinks excluded", "long-term effects: unknown"), same meaning and same fact rows, brought it to 0.
-- **The "tear off" transition sweeps the subtitle band**: the torn edge crosses the bottom diagonally (17 frames over subtitles in the first cut). Shot changes use a vertical push instead (the camera tilts down: the old receipt leaves upward, the new printer slot comes up from below, never crossing the subtitle band), which also reads as paper feed; this transition still lives in the page, not yet in `kit.transition`.
-- **Several receipts panning together collide on `clipPath` ids**: a page's own receipt helper must reset its counter every frame, as `kit.begin()` does, or a `print` reveal clips against another receipt.
+- **The "tear off" transition sweeps the subtitle band**: the torn edge crosses the bottom diagonally (17 frames over subtitles in the first cut). Shot changes use a vertical push instead (the camera tilts down: the old receipt leaves upward, the new printer slot comes up from below, never crossing the subtitle band), which also reads as paper feed; now in `receipt.js` (`rc.feed`).
+- **Several receipts panning together collide on `clipPath` ids**: a page's own receipt helper must reset its counter every frame, as `kit.begin()` does, or a `print` reveal clips against another receipt (`rc.build` already does).
 - **Measure a rotated stamp by its bounding box**: leave room between the stamp text and the inner border (at -3°, height at least 100).
+- **In the paper-feed transition, the counter goes under the new frame only**: if the counter under the new frame extends several screens outward (to avoid bare edges), it covers the old frame as it moves up, leaving 0.9 s of empty counter (all three such transitions in the episode 13 video did this; caught by review while moving it into `receipt.js`; `rc.feed` clips it).
 - **Label illustrative graphics on screen**: dot-matrix curves and scatter follow the paper's described direction, not read values; the ingredient list is illustrative, not a real product.
