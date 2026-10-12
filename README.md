@@ -1,6 +1,6 @@
 # baitu-video
 
-**Make explainer videos with code — any topic, any of 14 visual styles, narrated, subtitled, rendered and checked by one engine.**
+**Make explainer videos with code — any topic, any of 17 visual styles, narrated, subtitled, rendered and checked by one engine.**
 A [Claude Code](https://claude.com/claude-code) skill: the method (formats, scenes, styles, a design library) plus the engine that turns a script into a finished MP4.
 
 中文说明:[README.zh.md](README.zh.md)
@@ -18,14 +18,22 @@ One page, one timeline: `?lang=en` switches to the English narration, subtitles 
 
 The whole example — both languages, both orientations — runs from [examples/sky-demo](examples/sky-demo/README.md) with no API key.
 
-## Fourteen styles, one scene
+## Seventeen styles, one scene
 The same scene and content with only the style layer swapped — switching style is one line (`VC.kit('whiteboard')`).
 
-![Fourteen styles side by side](styles/thumbs/_all.jpg)
+![Seventeen styles side by side](styles/thumbs/_all.jpg)
 
-paper skeuomorphic · game UI · flat geometric · flat illustration · cartoon UI · dark tech · whiteboard · dark math · chalkboard · kinetic type · risograph · thermal receipt · starlight · sports broadcast — details in [styles/INDEX.en.md](styles/INDEX.en.md).
+paper skeuomorphic · game UI · flat geometric · flat illustration · cartoon UI · dark tech · whiteboard · dark math · chalkboard · kinetic type · risograph · thermal receipt · starlight · sports broadcast · 8-bit pixel · newsprint · transit map — details in [styles/INDEX.en.md](styles/INDEX.en.md).
 
-**New: starlight** (`starlight`) — a near-black night sky, glowing line art and points of light, cool blue for structure and warm gold only for the answer, light sans type with a neon glow. It comes with a new set of audience-participation components (choice, countdown, number-line guess, fill the blank, scramble, mask; demo page `engine/vc/quiz.html`): let viewers choose or guess first, pause the narration with a countdown, then reveal. Two frames from a 41-second sample (a choice on a glowing balance, a point gliding to the answer):
+**New: newsprint** (`newsprint`) — newsprint paper, black ink plus one red, heavy serif headlines, thick-and-thin column rules, 45° halftone photos; the metaphor is "the headline back then". Made for myth-busting and "what they said then / what we know now" topics — the correction notice, wire copy and letters to the editor come as ready-made parts. Two frames from a full video made with it (7½ minutes, landscape):
+
+![Frames from a full video in the newsprint style](styles/samples/newsprint-film.jpg)
+
+**New: 8-bit pixel** (`pixel`) — pixel art on a 4px grid, 16 colours, a banded dithered sky, bitmap type, narration in an RPG dialogue box; the metaphor is "a level". Made for topics that walk through eras or a list one stage at a time. Two frames from a full video made with it (12 minutes, landscape):
+
+![Frames from a full video in the 8-bit pixel style](styles/samples/pixel-film.jpg)
+
+**Starlight** (`starlight`) — a near-black night sky, glowing line art and points of light, cool blue for structure and warm gold only for the answer, light sans type with a neon glow. It comes with a new set of audience-participation components (choice, countdown, number-line guess, fill the blank, scramble, mask; demo page `engine/vc/quiz.html`): let viewers choose or guess first, pause the narration with a countdown, then reveal. Two frames from a 41-second sample (a choice on a glowing balance, a point gliding to the answer):
 
 ![Frames from a sample in the starlight style](styles/samples/starlight-film.jpg)
 
@@ -47,7 +55,7 @@ A video is chosen by four questions — **what** (explainer, true story, tutoria
 |---|---|---|
 | Format | The narrative skeleton (12 formats: true-experiment story, story → method → test, scenario guide, concept lesson, versus, list…) | [formats/](formats/INDEX.en.md) |
 | Scene | The visual world and its writing sources (case files, lab desk, strategy game, terminal, whiteboard…) | [scenes/](scenes/INDEX.en.md) |
-| Style | How it's drawn (14 styles) | [styles/](styles/INDEX.en.md) |
+| Style | How it's drawn (17 styles) | [styles/](styles/INDEX.en.md) |
 | Channel profile | Your channel's own settings: voice, subtitles, platform rules, preferences | [profiles/](profiles/README.md) |
 
 The page is plain HTML/SVG where `render(t)` draws the frame for time `t`; the engine renders it frame by frame with headless Chromium and hands everything else — narration, subtitles, mixing, thumbnails, vertical cut, acceptance — to one CLI.

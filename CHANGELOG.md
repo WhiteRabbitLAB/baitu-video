@@ -1,5 +1,23 @@
 # Changelog / 更新说明
 
+## 2026-10-12
+
+### New / 新增
+- **Three new styles** (15th–17th), picked by the decision-maker from six cross-topic stills (transit map, blueprint, newsprint, 8-bit, assembly manual, shadow puppets; not tied to one channel). Each has a style card, three sample frames and a thumbnail. 8-bit pixel and newsprint have each been used for a full video (12 minutes and 7½ minutes); the README shows two frames from each. Transit map has samples only.
+  **三种新画风**(第 15–17 种),决策者从六张跨题材静帧(地铁线路图、工程蓝图、报纸号外、8-bit、装配说明书、皮影;不专属某个频道)里选出。各有画风卡、三张样张、缩略图。8-bit 像素、报纸号外各已用于一部整片(12 分钟、7 分 30 秒),README 各配两帧截图;地铁线路图只有样张。
+  - **8-bit pixel** (`pixel`): pixel art on a 4px grid, banded sky with checkerboard dithering (`backdrop: 'pixel'`, one `vc-dither-<i>` per band), Fusion Pixel for every role (sizes snap to 12), RPG dialogue box and window (`rpg`, stepped pop-in, blinking ▼), corner-bracket mark `pixbox`, stepped yellow badge `pixbadge`, a `blink` entrance, and a mascot rasterised on an 8px grid. The metaphor is "a level".
+    **8-bit 像素**(`pixel`):4px 一格的像素画、分带天空 + 棋盘抖动(底子 `pixel`,每条带一个 `vc-dither-<i>`)、全部角色用缝合像素字(字号吸附 12)、RPG 对话框与窗口(`rpg`,分步弹出、▼ 闪)、四角括号批注 `pixbox`、台阶切角黄牌印章 `pixbadge`、出场方式 `blink`、按 8px 栅格化的吉祥物。比喻是「一关」。
+  - **Newsprint** (`newsprint`): newsprint backdrop with fold crease (`backdrop: 'newsprint'`), serif headlines, wire copy typed in Special Elite, proofreader's red pen and reader's ballpoint, pull-quote bubble `quote`, column frame `column` (thick + thin rules), a 45° halftone pattern `vc-ht-news` and a halftone mascot. The metaphor is "the headline back then".
+    **报纸号外**(`newsprint`):新闻纸底子 + 折痕(`newsprint`)、宋体大标题、电讯原文用 Special Elite 逐字打出、校对红笔与读者圆珠笔、引语气泡 `quote`、专栏外框 `column`(一粗一细两道线)、45° 网点图案 `vc-ht-news` 与网点吉祥物。比喻是「当年的头条」。
+  - **Transit map** (`transit`): off-white with a faint ghost network that always keeps true 45° (`backdrop: 'transit'`, reference coordinates scaled uniformly), the signature `route` mark (a stretch of line drawn under the text, stations at both ends), black station-sign bubbles, a legend-box frame `legend`, line-coloured capsule stamps. The metaphor is "a journey with changes".
+    **地铁线路图**(`transit`):米白底 + 很淡的整张网(底子 `transit`,按参考坐标等比缩放,斜线永远 45°)、签名部件批注 `route`(字底下画一段线路,两头是站)、黑底站牌气泡、图例牌外框 `legend`、线路色胶囊印章。比喻是「一路换乘」。
+- **Newsprint type is much larger** after the decision-maker watched the full video ("a lot of the text is too small"): role defaults raised (notes R3 28 → 42 and black instead of grey, captions R10 22 → 30, red pencil R6 44 → 64, headlines R1 96 → 110, numbers R4 120 → 150), and the `column` frame's heading 34 → 46. The style card lists the minimums; real-newspaper density does not work on screen.
+  **报纸号外字号整体调大**(决策者看完整片:「很多字太小」):角色默认字号提高(说明 R3 28 → 42 且改黑墨不用灰、图注 R10 22 → 30、红笔 R6 44 → 64、标题 R1 96 → 110、数字 R4 120 → 150),`column` 专栏栏题 34 → 46。画风卡写了下限:照真报纸的密度排,在视频里不成立。
+- Newsprint style card pitfalls from the full video: draw the halftone source with contrast first, no rolling counter (strike the old value instead), small stamp rotation, chart bars to scale or labelled as illustrative.
+  报纸号外画风卡补了整片踩的坑:网点照片先把对比度画够、数字不用滚动计数器(旧值红笔划掉)、印章转角别大、图表条要么按比例要么标示意。
+- The existing 14 thumbnails re-render byte-identical after these engine additions.
+  加完这些引擎改动后,原有 14 张缩略图重出逐字节相同。
+
 ## 2026-10-11
 
 ### New / 新增

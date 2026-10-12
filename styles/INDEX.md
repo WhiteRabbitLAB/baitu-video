@@ -19,6 +19,9 @@
 | ![thermal](thumbs/thermal.jpg) | [thermal](thermal.md) | 热敏小票 | 米白热敏纸条、点阵字逐行打出、黑 + 红两色;比喻是「账」 | 收银台小票、清单、账单对比 | 能 | 整片 ×1(2026-10-10) |
 | ![starlight](thumbs/starlight.jpg) | [starlight](starlight.md) | 星夜光点 | 近黑星空、发光光点当主角、冷蓝细线 + 暖金答案、细黑体霓虹字 + 中英双语;配「观众动手」先猜再揭晓 | 二选一 + 数轴猜数(样片) | 能 | 样张 + 样片(2026-10-10,待决策者看) |
 | ![broadcast](thumbs/broadcast.jpg) | [broadcast](broadcast.md) | 体育转播 | 夜场看台 + 电视包装条:比分板、裁判条、场边 LED 赞助板;两队各一色,黄只给包装;比喻是「比赛」 | 终场比分、赛程条、赛后复核、其他赛区 | 能 | 整片 ×1(2026-10-11) |
+| ![pixel](thumbs/pixel.jpg) | [pixel](pixel.md) | 8-bit 像素 | 4px 一格的像素画、16 色、分带抖动天空、点阵字;对话进 RPG 对话框;比喻是「一关」 | 关卡标题、RPG 对话框旁白、角色卡、清单关卡 | 能 | 整片 ×1(2026-10-12) |
+| ![newsprint](thumbs/newsprint.jpg) | [newsprint](newsprint.md) | 报纸号外 | 新闻纸、黑 + 一个红、宋体大标题、粗细双线分栏、45° 网点照片;比喻是「当年的头条」 | 号外头版、更正启事、专栏、读者来信 | 能 | 整片 ×1(2026-10-12) |
+| ![transit](thumbs/transit.jpg) | [transit](transit.md) | 地铁线路图 | 粗彩线只走横竖和 45°、换乘站、双语站名、要走的线上色其余压灰;比喻是「一路换乘」 | 静帧(一条消息怎么走) | 能 | 样张(2026-10-12,待决策者看) |
 
 候选画风、入库标准(三张样张)和更新节奏见 [ROADMAP.md](ROADMAP.md)。
 

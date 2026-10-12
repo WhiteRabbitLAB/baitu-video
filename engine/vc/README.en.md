@@ -7,7 +7,7 @@ Visual components shared by every channel. Components only know text roles R1–
 | File | What it does |
 |---|---|
 | `vc.js` | The components (pure functions returning SVG strings, 1920×1080 coordinates, reproducible frame by frame) |
-| `styles.js` | The style looks: paper skeuomorphic `paper-skeuo`, game skeuomorphic `game-ui`, flat geometric `flat-geometric`, flat illustration `flat-illustration`, cartoon UI `cartoon-ui`, dark tech `tech-ui`, whiteboard `whiteboard`, dark math `dark-math`, chalkboard `chalkboard`, kinetic type `kinetic`, Risograph `risograph`, thermal receipt `thermal`, starlight `starlight`, sports broadcast `broadcast` (14 in all; thumbnails in ../../styles/INDEX.md) |
+| `styles.js` | The style looks: paper skeuomorphic `paper-skeuo`, game skeuomorphic `game-ui`, flat geometric `flat-geometric`, flat illustration `flat-illustration`, cartoon UI `cartoon-ui`, dark tech `tech-ui`, whiteboard `whiteboard`, dark math `dark-math`, chalkboard `chalkboard`, kinetic type `kinetic`, Risograph `risograph`, thermal receipt `thermal`, starlight `starlight`, sports broadcast `broadcast`, 8-bit pixel `pixel`, newsprint `newsprint`, transit map `transit` (17 in all; thumbnails in ../../styles/INDEX.md) |
 | `demo.html` | Demo page: one row per component, switchable style, Chinese / English, timeline |
 | `receipt.js` | Receipt parts: an add-on module for the thermal receipt style (pulled out of the episode 13 full video), `const rc = VC.receipt(kit, {onPrint, onFeed})`; see the three "receipt" rows below |
 | `broadcast.js` | Broadcast parts: an add-on module for the sports broadcast style (pulled out of the episode 14 full video), `const bc = VC.broadcast(kit, {onCue, onText, ledY})`; see the three "broadcast" rows below |

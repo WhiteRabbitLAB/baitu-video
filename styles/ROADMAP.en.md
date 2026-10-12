@@ -29,11 +29,17 @@ Sources: popular explainers (../catalog/references.md), original works from art 
 | Stick-figure characters | Simple characters, fast cuts + reaction close-ups | stories, lifestyle | TheOdd1sOut type | 🧪 | medium |
 | Launch-event glass cards | Dark bokeh background, frosted-glass cards, big numbers | reviews, finance | Product launch events | 🧪 | medium |
 | Financial charts | Axes first, data grows in, only one thing labeled | finance, data | Financial media chart videos | 🧪 | medium |
-| 8-bit pixel art | Low resolution pixel by pixel, a limited palette | gamified explainers, nostalgia | 8-bit game graphics | 🧪 untried | medium |
-| Chinese ink / shadow puppets / Dunhuang | Traditional visuals | Chinese history and culture | Ink paintings, shadow theatre, Dunhuang murals | 🧪 untried | medium |
+| 8-bit pixel art | Logical 480×270 scaled ×4, 16-colour palette, dithered sky; subtitles live in an RPG dialogue box (12px pixel font ×4) | gamified explainers, Earth history, nostalgia | 8-bit game graphics | ✅ picked by the decision-maker on 2026-10-12 from six stills; three samples made ([pixel](pixel.en.md)), awaiting review | medium |
+| Chinese ink / shadow puppets / Dunhuang | Traditional visuals | Chinese history and culture | Ink paintings, shadow theatre, Dunhuang murals | Shadow puppets: 🧪 still made (2026-10-12, Cao Chong weighs the elephant; warm-lit screen, translucent dyed leather, cut-outs letting light through, rivets, control rods, stage frame; `f.js`). Ink: tried outside the skill (fengshui/), not registered | medium |
+| Transit map | Thick coloured lines on white, only horizontal/vertical/45°, interchanges, bilingual station names; the route in colour, other lines greyed | processes, causal chains, "how a thing gets from A to B" | City metro maps | ✅ picked 2026-10-12; three samples made ([transit](transit.en.md)), awaiting review | medium |
+| Engineering blueprint | Prussian blue, white section drawing, dimension lines with letters only, numbered callouts, parts list, title block; the only warm colour is a yellow-pencil annotation | mechanisms, inventions, engineering | Engineering drawings | 🧪 still made (2026-10-12, elevator safety gear; `b.js`) | medium |
+| Newspaper extra | Newsprint, black + one red, serif headline, column rules, 45° halftone photo (drawn, then screened) | historical events, reversals, corrections | Newspaper front pages | ✅ picked 2026-10-12; three samples made ([newsprint](newsprint.en.md)), awaiting review | medium |
+| Assembly manual | White paper, uniform black line art + one light grey, huge step numbers, parts list, ✗/✓ comparison, almost no words | tutorials, methods, using AI | Furniture assembly manuals (no brand) | 🧪 still made (2026-10-12, three steps before asking AI; `e.js`) | medium |
 | Bauhaus / Constructivism / Pop | Geometric composition, halftones, thick outlines | design history, opinion | Bauhaus, Constructivist, Pop originals | 🧪 untried | low |
 | Impressionism / Van Gogh / ukiyo-e | Brushstrokes filling the frame | art history | Impressionist, Van Gogh and ukiyo-e originals | 🧪 untried | low |
 | Realistic oil (Rembrandt, Renaissance) | Realistic light modelling figures | art history | Rembrandt, Renaissance originals | 🧪 untried (likely hard in pure code; may need image generation) | low |
+
+Contact sheet: `out/style-explore/_all.jpg` (six stills made the same way, each on a different topic, not specific to one channel); render with `node brief/style-explore/shoot.mjs`.
 
 ## Update rhythm
 - **Every episode validates at least one new combination** (new style × existing scene, or existing style × new scene), producing the three samples along the way.

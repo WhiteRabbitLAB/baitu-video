@@ -409,4 +409,99 @@
       bar: { font: H, accent: c.accent, track: '#8C9BB8', text: '#fff', ink: '#000', shade: .3 },
     };
   }
+  // ---------------- 8-bit 像素 Pixel:低分辨率像素画(一个像素 = 4px)、有限色板、分带抖动的天空;字全是点阵字,对话进 RPG 对话框 ----------------
+  // 2026-10-12 定(owner 从六张跨题材静帧里选了它、报纸号外、地铁线路图三张)。比喻:「一局游戏、一关」—— 年代 = 关卡,数量 = 生命值 / 分数,旁白 = 对话框。
+  // 规矩:点阵字字号只能是 12 的整数倍(pixel:12,kit 自动吸附);所有形状对齐 4px 网格,不用圆角、不用渐变、不用模糊;
+  //   动效是「步进」的:出现 = 闪(blink)或分两三步放大,没有缓动曲线。颜色即含义:黄只给「要看的那个」(分数、名牌、印章),红给危险 / 失去。
+  {
+    const c = {
+      bg: '#1d1838', sky: ['#1d1838', '#2a2050', '#3a2a5c', '#4f2f63'], star: '#fff4e0',
+      ink: '#0d0b14', box: '#0d0b14', text: '#fff4e0', muted: '#b9b0d6', accent: '#ffd27a', marker: '#ffd27a', mark: '#ffd27a', glow: '#ffd27a', red: '#e0505a', cool: '#8fd3ff',
+      green: '#5aa14a', grassHi: '#a8d36b', dirt: '#7b4a2a', dirt2: '#4a2c22', bodyHi: '#ffe7a8',
+      edge: '#fff4e0', surface: '#0d0b14', card: '#0d0b14', cardD: '#2a2050', title: '#ffd27a', panel: '#0d0b14',
+      chatU: '#2a2050', chatA: '#0d0b14', chatTxt: '#fff4e0', term: '#0d0b14', termTxt: '#fff4e0', termHi: '#ffd27a', lw: 4,
+    };
+    const P = 'Fusion Pixel 12:400';
+    VC.styles['pixel'] = {
+      id: 'pixel', name: '8-bit 像素', nameEn: '8-bit pixel', c, vig: 0, bit8: true, pixel: 12,
+      roles: {
+        R1: { zh: P, en: P, size: 72, fill: c.text, entrance: 'type', cps: 14 },
+        R2: { zh: P, en: P, size: 48, fill: c.text, entrance: 'type', cps: 20 },
+        R3: { zh: P, en: P, size: 24, fill: c.muted, entrance: 'type', cps: 40 },
+        R4: { zh: P, en: P, size: 96, fill: c.accent },
+        R5: { zh: P, en: P, size: 36, fill: c.text, entrance: 'type', cps: 16, cpsEn: 32 },   // 原文:同样点阵逐字打出(RPG 读信 / 读告示)
+        R6: { zh: P, en: P, size: 48, fill: c.red, entrance: 'blink' },
+        R7: { zh: P, en: P, size: 36, fill: c.text, entrance: 'static' },
+        R8: { zh: P, en: P, size: 36, fill: c.cool, entrance: 'type', cps: 16, cpsEn: 32 },   // 本画风没有手写层:手记改成「系统提示」青色点阵字
+        R9: { zh: P, en: P, size: 36, fill: c.ink },
+        R10: { zh: P, en: P, size: 24, fill: c.muted, entrance: 'type', cps: 40 },
+      },
+      mono: { zh: P, en: P },
+      carriers: { backdrop: 'pixel', mark: 'pixbox', stamp: 'pixbadge', counter: 'punch', bubble: 'rpg', window: 'rpg', panel: 'rpg' },
+      bar: { font: 'Noto Sans SC:900', accent: c.accent, track: c.muted, text: '#fff', ink: '#000', shade: .3 },
+    };
+  }
+  // ---------------- 报纸号外 Newsprint:新闻纸、黑油墨 + 一个红、宋体大标题、粗细双线分栏、45° 网点 ----------------
+  // 2026-10-12 定(同上一轮)。比喻:「这件事在当时就是头条」—— 历史事件、翻案、更正;更正启事、电讯稿是这个画风天生的部件。
+  // 颜色即含义:红只给报头 / 校对红笔 / 印章,其余黑;照片一律网点化(kit 里的 vc-ht-news 图案),图注写清是「示意」还是真照片。
+  // 字:标题思源宋体 900,正文宋体 500;电讯原文(R5)逐字打出,英文走 Special Elite(电传打字机);手写只有两种:校对红笔(R6)、读者圆珠笔(R8)。
+  {
+    const c = {
+      bg: '#ebe3cf', paper: '#ebe3cf', card: '#f1ead9', ink: '#1d1b17', text: '#1d1b17', muted: '#5a5348', accent: '#c3241b', red: '#c3241b', mark: '#c3241b', marker: '#c3241b',
+      pen: '#24324C', note: '#f1ead9', tape: '#E9DDB4', surface: '#f1ead9', edge: '#1d1b17', title: '#1d1b17',
+      bezel: '#2B3236', screen: '#0F1F1B', scrTxt: '#8FB8A8', scrHi: '#6FD6A8', scrGrid: '#24443B',
+      chatU: '#e3dac4', chatA: '#f1ead9', chatTxt: '#1d1b17', term: '#1d1b17', termTxt: '#ebe3cf', termHi: '#e8b04a', lw: 3,
+    };
+    const H = 'Noto Serif SC:900', B = 'Noto Serif SC:500';
+    VC.styles['newsprint'] = {
+      id: 'newsprint', name: '报纸号外', nameEn: 'Newsprint', c, vig: .22, news: true,
+      roles: {
+        // 字号 2026-10-12 按决策者看 N15 整片的反馈整体调大(「很多字太小,感官不好」):说明字 40 起、用黑墨不用灰,图注 30 起
+        R1: { zh: H, en: H, size: 110, fill: c.ink, entrance: 'fadeUp' },
+        R2: { zh: H, en: H, size: 60, fill: c.ink, entrance: 'fadeUp' },
+        R3: { zh: B, en: B, size: 42, fill: c.ink, entrance: 'fadeUp' },
+        R4: { zh: H, en: H, size: 150, fill: c.ink },
+        R5: { zh: B, en: 'Special Elite:400', size: 46, fill: c.ink, entrance: 'type', cps: 14, cpsEn: 30, ink: .2, jit: .04 },   // 电讯稿 / 原文:电传打字机逐字打出
+        R6: { zh: 'Zhi Mang Xing:400', en: 'Caveat Brush:400', size: 64, fill: c.red, entrance: 'hand', cps: 6, blend: 'multiply' },   // 校对红笔
+        R7: { zh: B, en: B, size: 46, fill: c.ink, entrance: 'static' },
+        R8: { zh: 'Xiaolai:400', en: 'Kalam:400', size: 56, fill: c.pen, entrance: 'hand', cps: 8, cpsEn: 18, jit: 1 },   // 读者在报上写的圆珠笔字
+        R9: { zh: H, en: H, size: 48, fill: c.red },
+        R10: { zh: B, en: B, size: 30, fill: c.muted, entrance: 'fadeUp' },
+      },
+      mono: { zh: B, en: 'Special Elite:400' },
+      carriers: { backdrop: 'newsprint', mark: 'pencil', stamp: 'ink', counter: 'print', bubble: 'quote', window: 'column', panel: 'column' },
+      bar: { font: 'Noto Sans SC:900', accent: c.red, track: c.ink, text: c.ink, ink: c.paper, shade: 0 },
+    };
+  }
+  // ---------------- 地铁线路图 Transit map:米白底、粗彩线只走横竖和 45°、白圈站、黑粗圈换乘、站牌式黑底白字 ----------------
+  // 2026-10-12 定(同上一轮)。比喻:「一段路要换乘」—— 流程的每一步 = 一站,换了机制 = 换乘,要走的线上色、别的线压灰。
+  // 颜色即含义:每条线一种颜色(橙 / 蓝 / 绿,页面按线路传),红只给「你在这里」和要警惕的量;字全是黑体(站牌字),英文 Space Grotesk;
+  //   没有手写层。出场方式 wipe(像站牌条滑出);批注 = 字底下画一段线路(route)。
+  {
+    const c = {
+      bg: '#f5f3ed', ink: '#1b1b1b', text: '#1b1b1b', muted: '#7a776f', accent: '#d6312b', red: '#d6312b',
+      orange: '#ef7d1a', blue: '#1f6db5', green: '#2a9d5c', grey: '#c9c6bd', marker: '#ef7d1a', mark: '#1f6db5',
+      bubble: '#1b1b1b', card: '#ffffff', cardD: '#1b1b1b', title: '#ffffff', surface: '#ffffff', edge: '#1b1b1b',
+      chatU: '#ebe8df', chatA: '#ffffff', chatTxt: '#1b1b1b', term: '#1b1b1b', termTxt: '#f5f3ed', termHi: '#ef7d1a', lw: 4,
+    };
+    const H = 'Noto Sans SC:900', B = 'Noto Sans SC:500', GH = H, GB = B;   // 角色里的英文 / 数字也走思源黑体:Space Grotesk 的「1」带大钩,大数字很怪(样张实测);双语站名的英文小字由页面用 Space Grotesk 画
+    VC.styles['transit'] = {
+      id: 'transit', name: '地铁线路图', nameEn: 'Transit map', c, vig: 0,
+      roles: {
+        R1: { zh: H, en: GH, size: 88, fill: c.ink, entrance: 'wipe' },
+        R2: { zh: H, en: GH, size: 52, fill: c.ink, entrance: 'wipe' },
+        R3: { zh: B, en: GB, size: 28, fill: c.muted, entrance: 'wipe', wipeDur: .3 },
+        R4: { zh: H, en: GH, size: 140, fill: c.ink },
+        R5: { zh: 'Noto Serif SC:500', en: 'Noto Serif SC:500', size: 38, fill: c.ink, entrance: 'fadeUp' },   // 原文:印刷原件,不是站牌字
+        R6: { zh: H, en: GH, size: 44, fill: c.red, entrance: 'pop' },
+        R7: { zh: B, en: GB, size: 34, fill: '#ffffff', entrance: 'static' },   // 对白在黑底站牌气泡里
+        R8: { zh: B, en: GB, size: 38, fill: c.blue, entrance: 'wipe' },   // 本画风没有手写层:手记改成蓝色「站内提示」小字
+        R9: { zh: H, en: GH, size: 36, fill: '#ffffff' },   // 印章 = 线路色胶囊牌,白字
+        R10: { zh: B, en: GB, size: 22, fill: c.muted, entrance: 'wipe', wipeDur: .3 },
+      },
+      mono: { zh: B, en: 'JetBrains Mono:400' },
+      carriers: { backdrop: 'transit', mark: 'route', stamp: 'capsule', counter: 'punch', bubble: 'flat', window: 'legend', panel: 'legend' },
+      bar: { font: H, accent: c.orange, track: c.ink, text: c.ink, ink: '#fff', shade: 0 },
+    };
+  }
 })();

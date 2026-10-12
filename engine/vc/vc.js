@@ -372,6 +372,7 @@
         const fid = id('gw'), b = 9 * (1 - k);
         return b < .3 ? `<g opacity="${f3(k)}">${body}</g>` : `<filter id="${fid}" x="-10%" y="-40%" width="120%" height="180%"><feGaussianBlur stdDeviation="${f2(b)}"/></filter><g filter="url(#${fid})" opacity="${f3(k)}">${body}</g>`;
       }
+      if (ent === 'blink') { const e = t - t0; return e >= .4 || Math.floor(e / .08) % 2 === 0 ? body : ''; }   // 8-bit:亮灭亮灭亮(每 0.08s 一拍)后定住;没有渐变
       if (ent === 'pop') { const k = seg(t, t0, t0 + .4), w = width(role, s, size), cx = ax(x, w, anchor) + w / 2; return `<g opacity="${f3(clamp(k * 3))}" transform="translate(${f1(cx)},${f1(y)}) scale(${f3(Math.max(.001, ease.back(k)))}) translate(${f1(-cx)},${f1(-y)})">${body}</g>`; }
       return body;
     }
@@ -396,6 +397,15 @@
       }
       if (kind === 'box') {   // Manim 的 SurroundingRectangle:黄色矩形一笔画出
         return sketch(VC.shape.rect(x - 10, y - 6, w + 20, h + 12, 4), t, t0, o.dur || .6, { color: col, width: 4, pen: false });
+      }
+      if (kind === 'pixbox') {   // 8-bit:先出四个角括号,再连成整框;分步出现,不缓动;线宽 4 = 一个像素
+        const st = Math.min(3, Math.floor(seg(t, t0, t0 + .36) * 3 + 1e-6)), X0 = x - 6, Y0 = y - 8, W0 = w + 12, H0 = h + 16, L0 = Math.min(28, W0 / 3);
+        const corners = `M${f1(X0)},${f1(Y0 + L0)} V${f1(Y0)} H${f1(X0 + L0)} M${f1(X0 + W0 - L0)},${f1(Y0)} H${f1(X0 + W0)} V${f1(Y0 + L0)} M${f1(X0 + W0)},${f1(Y0 + H0 - L0)} V${f1(Y0 + H0)} H${f1(X0 + W0 - L0)} M${f1(X0 + L0)},${f1(Y0 + H0)} H${f1(X0)} V${f1(Y0 + H0 - L0)}`;
+        return `<path d="${st >= 2 ? `M${f1(X0)},${f1(Y0)} H${f1(X0 + W0)} V${f1(Y0 + H0)} H${f1(X0)} Z` : corners}" fill="none" stroke="${col}" stroke-width="4" stroke-linejoin="miter" stroke-linecap="square"/>`;
+      }
+      if (kind === 'route') {   // 地铁线路图:字下面一段线路从左画到右,起点一站、画到头再亮终点站(站 = 白圈黑边)
+        const yy = y + h + 14, ww = (w + 12) * ease.out(k), stn = (cx) => `<circle cx="${f1(cx)}" cy="${f1(yy)}" r="9" fill="#fff" stroke="${S.c.ink}" stroke-width="4.5"/>`;
+        return `<path d="M${f1(x - 6)},${f1(yy)} H${f1(x - 6 + ww)}" stroke="${col}" stroke-width="12" stroke-linecap="round"/>${stn(x - 6)}${k >= 1 ? stn(x + w + 6) : ''}`;
       }
       if (kind === 'glow') {   // 下划线从左扫到右 + 辉光
         const ww = w * ease.out(k);
@@ -439,6 +449,11 @@
           <g transform="translate(${f1(h * .45)},0)">${body(col)}</g>
           <clipPath id="${cid}"><rect x="${f1(X)}" y="${f1(-h / 2)}" width="${f1(W)}" height="${f1(h)}" rx="8"/></clipPath>
           ${sw > 0 && sw < 1 ? `<rect clip-path="url(#${cid})" x="${f1(X - 80 + (W + 160) * sw)}" y="${f1(-h / 2)}" width="60" height="${f1(h)}" fill="#fff" opacity=".35" transform="skewX(-20)"/>` : ''}</g>`;
+      }
+      if (kind === 'pixbadge') {   // 8-bit:黄底像素牌(切角 = 台阶状)+ 右下硬阴影,分三步放大(.6 → .85 → 1)落定,不缓动
+        const st = Math.min(2, Math.floor(seg(t, t0, t0 + .18) * 3 + 1e-6)), sc = [.6, .85, 1][st], q = 8;
+        const plate = (dx, dy, f) => `<path d="M${f1(-w / 2 + q + dx)},${f1(-h / 2 + dy)} H${f1(w / 2 - q + dx)} V${f1(-h / 2 + q + dy)} H${f1(w / 2 + dx)} V${f1(h / 2 - q + dy)} H${f1(w / 2 - q + dx)} V${f1(h / 2 + dy)} H${f1(-w / 2 + q + dx)} V${f1(h / 2 - q + dy)} H${f1(-w / 2 + dx)} V${f1(-h / 2 + q + dy)} H${f1(-w / 2 + q + dx)} Z" fill="${f}"/>`;
+        return `<g transform="translate(${f1(cx)},${f1(cy)}) scale(${sc})">${plate(8, 8, S.c.ink)}${plate(0, 0, o.fill || S.c.marker)}${body(col)}</g>`;
       }
       if (kind === 'capsule') {   // 胶囊标签:无描边色块,淡入上滑
         const k = ease.out(seg(t, t0, t0 + .4));
@@ -549,6 +564,23 @@
         const seedB = strSeed(s), dB = [VC.wobblyRect(bx, by, w, h, seedB, 3.5), VC.wobblyLine(-14, by + h + 2, 0, -6, seedB + 1, 1.5) + ' ' + VC.wobblyLine(0, -6, 14, by + h + 2, seedB + 2, 1.5).replace('M', 'L')];
         return `<g transform="translate(${f1(x)},${f1(y)})" opacity="${f2(1 - kout)}">${sketch(dB, t, t0, .45, { color: S.c.ink, width: 4.5, pen: false })}<g opacity="${f2(seg(t, t0 + .35, t0 + .6))}">${txt}</g></g>`;
       }
+      if (kind === 'rpg') {   // 8-bit:RPG 对话框 —— 深底、内侧一圈 4px 亮边、台阶状小尾巴;分两步弹出(.7 → 1),说完右下角 ▼ 闪(右边多留 36px 给它,不压字)
+        const sc = t < t0 + .06 ? .7 : 1, bg = S.c.box || S.c.ink, bw = w + 36, bx2 = side > 0 ? bx : bx - 36;
+        const tail = [0, 1, 2, 3].map(i => `<rect x="${f1(-16 + i * 4)}" y="${f1(by + h - 2 + i * 6)}" width="${f1(32 - i * 8)}" height="6" fill="${bg}"/>`).join('');
+        const arrow = t > t0 + .5 && Math.floor((t - t0) / .4) % 2 === 0 ? `<path d="M${f1(bx2 + bw - 34)},${f1(by + h - 28)} h16 l-8,10 z" fill="${S.c.accent}"/>` : '';
+        const txt2 = side > 0 ? txt : `<g transform="translate(-36,0)">${txt}</g>`;
+        return `<g transform="translate(${f1(x)},${f1(y)}) scale(${sc})" opacity="${f2(1 - kout)}">
+          <rect x="${f1(bx2)}" y="${f1(by)}" width="${f1(bw)}" height="${f1(h)}" fill="${bg}"/>${tail}
+          <rect x="${f1(bx2 + 8)}" y="${f1(by + 8)}" width="${f1(bw - 16)}" height="${f1(h - 16)}" fill="none" stroke="${S.c.edge}" stroke-width="4"/>${txt2}${arrow}</g>`;
+      }
+      if (kind === 'quote') {   // 报纸引语:不画框,左边一条红竖线 + 上下两道细线;纸色垫底(盖住下面的版面);淡入
+        const k = ease.out(kin), pc = S.c.card || S.c.bg;
+        return `<g transform="translate(${f1(x)},${f1(y)})" opacity="${f2(k * (1 - kout))}">
+          <rect x="${f1(bx - 10)}" y="${f1(by - 10)}" width="${f1(w + 30)}" height="${f1(h + 20)}" fill="${pc}"/>
+          <path d="M${f1(bx - 10)},${f1(by - 10)} H${f1(bx + w + 20)} M${f1(bx - 10)},${f1(by + h + 10)} H${f1(bx + w + 20)}" stroke="${S.c.ink}" stroke-width="1.5"/>
+          <rect x="${f1(bx + pad * .3)}" y="${f1(by + pad * .4)}" width="6" height="${f1(h - pad * .8)}" fill="${S.c.accent}"/>
+          <g transform="translate(${f1(pad * .4)},0)">${txt}</g></g>`;
+      }
       if (kind === 'riso') {   // 纸片 + 墨线框,淡入上滑
         const k = ease.out(kin);
         return `<g transform="translate(${f1(x)},${f1(y + 18 * (1 - k))})" opacity="${f2(k * (1 - kout))}">
@@ -614,6 +646,22 @@
         return `<path d="${d}" fill="#000" opacity=".35" filter="url(#vc-soft)" transform="translate(6,12)"/><path d="${d}" fill="${c.paper}"/><path d="${d}" fill="url(#vc-curl)"/>
           ${title ? staticRun(title, x + w / 2, y + 60, R('R2'), snap(36), c.ink, 'middle') + `<path d="M${x + 36} ${y + 86} H${x + w - 36}" stroke="${c.ink}" stroke-width="3" stroke-dasharray="9 7"/>` : ''}`;
       }
+      if (kind === 'rpg') {   // 8-bit:深底 + 内侧 4px 亮边;标题是左上角压在边上的名牌(和对话框的说话人牌同一造型)
+        const bg = dark ? c.term : (c.box || c.ink), ts = snap(36), tw = title ? width('R2', title, ts) + 48 : 0;
+        return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${bg}"/><rect x="${x + 8}" y="${y + 8}" width="${w - 16}" height="${h - 16}" fill="none" stroke="${c.edge}" stroke-width="4"/>
+          ${title ? `<rect x="${x + 24}" y="${y - 28}" width="${f1(tw)}" height="64" fill="${bg}"/><rect x="${x + 32}" y="${y - 20}" width="${f1(tw - 16)}" height="48" fill="none" stroke="${c.edge}" stroke-width="4"/>` + staticRun(title, x + 48, y + 16, R('R2'), ts, c.title || c.accent, 'start') : ''}`;
+      }
+      if (kind === 'column') {   // 报纸专栏:不画框,顶上一粗一细两道线、栏题宋体 46(N15 反馈:34 太小)、栏题下一道细线,底下一道细线;纸色垫底
+        const tc = dark ? c.termTxt : c.ink;
+        return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${dark ? c.term : (c.card || c.bg)}"/>
+          <path d="M${x} ${y + 3} H${x + w}" stroke="${c.ink}" stroke-width="6"/><path d="M${x} ${y + 12} H${x + w}" stroke="${c.ink}" stroke-width="1.5"/>
+          ${title ? staticRun(title, x + 4, y + 66, R('R2'), 46, tc, 'start') + `<path d="M${x} ${y + 88} H${x + w}" stroke="${tc}" stroke-width="1.5"/>` : ''}
+          <path d="M${x} ${y + h} H${x + w}" stroke="${c.ink}" stroke-width="1.5"/>`;
+      }
+      if (kind === 'legend') {   // 地铁图例牌:白底黑边圆角框,标题条 = 站牌(黑底白字),左头一枚线路色小方块
+        return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="12" fill="${dark ? c.term : c.card}" stroke="${c.ink}" stroke-width="3.5"/>
+          ${title ? `<path d="M${x + 12} ${y} H${x + w - 12} a12 12 0 0 1 12 12 V${y + 58} H${x} V${y + 12} a12 12 0 0 1 12 -12Z" fill="${c.cardD}"/><rect x="${x + 18}" y="${y + 13}" width="32" height="32" rx="7" fill="${c.marker}"/>` + staticRun(title, x + 64, y + 40, R('R2'), 26, c.title, 'start') : ''}`;
+      }
       if (kind === 'riso') {
         return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${dark ? c.term : c.paper}" stroke="${c.ink}" stroke-width="4"/>
           <path d="M${x + 10} ${y} H${x + w - 10} a10 10 0 0 1 10 10 V${y + 54} H${x} V${y + 10} a10 10 0 0 1 10 -10Z" fill="${c.pink}" style="mix-blend-mode:multiply"/>
@@ -647,7 +695,7 @@
       items.forEach(it => {
         if (it.k <= 0) return;
         const user = it.m.who === 'user', bx = user ? x + w - pad - it.bw : x + pad, by = y + top + it.y;
-        const fill = user ? c.chatU : c.chatA, stroke = kind === 'outline' ? c.ink : kind === 'win' ? (user ? c.accent : c.edge) : kind === 'gold' ? c.gold : (user ? '#D6C8A8' : '#E3DCCB');
+        const fill = user ? c.chatU : c.chatA, stroke = kind === 'outline' ? c.ink : kind === 'win' ? (user ? c.accent : c.edge) : kind === 'gold' ? c.gold : kind === 'rpg' ? c.edge : kind === 'column' || kind === 'legend' ? c.ink : (user ? '#D6C8A8' : '#E3DCCB');
         const sw = kind === 'outline' ? 4 : kind === 'flat' || kind === 'plate' ? 0 : 2, txtCol = c.chatTxt || (kind === 'win' ? c.text : '#24302A');
         const k = user ? ease.back(it.k) : ease.out(it.k), ox = user ? bx + it.bw : bx;
         let inner = `<rect x="${f1(bx)}" y="${f1(by)}" width="${f1(it.bw)}" height="${f1(it.bh)}" rx="${kind === 'outline' ? 20 : 16}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
@@ -774,6 +822,29 @@
         const bd = c.pi || c.accent, eye = (ex) => `<ellipse cx="${ex}" cy="${cy - 18}" rx="20" ry="24" fill="#fff"/><circle cx="${ex - 7}" cy="${cy - 24}" r="10" fill="#000"/><circle cx="${ex - 10}" cy="${cy - 28}" r="3" fill="#fff"/>`;
         const [st, lL, lR] = sproutD(x, cy - r), sprout = `<path d="${st}" fill="none" stroke="${bd}" stroke-width="8" stroke-linecap="round"/><path d="${lL}" fill="${bd}"/><path d="${lR}" fill="${bd}"/>`;
         return `${sprout}<circle cx="${x}" cy="${cy}" r="${r}" fill="${bd}"/>${eye(x - 26)}${eye(x + 26)}<path d="M${x - 18},${cy + 30} Q${x},${cy + 42} ${x + 18},${cy + 30}" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/>`;
+      }
+      if (b === 'rpg') {   // 8-bit:同一个圆身子 + 小芽,按 8px 方格栅格化(格子中心落在形状里就填),外圈一格深色描边,左上一块亮面
+        const P = 8, cells = new Map(), leafC = c.green || '#5aa14a';
+        for (let j = Math.floor((cy - r - 90) / P); j <= Math.ceil(feet / P); j++) for (let i = Math.floor((x - r - 70) / P); i <= Math.ceil((x + r + 70) / P); i++) {
+          const px = i * P + P / 2, py = j * P + P / 2;
+          if ((px - x) ** 2 + (py - cy) ** 2 <= r * r) cells.set(i + ',' + j, (px - x + r * .35) ** 2 + (py - cy + r * .4) ** 2 < (r * .32) ** 2 ? (c.bodyHi || body) : body);
+          else if (py < cy - r + 4 && py > cy - r - 44 && Math.abs(px - x - 2) < 5) cells.set(i + ',' + j, leafC);   // 茎
+          else if (((px - x + 24) / 30) ** 2 + ((py - cy + r + 50) / 13) ** 2 <= 1 || ((px - x - 34) / 32) ** 2 + ((py - cy + r + 54) / 13) ** 2 <= 1) cells.set(i + ',' + j, leafC);   // 两片叶
+        }
+        let out = '';
+        for (const key of cells.keys()) { const [i, j] = key.split(',').map(Number); for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) if (!cells.has((i + di) + ',' + (j + dj))) out += `<rect x="${(i + di) * P}" y="${(j + dj) * P}" width="${P}" height="${P}" fill="${c.ink}"/>`; }
+        for (const [key, col] of cells) { const [i, j] = key.split(',').map(Number); out += `<rect x="${i * P}" y="${j * P}" width="${P}" height="${P}" fill="${col}"/>`; }
+        const g = v => Math.round(v / P) * P, eye = ex => `<rect x="${g(ex)}" y="${g(cy - 24)}" width="${P * 2}" height="${P * 3}" fill="${c.ink}"/>`;
+        return `<rect x="${g(x - r * .9)}" y="${g(feet)}" width="${g(r * 1.8)}" height="${P}" fill="#000" opacity=".3"/>` + out + eye(x - 40) + eye(x + 24)
+          + [[-16, 16], [-8, 24], [0, 24], [8, 16]].map(([dx, dy]) => `<rect x="${g(x + dx)}" y="${g(cy + dy)}" width="${P}" height="${P}" fill="${c.ink}"/>`).join('');
+      }
+      if (b === 'quote') {   // 报纸:身子是 45° 网点(vc-ht-news),黑墨描边;叶子用唯一的红
+        const [st, lL, lR] = sproutD(x, cy - r);
+        return `<path d="${st}" fill="none" stroke="${c.ink}" stroke-width="6" stroke-linecap="round"/><path d="${lL}" fill="${c.accent}" stroke="${c.ink}" stroke-width="3"/><path d="${lR}" fill="${c.accent}" stroke="${c.ink}" stroke-width="3"/>
+          <circle cx="${x}" cy="${cy}" r="${r}" fill="${c.card || c.bg}"/><circle cx="${x}" cy="${cy}" r="${r}" fill="url(#vc-ht-news)"/><circle cx="${x}" cy="${cy}" r="${r}" fill="none" stroke="${c.ink}" stroke-width="5"/>
+          <circle cx="${x - 30}" cy="${cy - 12}" r="13" fill="${c.card || c.bg}"/><circle cx="${x + 30}" cy="${cy - 12}" r="13" fill="${c.card || c.bg}"/>
+          <circle cx="${x - 30}" cy="${cy - 12}" r="9" fill="${c.ink}"/><circle cx="${x + 30}" cy="${cy - 12}" r="9" fill="${c.ink}"/>
+          <path d="M${x - 14},${cy + 22} Q${x},${cy + 32} ${x + 14},${cy + 22}" fill="none" stroke="${c.card || c.bg}" stroke-width="11" stroke-linecap="round"/><path d="M${x - 14},${cy + 22} Q${x},${cy + 32} ${x + 14},${cy + 22}" fill="none" stroke="${c.ink}" stroke-width="5" stroke-linecap="round"/>`;
       }
       if (b === 'riso') {
         const [st, lL, lR] = sproutD(x, cy - r);
@@ -1032,7 +1103,8 @@
     function defs(o = {}) {
       return `${S.riso ? risoDefs(o.frame || 0) : ''}${S.thermal ? `<filter id="vc-thermal" x="0" y="0" width="1" height="1"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="1" seed="4" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.9 1.35" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>
         <linearGradient id="vc-curl" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".10"/><stop offset=".08" stop-color="#000" stop-opacity="0"/><stop offset=".92" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".12"/></linearGradient>
-        <pattern id="vc-counter" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="${S.c.bg}"/><rect width="3" height="3" fill="${S.c.bg2 || S.c.bg}"/></pattern>` : ''}<filter id="vc-soft" x="-10%" y="-10%" width="120%" height="130%"><feGaussianBlur stdDeviation="9"/></filter>
+        <pattern id="vc-counter" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="${S.c.bg}"/><rect width="3" height="3" fill="${S.c.bg2 || S.c.bg}"/></pattern>` : ''}${S.news ? `<pattern id="vc-ht-news" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><circle cx="4.5" cy="4.5" r="2.3" fill="${S.c.ink}"/></pattern>
+        <linearGradient id="vc-fold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset=".45" stop-color="#000" stop-opacity=".06"/><stop offset=".5" stop-color="#fff" stop-opacity=".22"/><stop offset=".56" stop-color="#000" stop-opacity=".04"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>` : ''}${S.bit8 ? (S.c.sky || []).map((col, i) => `<pattern id="vc-dither-${i}" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="4" height="4" fill="${col}"/><rect x="4" y="4" width="4" height="4" fill="${col}"/></pattern>`).join('') : ''}<filter id="vc-soft" x="-10%" y="-10%" width="120%" height="130%"><feGaussianBlur stdDeviation="9"/></filter>
         <filter id="vc-glow" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>
         <filter id="vc-smudge" filterUnits="userSpaceOnUse" x="-200" y="-200" width="2320" height="1480"><feGaussianBlur stdDeviation="22"/></filter>
         <filter id="vc-chalk" x="-5%" y="-10%" width="110%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="1.2" numOctaves="2" seed="4" result="n"/>
@@ -1072,6 +1144,26 @@
         const nl = Math.max(1, Math.round(w / 480));
         for (let i = 0; i < nl; i++) { const lx = x + (i + .5) * w / nl; s += `<circle cx="${f1(lx)}" cy="${f1(y + 24)}" r="36" fill="#fff" opacity=".035"/><circle cx="${f1(lx)}" cy="${f1(y + 24)}" r="7" fill="#fff" opacity=".35"/>`; }
         s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-vig)"/>`;
+      }
+      if (b === 'pixel') {   // 8-bit:天空分几条色带,交界处 8px 高的棋盘抖动(下一条的颜色);固定种子的像素星;整屏时底部一条草地 + 泥土(地面在 86% 高,吉祥物脚底对齐)
+        const bands = c.sky || [c.bg], bh = Math.round(h * .86 / bands.length / 4) * 4;
+        bands.forEach((col, i) => { s += `<rect x="${x}" y="${y + i * bh}" width="${w}" height="${i === bands.length - 1 ? h - i * bh : bh}" fill="${col}"/>`; if (i) s += `<rect x="${x}" y="${y + i * bh - 8}" width="${w}" height="8" fill="url(#vc-dither-${i})"/>`; });
+        const n = Math.round(w * h / (1920 * 1080) * 70);
+        for (let i = 0; i < n; i++) { const sx = Math.round((x + h2(i, 5, 81) * w) / 4) * 4, sy = Math.round((y + h2(i, 6, 81) * h * .45) / 4) * 4; s += `<rect x="${sx}" y="${sy}" width="4" height="4" fill="${c.star || '#fff4e0'}" opacity="${f2(.35 + h2(i, 7, 81) * .6)}"/>`; }
+        if (w >= 1920 && h >= 1080) {
+          const gy = Math.round((y + h * .86) / 4) * 4;
+          s += `<rect x="${x}" y="${gy}" width="${w}" height="${y + h - gy}" fill="${c.dirt || '#7b4a2a'}"/><rect x="${x}" y="${gy}" width="${w}" height="4" fill="${c.grassHi || '#a8d36b'}"/><rect x="${x}" y="${gy + 4}" width="${w}" height="12" fill="${c.green || '#5aa14a'}"/>`;
+          for (let i = 0; i < w / 48; i++) s += `<rect x="${x + i * 48 + (i % 2) * 20}" y="${gy + 28 + (i % 3) * 16}" width="8" height="4" fill="${c.dirt2 || '#4a2c22'}"/>`;
+        }
+      }
+      if (b === 'newsprint') {   // 报纸:新闻纸色 + 纤维颗粒(正片叠底)+ 横向对折的折痕
+        s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-grain)" opacity=".1" style="mix-blend-mode:multiply"/><rect x="${x}" y="${f1(y + h * .38)}" width="${w}" height="${f1(h * .24)}" fill="url(#vc-fold)"/>`;
+      }
+      if (b === 'transit') {   // 地铁图:米白底 + 很淡的「整张网」(灰线只走横竖和 45°,几个白圈站),只当背景纹理,不抢内容
+        const g = c.grey || '#c9c6bd', k = w / 1920, X = v => f1(x + v * k), Y = v => f1(y + v * k);   // 1920 宽的参考坐标等比缩放:斜线永远是 45°
+        const lines = [[[1180, 0], [1180, 300], [1460, 580], [1920, 580]], [[1680, 0], [1680, 260], [1920, 500]], [[0, 840], [340, 840], [470, 970], [1340, 970]]];
+        for (const L of lines) s += `<polyline points="${L.map(([a, b2]) => X(a) + ',' + Y(b2)).join(' ')}" fill="none" stroke="${g}" stroke-width="${f1(14 * k)}" stroke-linejoin="round" opacity=".3"/>`;
+        for (const [a, b2] of [[1180, 160], [1730, 580], [1680, 130], [960, 970]]) s += `<circle cx="${X(a)}" cy="${Y(b2)}" r="${f1(9 * k)}" fill="${c.bg}" stroke="${g}" stroke-width="${f1(5 * k)}" opacity=".5"/>`;
       }
       if (b === 'solid') s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-grain)" opacity=".06" style="mix-blend-mode:overlay"/>`;
       if (b === 'starfield') {   // 星夜光点:近黑底 + 中间一团很淡的深蓝星云 + 固定种子的星点(静止;要闪 / 要飘用 kit.particles)+ 暗角

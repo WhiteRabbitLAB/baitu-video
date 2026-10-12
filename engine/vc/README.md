@@ -5,7 +5,7 @@
 | 文件 | 管什么 |
 |---|---|
 | `vc.js` | 组件(纯函数,返回 SVG 字符串,1920×1080 坐标,逐帧可复现) |
-| `styles.js` | 画风外观表:纸面拟物 `paper-skeuo`、游戏拟物 `game-ui`、扁平几何 `flat-geometric`、扁平插画 `flat-illustration`、卡通界面 `cartoon-ui`、科技深色 `tech-ui`、白板手绘 `whiteboard`、黑底数学 `dark-math`、黑板粉笔 `chalkboard`、动态文字 `kinetic`、孔版印刷 `risograph`、热敏小票 `thermal`、星夜光点 `starlight`、体育转播 `broadcast`(共 14 种,缩略图见 ../../styles/INDEX.md) |
+| `styles.js` | 画风外观表:纸面拟物 `paper-skeuo`、游戏拟物 `game-ui`、扁平几何 `flat-geometric`、扁平插画 `flat-illustration`、卡通界面 `cartoon-ui`、科技深色 `tech-ui`、白板手绘 `whiteboard`、黑底数学 `dark-math`、黑板粉笔 `chalkboard`、动态文字 `kinetic`、孔版印刷 `risograph`、热敏小票 `thermal`、星夜光点 `starlight`、体育转播 `broadcast`、8-bit 像素 `pixel`、报纸号外 `newsprint`、地铁线路图 `transit`(共 17 种,缩略图见 ../../styles/INDEX.md) |
 | `demo.html` | 演示页:每个组件一行,可切换画风、中英文、时间轴 |
 | `receipt.js` | 小票部件:热敏小票画风的附加模块(第 13 期整片抽出),`const rc = VC.receipt(kit, {onPrint, onFeed})`;组件见下表「小票」三行 |
 | `broadcast.js` | 转播部件:体育转播画风的附加模块(第 14 期整片抽出),`const bc = VC.broadcast(kit, {onCue, onText, ledY})`;组件见下表「转播」三行 |
