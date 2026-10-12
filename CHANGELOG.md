@@ -1,5 +1,17 @@
 # Changelog / 更新说明
 
+## 2026-10-13
+
+### Changes / 改动
+- **Transit map used for a full video** (an information-theory primer, about 4¾ minutes): one yes/no question = one fork, "yes" on the orange line and "no" on the blue; a binary line network, a number-line route, stations crossed out one by one, a terminus pin, a question route. The style card lists the page-level parts.
+  **地铁线路图用于一部整片**(信息论入门,约 4 分 46 秒):一道是非题 = 一个岔口,「是」走橙线、「不是」走蓝线;二叉线路网、数轴线路、逐站打叉、终点定位针、问答线路。画风卡列了页面自写的部件。
+- **Transit type is larger**, same lesson as newsprint: role defaults raised (notes R3 28 → 42 in black, captions R10 22 → 30, R2 52 → 60, R1 88 → 104), the `legend` heading 26 → 38.
+  **地铁线路图字号调大**,与报纸号外同一个教训:角色默认字号提高(说明 R3 28 → 42 且改黑字、出处 R10 22 → 30、R2 52 → 60、R1 88 → 104),`legend` 图例牌栏题 26 → 38。
+
+### Fixes / 修复
+- The transit backdrop's faint ghost network now carries `data-over`, so `check-text-bounds --objects` no longer reports text sitting on background texture (50 false hits in one video). Lines a page draws itself are still checked.
+  地铁图底子那层很淡的「整张网」加了 `data-over`,`check-text-bounds --objects` 不再把压在底纹上的字报成「字压素材」(一部片子里误报了 50 处);页面自己画的线路照样查。
+
 ## 2026-10-12
 
 ### New / 新增

@@ -33,6 +33,7 @@ Flat colour, no gradients, no shadows; rivers and seas also run only horizontal,
 - Code lighting: none.
 
 ## Scenes it can draw
+**Full film ×1 (2026-10-13, A11 information-theory primer, about 4′40″, 23 pages)**: one yes/no question = one fork, "yes" on the orange line and "no" on the blue; a binary line network for the opening and the cover, a number-line route (1 to 100), stations crossed out one by one, a terminus with a location pin, five stations on one line = the five questions an AI asked, dashed stations = what it never asked. Page-level parts: `line` (grows along its route), `stop` (pops on arrival), `fork` (45° then horizontal), `tree`, `train`, `sign` (black title plate), `cap` (line-coloured capsule).
 Still ×1 (2026-10-12, how a message travels: your phone → cell tower → carrier hub → app server → undersea cable → their phone, the rest of the network greyed out).
 Suggested: process and causal-chain explainers (parcels, power grids, the internet, supply chains), routes through the body (food → stomach → small intestine → blood → liver), "one destination, several routes" comparisons (two lines side by side, which is faster), historical routes (the Silk Road, migrations).
 
@@ -40,5 +41,8 @@ Suggested: process and causal-chain explainers (parcels, power grids, the intern
 [Empty scene](samples/transit-1-scene.jpg) · [Text roles R1–R10](samples/transit-2-roles.jpg) · [Character](samples/transit-3-character.jpg). Re-render: `node engine/vc/samples.mjs transit`.
 
 ## Pitfalls
+- **Type size** (A11, carrying over the newsprint N15 lesson): role defaults raised on 2026-10-13 (R3 42 in black, R10 30, R2 60); the `legend` heading 26 → 38. Station names in Chinese only, 44px and up — bilingual small print can't be read in a video.
+- **The backdrop texture counted as "text over artwork"** (A11): the faint grey lines in the backdrop produced 50 checker hits; the backdrop now carries `data-over`. Lines the page draws itself must **not** carry it, so text sitting on a route is still caught.
+- **Don't show a hypothetical number before the narration states the hypothesis** (A11 review): "yes 1% / no 99%" appeared before "suppose all 100 things are equally likely", turning an assumption into a fact; before that, show only "small chance / large chance".
 - **Station names fight the lines for space**: in the first still, "运营商机房" sat on a grey line, a grey diagonal cut through "Far landing" and the train covered "Cable landing". Place names first and draw lines after; start a diagonal one station further out; park the train midway between two stations. `check-text-bounds` without `--objects` doesn't catch text on lines; add the flag.
 - **Only horizontal, vertical and 45°**: one casual 30° or 60° segment and it stops looking like a metro map; even the river has to bend at 45°.

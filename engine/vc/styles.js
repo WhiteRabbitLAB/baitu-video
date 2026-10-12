@@ -488,16 +488,17 @@
     VC.styles['transit'] = {
       id: 'transit', name: '地铁线路图', nameEn: 'Transit map', c, vig: 0,
       roles: {
-        R1: { zh: H, en: GH, size: 88, fill: c.ink, entrance: 'wipe' },
-        R2: { zh: H, en: GH, size: 52, fill: c.ink, entrance: 'wipe' },
-        R3: { zh: B, en: GB, size: 28, fill: c.muted, entrance: 'wipe', wipeDur: .3 },
-        R4: { zh: H, en: GH, size: 140, fill: c.ink },
-        R5: { zh: 'Noto Serif SC:500', en: 'Noto Serif SC:500', size: 38, fill: c.ink, entrance: 'fadeUp' },   // 原文:印刷原件,不是站牌字
-        R6: { zh: H, en: GH, size: 44, fill: c.red, entrance: 'pop' },
-        R7: { zh: B, en: GB, size: 34, fill: '#ffffff', entrance: 'static' },   // 对白在黑底站牌气泡里
-        R8: { zh: B, en: GB, size: 38, fill: c.blue, entrance: 'wipe' },   // 本画风没有手写层:手记改成蓝色「站内提示」小字
-        R9: { zh: H, en: GH, size: 36, fill: '#ffffff' },   // 印章 = 线路色胶囊牌,白字
-        R10: { zh: B, en: GB, size: 22, fill: c.muted, entrance: 'wipe', wipeDur: .3 },
+        // 字号 2026-10-13 起整体调大(同报纸号外 N15 的教训:视频里说明字 40 起、用黑不用灰,出处 30 起)
+        R1: { zh: H, en: GH, size: 104, fill: c.ink, entrance: 'wipe' },
+        R2: { zh: H, en: GH, size: 60, fill: c.ink, entrance: 'wipe' },
+        R3: { zh: B, en: GB, size: 42, fill: c.ink, entrance: 'wipe', wipeDur: .3 },
+        R4: { zh: H, en: GH, size: 150, fill: c.ink },
+        R5: { zh: 'Noto Serif SC:500', en: 'Noto Serif SC:500', size: 46, fill: c.ink, entrance: 'fadeUp' },   // 原文:印刷原件,不是站牌字
+        R6: { zh: H, en: GH, size: 56, fill: c.red, entrance: 'pop' },
+        R7: { zh: B, en: GB, size: 44, fill: '#ffffff', entrance: 'static' },   // 对白在黑底站牌气泡里
+        R8: { zh: B, en: GB, size: 46, fill: c.blue, entrance: 'wipe' },   // 本画风没有手写层:手记改成蓝色「站内提示」
+        R9: { zh: H, en: GH, size: 44, fill: '#ffffff' },   // 印章 = 线路色胶囊牌,白字
+        R10: { zh: B, en: GB, size: 30, fill: c.muted, entrance: 'wipe', wipeDur: .3 },
       },
       mono: { zh: B, en: 'JetBrains Mono:400' },
       carriers: { backdrop: 'transit', mark: 'route', stamp: 'capsule', counter: 'punch', bubble: 'flat', window: 'legend', panel: 'legend' },

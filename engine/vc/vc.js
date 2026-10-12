@@ -660,7 +660,7 @@
       }
       if (kind === 'legend') {   // 地铁图例牌:白底黑边圆角框,标题条 = 站牌(黑底白字),左头一枚线路色小方块
         return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="12" fill="${dark ? c.term : c.card}" stroke="${c.ink}" stroke-width="3.5"/>
-          ${title ? `<path d="M${x + 12} ${y} H${x + w - 12} a12 12 0 0 1 12 12 V${y + 58} H${x} V${y + 12} a12 12 0 0 1 12 -12Z" fill="${c.cardD}"/><rect x="${x + 18}" y="${y + 13}" width="32" height="32" rx="7" fill="${c.marker}"/>` + staticRun(title, x + 64, y + 40, R('R2'), 26, c.title, 'start') : ''}`;
+          ${title ? `<path d="M${x + 12} ${y} H${x + w - 12} a12 12 0 0 1 12 12 V${y + 72} H${x} V${y + 12} a12 12 0 0 1 12 -12Z" fill="${c.cardD}"/><rect x="${x + 20}" y="${y + 18}" width="36" height="36" rx="8" fill="${c.marker}"/>` + staticRun(title, x + 72, y + 50, R('R2'), 38, c.title, 'start') : ''}`;   // 标题条 72 高、字 38(2026-10-13 起,原 26 太小)
       }
       if (kind === 'riso') {
         return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${dark ? c.term : c.paper}" stroke="${c.ink}" stroke-width="4"/>
@@ -1162,8 +1162,8 @@
       if (b === 'transit') {   // 地铁图:米白底 + 很淡的「整张网」(灰线只走横竖和 45°,几个白圈站),只当背景纹理,不抢内容
         const g = c.grey || '#c9c6bd', k = w / 1920, X = v => f1(x + v * k), Y = v => f1(y + v * k);   // 1920 宽的参考坐标等比缩放:斜线永远是 45°
         const lines = [[[1180, 0], [1180, 300], [1460, 580], [1920, 580]], [[1680, 0], [1680, 260], [1920, 500]], [[0, 840], [340, 840], [470, 970], [1340, 970]]];
-        for (const L of lines) s += `<polyline points="${L.map(([a, b2]) => X(a) + ',' + Y(b2)).join(' ')}" fill="none" stroke="${g}" stroke-width="${f1(14 * k)}" stroke-linejoin="round" opacity=".3"/>`;
-        for (const [a, b2] of [[1180, 160], [1730, 580], [1680, 130], [960, 970]]) s += `<circle cx="${X(a)}" cy="${Y(b2)}" r="${f1(9 * k)}" fill="${c.bg}" stroke="${g}" stroke-width="${f1(5 * k)}" opacity=".5"/>`;
+        for (const L of lines) s += `<polyline points="${L.map(([a, b2]) => X(a) + ',' + Y(b2)).join(' ')}" fill="none" stroke="${g}" stroke-width="${f1(14 * k)}" stroke-linejoin="round" opacity=".3" data-over="底纹"/>`;   // 底纹:检查器不算「字压素材」
+        for (const [a, b2] of [[1180, 160], [1730, 580], [1680, 130], [960, 970]]) s += `<circle cx="${X(a)}" cy="${Y(b2)}" r="${f1(9 * k)}" fill="${c.bg}" stroke="${g}" stroke-width="${f1(5 * k)}" opacity=".5" data-over="底纹"/>`;
       }
       if (b === 'solid') s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vc-grain)" opacity=".06" style="mix-blend-mode:overlay"/>`;
       if (b === 'starfield') {   // 星夜光点:近黑底 + 中间一团很淡的深蓝星云 + 固定种子的星点(静止;要闪 / 要飘用 kit.particles)+ 暗角
