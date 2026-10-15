@@ -1,6 +1,6 @@
 # baitu-video
 
-**用代码做讲解视频:任何话题、17 种画风,配音、字幕、渲染、验收由一个引擎跑完。**
+**用代码做讲解视频:任何话题、18 种画风,配音、字幕、渲染、验收由一个引擎跑完。**
 一个 [Claude Code](https://claude.com/claude-code) skill:方法(片型、场景、画风、设计库)加上把稿子变成成片 MP4 的引擎。
 
 English: [README.md](README.md)
@@ -18,10 +18,10 @@ English: [README.md](README.md)
 
 整个示例(两种语言、两种画幅)在 [examples/sky-demo](examples/sky-demo/README.md),不要任何密钥就能跑。
 
-## 十七种画风,同一个场景
+## 十八种画风,同一个场景
 同一个场景、同一段内容,只换画风层——换画风只改一行(`VC.kit('whiteboard')`)。
 
-![十七种画风并排](styles/thumbs/_all.jpg)
+![十八种画风并排](styles/thumbs/_all.jpg)
 
 纸面拟物 · 游戏界面 · 扁平几何 · 扁平插画 · 卡通界面 · 科技深色 · 白板手绘 · 黑底数学 · 黑板粉笔 · 动态文字 · 孔版印刷 · 热敏小票 · 星夜光点 · 体育转播 · 8-bit 像素 · 报纸号外 · 地铁线路图 —— 详见 [styles/INDEX.md](styles/INDEX.md)。
 
@@ -55,7 +55,7 @@ English: [README.md](README.md)
 |---|---|---|
 | 片型 | 叙事骨架(12 种:真实实验纪实、故事引出方法 + 实测、场景攻略、概念教学、A vs B、清单……) | [formats/](formats/INDEX.md) |
 | 场景 | 画面是个什么世界、里面谁在用什么写字(档案、实验桌、策略游戏、终端、白板……) | [scenes/](scenes/INDEX.md) |
-| 画风 | 怎么画(17 种) | [styles/](styles/INDEX.md) |
+| 画风 | 怎么画(18 种) | [styles/](styles/INDEX.md) |
 | 频道配置 | 只属于你频道的设定:配音、字幕、平台规矩、偏好 | [profiles/](profiles/README.md) |
 
 画面就是普通的 HTML/SVG 页面,`render(t)` 画出第 t 秒的那一帧;引擎用无头 Chromium 逐帧渲染,配音、字幕、混音、封面、竖版、验收都交给同一个命令行。

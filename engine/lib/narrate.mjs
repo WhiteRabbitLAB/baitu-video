@@ -3,7 +3,9 @@
 // 产物:<out>/narration[.lang].wav、timeline[.lang].json(第一种语言不带后缀)。
 // 每期设定 <brief>/narration[.lang].json(可选):
 //   { "sectionAfter": [3, 7], "sectionGap": 1.2,   第 3、7 段之后是大段落分界,停顿 1.2s(其余段间用 pauses.para)
-//     "verbatimParas": [1, 5] }                     这几段改用「逐字朗读」提示(正文像指令时,Gemini 等会当指令执行、不念出来)
+//     "verbatimParas": [1, 5],                      这几段改用「逐字朗读」提示(正文像指令时,Gemini 等会当指令执行、不念出来)
+//     "gapAfter": { "4": 5.5 },                     第 4 段之后单独停 5.5s(给画面留出不配音的时间,如逐张看图、放原声);优先于 sectionAfter
+//     "voice": { "speed": 1.2 } }                   本期覆盖 voice.md 的配音参数
 import fs from 'node:fs';
 import path from 'node:path';
 import { PROJECT } from './paths.mjs';
@@ -29,6 +31,7 @@ export async function narrate({ ep, channel, lang, out, paras: only }) {
   const OUT = out ? path.resolve(out) : path.join(PROJECT, fill(ch.paths.out, ep));
   const P = { leadIn: 0.5, para: 0.6, tail: 3, ...v.pauses };
   const ncfgF = path.join(brief, `narration${suf}.json`), NC = fs.existsSync(ncfgF) ? JSON.parse(fs.readFileSync(ncfgF, 'utf8')) : {};
+  Object.assign(v, NC.voice || {});   // 本期覆盖配音参数(如 { "voice": { "speed": 1.2 } })
   const VERBATIM = 'Read the following passage aloud exactly as written, every single word including the first sentence, in the same voice and tone:';
   const all = loadSentences(scriptFile, lang);
   const stats = {}, notes = [];
@@ -61,7 +64,7 @@ export async function narrate({ ep, channel, lang, out, paras: only }) {
   for (let p = 1; p <= NP; p++) {
     if (only && !only.includes(p)) continue;
     const sents = all.filter(s => s.para === p);
-    if (p > 1 && (!only || only.indexOf(p) > 0)) sil((NC.sectionAfter || []).includes(p - 1) ? (NC.sectionGap ?? 1.2) : P.para);
+    if (p > 1 && (!only || only.indexOf(p) > 0)) sil(NC.gapAfter?.[p - 1] ?? ((NC.sectionAfter || []).includes(p - 1) ? (NC.sectionGap ?? 1.2) : P.para));
     const pieces = await synthPara(p, sents);
     const paraStart = n / SR;
     let heard = [];
@@ -108,7 +111,7 @@ export async function narrate({ ep, channel, lang, out, paras: only }) {
   const unmatched = timeline.filter(s => !s.match).length;
   fs.writeFileSync(path.join(OUT, `timeline${suf}.json`), JSON.stringify({
     method: useTokens ? 'api-timestamps' : 'whisper', provider: v.provider, voice: v.voice, lang, sampleRate: SR,
-    leadIn: P.leadIn, paraGap: P.para, tail: P.tail, ...(NC.sectionAfter ? { sectionAfter: NC.sectionAfter, sectionGap: NC.sectionGap ?? 1.2 } : {}), duration, paragraphs: paraInfo, notes, sentences: timeline,
+    leadIn: P.leadIn, paraGap: P.para, tail: P.tail, ...(NC.sectionAfter ? { sectionAfter: NC.sectionAfter, sectionGap: NC.sectionGap ?? 1.2 } : {}), ...(NC.gapAfter ? { gapAfter: NC.gapAfter } : {}), duration, paragraphs: paraInfo, notes, sentences: timeline,
   }, null, 1));
   return { duration, stats, notes, unmatched, sentences: timeline.length, out: OUT };
 }

@@ -1,6 +1,20 @@
 # Changelog / 更新说明
 
+## 2026-10-14
+
+### New / 新增
+- **Archive backdrop** (`design/live-footage.md`): the opposite of full-screen footage — the light-pen animation leads, and archive photos and clips sit behind it as a darkened, desaturated, cooled layer that fades in only at key moments. Each photo "develops" inside a frame the pen has just drawn; an ARCHIVE tag at the top names the source and licence, and says plainly when the footage is not of the event itself or when a demo is built from a surviving print. Includes the text-checker grouping fix (wrap each HUD text in its own group), mixing a public-domain recording into the narration track, and a louder music bed for an "epic" feel.
+  **档案背景叠法**(`design/live-footage.md`):和实拍满屏相反——光笔动画为主,历史照片与实拍片段压暗、去色、偏冷当背景,只在关键时刻浮现。每张照片在光笔刚画好的框里「显影」;顶部 ARCHIVE 标签写来源和许可,不是当次事件的影像、用现存照片做的原理演示都要明说。另含:检查工具的分组坑(HUD 每块字各包一层)、把公版录音叠进配音轨、要「燃」时配乐响一些。
+- **Per-gap pauses in narration** (`engine/lib/narrate.mjs`): `narration.json` can now set `gapAfter` (`{ "15": 17 }` = a 17-second pause after paragraph 15, e.g. to leave room for an archive recording) and `voice` (override the profile's voice settings for one video, such as speed).
+  **配音逐段停顿**(`engine/lib/narrate.mjs`):`narration.json` 可写 `gapAfter`(`{ "15": 17 }` = 第 15 段后停 17 秒,给原声留位置)和 `voice`(本期覆盖频道配音参数,如语速)。
+- **Enamel home style** (18th, `styles/enamel.md`): the family dinner table — white enamel mugs chipped to the blue iron, a red thermos, a green-painted dado, a checked tablecloth; numbers hang on enamel signs. Used for a full video. English card, thumbnail and the side-by-side grid now include it; the demo font subset adds its title font (ZCOOL QingKe HuangYou). Its stamp (R9) now defaults to enamel red — the old cream default made the shared stamp nearly invisible on the cream background.
+  **搪瓷暖水瓶画风**(第 18 种,`styles/enamel.md`):爸妈家的饭桌——磕瓷露蓝的白搪瓷缸、红壳暖水瓶、绿漆墙围、格子桌布,数字挂在搪瓷标牌上;已用于一部整片。补了英文卡、缩略图和并排总图;演示字体子集加了它的标题字(站酷庆科黄油体)。印章(R9)默认改成搪瓷红——原先默认奶白,共享印章在奶白底上几乎看不见。
+
 ## 2026-10-13
+
+### New / 新增
+- **Light pen** (`kit.lightpen`): one glowing pen draws the whole piece in a single line — an outline turns into a diagram, the diagram's line turns into a chart's curve, and the camera follows the tip. Segments are joined along their tangents; the tip has a white core, a halo and a horizontal lens streak; line width and glow stay constant on screen at any zoom. Comes with a parallax starfield (`pen.stars`). New filter `vc-bloom-l` (wide, faint glow). A 37-second sample is built with the Starlight style.
+  **光笔**(`kit.lightpen`):一支发光的笔一笔画到底——线稿变成示意图,示意图的线再拉成曲线,镜头跟着笔头走。段与段顺着切线自动接上;笔头是白芯 + 光晕 + 横向镜头光;镜头推拉时线宽、辉光在画面上不变。配一层随镜头视差移动的星空(`pen.stars`)。新滤镜 `vc-bloom-l`(大范围的淡辉光)。用星夜光点画风出了一段 37 秒样片。
 
 ### Changes / 改动
 - **Transit map used for a full video** (an information-theory primer, about 4¾ minutes): one yes/no question = one fork, "yes" on the orange line and "no" on the blue; a binary line network, a number-line route, stations crossed out one by one, a terminus pin, a question route. The style card lists the page-level parts.

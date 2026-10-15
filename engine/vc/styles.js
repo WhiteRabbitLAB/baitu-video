@@ -505,4 +505,36 @@
       bar: { font: H, accent: c.orange, track: c.ink, text: c.ink, ink: '#fff', shade: 0 },
     };
   }
+  // ---------------- 搪瓷暖水瓶 Enamel home:爸妈家的饭桌 —— 白搪瓷缸(红口沿、牡丹贴花、磕掉瓷露出深蓝铁底)、红壳竹编纹暖水瓶、绿漆墙围 + 白灰墙、红白格子桌布 ----------------
+  // 2026-10-14 定(决策者从三张新画风静帧里选了它,第 16 期烫茶)。比喻:「爸妈家里那张桌子」—— 数字写在搪瓷标牌上(奶白底、红边、四颗铆钉),
+  //   人群用搪瓷缸当单位小图,年份挂在挂历上,调查表是一张印刷表格,手写是蓝色圆珠笔。颜色:搪瓷红 = 要警惕的量,墙围绿 = 平静 / 没发现,深蓝 = 铁底与正文。
+  //   只用纹样,不用任何商标与年代口号。标题字站酷庆科黄油体(粗圆、像搪瓷标牌上的喷字),正文思源黑体,表格印刷字思源宋体,手写小赖体蓝笔。
+  {
+    const c = {
+      bg: '#ECE5D3', wall: '#ECE5D3', green: '#6E9B84', greenD: '#557A67', cream: '#F4EEDF', card: '#F7F2E6', ink: '#2A2522', text: '#2A2522', muted: '#6E6458',
+      accent: '#C8322B', red: '#C8322B', redD: '#9E2A24', navy: '#1F2C45', blue: '#2C4A86', pen: '#2B4C9B', gold: '#E2A93B', check: '#F6F1E6',
+      mark: '#C8322B', marker: '#C8322B', surface: '#F7F2E6', edge: '#2A2522', title: '#2A2522', note: '#F7F2E6', tape: '#E9DDB4',
+      chatU: '#EDE5D0', chatA: '#F7F2E6', chatTxt: '#2A2522', term: '#1F2C45', termTxt: '#F4EEDF', termHi: '#E2A93B', lw: 3,
+      bezel: '#2B3236', screen: '#0F1F1B', scrTxt: '#8FB8A8', scrHi: '#6FD6A8', scrGrid: '#24443B',
+    };
+    const HY = 'ZCOOL QingKe HuangYou:400', H = 'Noto Sans SC:900', B = 'Noto Sans SC:500';
+    VC.styles['enamel'] = {
+      id: 'enamel', name: '搪瓷暖水瓶', nameEn: 'Enamel home', c, vig: .18,
+      roles: {
+        R1: { zh: HY, en: HY, size: 104, fill: c.red, entrance: 'pop' },                 // 搪瓷标牌上的大字
+        R2: { zh: H, en: H, size: 56, fill: c.ink, entrance: 'fadeUp' },
+        R3: { zh: B, en: B, size: 40, fill: c.ink, entrance: 'fadeUp' },                  // 说明字 40 起、用墨色(报纸号外 N15 的教训)
+        R4: { zh: H, en: H, size: 150, fill: c.red },                                     // 大数字:思源黑体粗(黄油体的「多」「九」像别的字,样片实测;黄油体只给短标题)
+        R5: { zh: 'Noto Serif SC:500', en: 'Noto Serif SC:500', size: 40, fill: c.ink, entrance: 'type', cps: 14, cpsEn: 30, ink: .15, jit: .02 },   // 调查表上的印刷字
+        R6: { zh: 'Zhi Mang Xing:400', en: 'Caveat Brush:400', size: 60, fill: c.red, entrance: 'hand', cps: 6, blend: 'multiply' },
+        R7: { zh: B, en: B, size: 44, fill: c.ink, entrance: 'static' },
+        R8: { zh: 'Xiaolai:400', en: 'Kalam:400', size: 48, fill: c.pen, entrance: 'hand', cps: 8, cpsEn: 18, jit: 1 },   // 蓝色圆珠笔
+        R9: { zh: HY, en: HY, size: 46, fill: c.red },                                     // 印章红字(默认印章是奶白底上盖章;红底奶白字的搪瓷小牌由页面传 fill)
+        R10: { zh: B, en: B, size: 30, fill: c.muted, entrance: 'fadeUp' },
+      },
+      mono: { zh: B, en: 'JetBrains Mono:400' },
+      carriers: { backdrop: 'paper', mark: 'pencil', stamp: 'ink', counter: 'print', bubble: 'note', window: 'bezel', panel: 'sheet' },
+      bar: { font: H, accent: c.red, track: c.cream, text: '#fff', ink: c.ink, shade: 1 },
+    };
+  }
 })();

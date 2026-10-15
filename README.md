@@ -1,6 +1,6 @@
 # baitu-video
 
-**Make explainer videos with code — any topic, any of 17 visual styles, narrated, subtitled, rendered and checked by one engine.**
+**Make explainer videos with code — any topic, any of 18 visual styles, narrated, subtitled, rendered and checked by one engine.**
 A [Claude Code](https://claude.com/claude-code) skill: the method (formats, scenes, styles, a design library) plus the engine that turns a script into a finished MP4.
 
 中文说明:[README.zh.md](README.zh.md)
@@ -18,10 +18,10 @@ One page, one timeline: `?lang=en` switches to the English narration, subtitles 
 
 The whole example — both languages, both orientations — runs from [examples/sky-demo](examples/sky-demo/README.md) with no API key.
 
-## Seventeen styles, one scene
+## Eighteen styles, one scene
 The same scene and content with only the style layer swapped — switching style is one line (`VC.kit('whiteboard')`).
 
-![Seventeen styles side by side](styles/thumbs/_all.jpg)
+![Eighteen styles side by side](styles/thumbs/_all.jpg)
 
 paper skeuomorphic · game UI · flat geometric · flat illustration · cartoon UI · dark tech · whiteboard · dark math · chalkboard · kinetic type · risograph · thermal receipt · starlight · sports broadcast · 8-bit pixel · newsprint · transit map — details in [styles/INDEX.en.md](styles/INDEX.en.md).
 
@@ -55,7 +55,7 @@ A video is chosen by four questions — **what** (explainer, true story, tutoria
 |---|---|---|
 | Format | The narrative skeleton (12 formats: true-experiment story, story → method → test, scenario guide, concept lesson, versus, list…) | [formats/](formats/INDEX.en.md) |
 | Scene | The visual world and its writing sources (case files, lab desk, strategy game, terminal, whiteboard…) | [scenes/](scenes/INDEX.en.md) |
-| Style | How it's drawn (17 styles) | [styles/](styles/INDEX.en.md) |
+| Style | How it's drawn (18 styles) | [styles/](styles/INDEX.en.md) |
 | Channel profile | Your channel's own settings: voice, subtitles, platform rules, preferences | [profiles/](profiles/README.md) |
 
 The page is plain HTML/SVG where `render(t)` draws the frame for time `t`; the engine renders it frame by frame with headless Chromium and hands everything else — narration, subtitles, mixing, thumbnails, vertical cut, acceptance — to one CLI.

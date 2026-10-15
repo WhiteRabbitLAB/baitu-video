@@ -24,5 +24,6 @@ These are subsets (modified versions) of the original fonts, cut to the characte
 | Special Elite | Apache-2.0 | SpecialElite.txt | — |
 | Xiaolai | OFL-1.1 | Xiaolai.txt | — |
 | ZCOOL KuaiLe | OFL-1.1 | ZCOOLKuaiLe.txt | — |
+| ZCOOL QingKe HuangYou | OFL-1.1 | ZCOOLQingKeHuangYou.txt | — |
 | ZCOOL XiaoWei | OFL-1.1 | ZCOOLXiaoWei.txt | — |
 | Zhi Mang Xing | OFL-1.1 | ZhiMangXing.txt | — |

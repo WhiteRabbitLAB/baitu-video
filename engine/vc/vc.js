@@ -189,7 +189,7 @@
   VC.kit = function (styleId, { lang = 'zh' } = {}) {
     const S = VC.styles[styleId];
     if (!S) throw new Error('没有这个画风:' + styleId);
-    let UID = 0;
+    let UID = 0, LPN = 0;
     const id = p => `vc${p}${UID++}`;
     const R = r => { const x = S.roles[r]; if (!x) throw new Error(`画风 ${styleId} 没给角色 ${r}`); return x; };
     // 点阵字(S.pixel = 字模格数,如 12):字号只能是它的整数倍,否则笔画落在半像素上会糊
@@ -897,6 +897,180 @@
       return `<g data-over="飘尘">${out}</g>`;
     }
 
+    // ---------- 光笔 lightpen:一支光笔一笔画到底(参考:一条讲函数的数学科普短视频,2026-10-13 决策者让拆解;只学做法,不搬素材) ----------
+    // 一条很长的「世界坐标」路径分段画出来;段与段之间自动用顺着切线的曲线接上(jump:true 的段 = 提笔,不接)。
+    // 笔头像彗星:白芯 + 光晕 + 一道横向镜头光;笔头后面一截线发白发烫。镜头按关键帧走,也可以一段时间跟着笔头。
+    // 线宽、辉光在画面坐标里恒定:先投影到画面再画,镜头推近时线不会变粗、辉光不会变糊。
+    // segs:[{ d(世界坐标路径;段内提笔只能用绝对坐标 M,相对 m 会报错), t0, dur, ease:'inOut'|'out'|'lin', jump, fade:[t, 秒](这一段从 t 起淡出) }]
+    //   段的时间必须先后不重叠;要接线时两段之间至少留 o.link 秒(默认 .3),不够就把后一段顺延并在控制台警告 —— 不悄悄压成零时长、让接线凭空冒出来。
+    // o:{ col(默认 S.c.glow), w(线宽,默认 3.2), hot(笔头后发白的长度,画面 px,默认 260), link(接线最短秒数,默认 .3),
+    //     cams:[[t, x, y, z], ...](镜头中心与缩放,关键帧之间缓入缓出;z 按对数插值),
+    //     follow:[{ t0, t1, dx, dy, y, z, lag }](这段时间镜头跟着笔头,lag 秒的平均位置 + 偏移;y = 纵向钉住;进出各用 .7s 混合),
+    //     camOf(另一支光笔:镜头完全借它的,cams/follow/drift 都不用写), drift(手持漂移 px,默认 5), step(采样间距,世界 px,默认 3), headOut:[t, 秒](笔头熄灭) }
+    // 返回 { render(t), cam(t), S(x,y,t)(世界 → 画面), head(t), at(i,k)(第 i 段 k 处的世界坐标), stars(t, o)(随镜头视差移动的星空与虚化光斑) }
+    function lightpen(segs, o = {}) {
+      const col = o.col || S.c.glow || S.c.accent, W = o.w ?? 3.2, HOT = o.hot ?? 260, step = o.step ?? 3, drift = o.drift ?? 5, LINK = o.link ?? .3;
+      if (!SAMPLER) samplePath('M0,0 L1,1', 2);
+      // 按子路径分别等距取点:每条子路径的起点标 brk(提笔),终点一定取到;累计长度跨提笔不增加
+      const poly = d => {
+        const subs = String(d).trim().split(/(?=[Mm])/).filter(x => x.trim());
+        subs.forEach((x, i) => { if (i && x.trim()[0] === 'm') throw new Error('lightpen:段内提笔请用绝对坐标 M(相对 m 拆开后无法单独取点):' + x.slice(0, 40)); });
+        const P = [], B = [];
+        for (const sp of subs) {
+          SAMPLER.setAttribute('d', sp); const L = SAMPLER.getTotalLength(), n = Math.max(1, Math.ceil(L / step));
+          for (let i = 0; i <= n; i++) { const p = SAMPLER.getPointAtLength(L * i / n); P.push([p.x, p.y]); B.push(i === 0 && P.length > 1); }
+        }
+        return { P, B };
+      };
+      const EZ = { inOut: ease.inOut, out: ease.out, lin: k => k };
+      const mk = ({ P, B }, t0, t1, ez, fade) => {   // 一截:点、累计长度、提笔标记
+        const cum = [0];
+        for (let i = 1; i < P.length; i++) cum.push(cum[i - 1] + (B[i] ? 0 : Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1])));
+        return { P, cum, brk: B, len: cum[cum.length - 1], t0, t1, ez: EZ[ez] || ease.inOut, fade, contig: false };
+      };
+      const nv = (p, q) => { const l = Math.hypot(q[0] - p[0], q[1] - p[1]) || 1; return [(q[0] - p[0]) / l, (q[1] - p[1]) / l]; };
+      // 端点切线:只在端点所在的那条子路径里,找离端点约 2–4 个步长的点(跳过与端点重合的点;整条子路径都缩成一点就当水平)
+      const far = (p, q) => Math.hypot(q[0] - p[0], q[1] - p[1]) > step * .5;
+      const tanEnd = pc => {
+        const n = pc.P.length - 1, e = pc.P[n]; let pick = null;
+        for (let j = n - 1; j >= 0; j--) { if (far(pc.P[j], e)) { pick = j; if (n - j >= 3) break; } if (pc.brk[j]) break; }
+        return pick === null ? [1, 0] : nv(pc.P[pick], e);
+      };
+      const tanStart = pc => {
+        const b = pc.P[0]; let pick = null;
+        for (let j = 1; j < pc.P.length && !pc.brk[j]; j++) { if (far(b, pc.P[j])) { pick = j; if (j >= 3) break; } }
+        return pick === null ? [1, 0] : nv(b, pc.P[pick]);
+      };
+      const pieces = [], segAt = [];
+      let tPrev = -1e9;
+      segs.forEach((s, i) => {
+        const shape = poly(s.d), prev = pieces[pieces.length - 1];
+        let t0 = s.t0;
+        if (t0 < tPrev - 1e-6) { console.warn(`lightpen:第 ${i} 段 t0=${t0} 早于上一段结束 ${tPrev},已顺延`); t0 = tPrev; }
+        if (prev && !s.jump) {   // 接线:从上一段的末端顺着切线,弯到这一段的起点
+          const a = prev.P[prev.P.length - 1], b = shape.P[0], D = Math.hypot(b[0] - a[0], b[1] - a[1]);
+          if (D > 1) {
+            if (t0 - prev.t1 < LINK) { console.warn(`lightpen:第 ${i} 段前的接线只有 ${(t0 - prev.t1).toFixed(2)}s,顺延到 ${LINK}s`); t0 = prev.t1 + LINK; }
+            const T = tanEnd(prev), U = tanStart(mk(shape, 0, 0)), c1 = [a[0] + T[0] * D * .42, a[1] + T[1] * D * .42], c2 = [b[0] - U[0] * D * .42, b[1] - U[1] * D * .42];
+            const ln = mk(poly(`M${a[0]},${a[1]} C${c1[0]},${c1[1]} ${c2[0]},${c2[1]} ${b[0]},${b[1]}`), prev.t1, t0, 'inOut', s.fadeLink || s.fade);
+            ln.contig = true; pieces.push(ln);
+          }
+        }
+        const pc = mk(shape, t0, t0 + (s.dur ?? 1), s.ease, s.fade);
+        const last = pieces[pieces.length - 1];
+        pc.contig = !s.jump && !!last && Math.hypot(pc.P[0][0] - last.P[last.P.length - 1][0], pc.P[0][1] - last.P[last.P.length - 1][1]) <= 1;
+        segAt[i] = pieces.length; pieces.push(pc); tPrev = pc.t1;
+      });
+      const drawn = (p, t) => p.ez(seg(t, p.t0, p.t1)) * p.len;
+      // 累计长度 L 处:lo = 最后一个 cum < L 的点,hi = lo + 1(提笔两侧 cum 相同,这样取永远落在提笔前的那条子路径上)
+      const locate = (p, L) => {
+        if (L <= 0) return { lo: 0, pt: p.P[0] }; if (L >= p.len) return { lo: p.P.length - 1, pt: p.P[p.P.length - 1] };
+        let lo = 0, hi = p.cum.length - 1; while (hi - lo > 1) { const m = (lo + hi) >> 1; if (p.cum[m] < L) lo = m; else hi = m; }
+        const k = (L - p.cum[lo]) / ((p.cum[hi] - p.cum[lo]) || 1); return { lo, pt: [lerp(p.P[lo][0], p.P[hi][0], k), lerp(p.P[lo][1], p.P[hi][1], k)] };
+      };
+      const pointAt = (p, L) => locate(p, L).pt;
+      const headIdx = t => { let h = -1; pieces.forEach((p, i) => { if (t >= p.t0) h = i; }); return h; };
+      const head = t => { const i = headIdx(t); if (i < 0) return pieces[0].P[0]; return pointAt(pieces[i], drawn(pieces[i], t)); };
+      const moving = t => { const i = headIdx(t); return i >= 0 && t < pieces[i].t1 ? 1 : 0; };
+      // 镜头:关键帧(缓入缓出,z 按对数插值)+ 跟随段 + 手持漂移
+      const cams = (o.cams || [[0, 960, 540, 1]]).slice().sort((a, b) => a[0] - b[0]);
+      if (cams.some(k => !(k[3] > 0))) throw new Error('lightpen:cams 的 z 必须 > 0');
+      const keyCam = t => {
+        if (t <= cams[0][0]) return cams[0].slice(1); const L = cams[cams.length - 1]; if (t >= L[0]) return L.slice(1);
+        let i = 0; while (t > cams[i + 1][0]) i++; const A = cams[i], B = cams[i + 1], k = ease.inOut(seg(t, A[0], B[0]));
+        return [lerp(A[1], B[1], k), lerp(A[2], B[2], k), Math.exp(lerp(Math.log(A[3]), Math.log(B[3]), k))];
+      };
+      const cam = o.camOf ? t => o.camOf.cam(t) : t => {   // camOf:借另一支光笔的镜头(几支不同颜色的笔画在同一个世界里)
+        let [x, y, z] = keyCam(t);
+        for (const f of o.follow || []) {
+          const wgt = ease.inOut(Math.min(seg(t, f.t0, f.t0 + .7), 1 - seg(t, f.t1 - .7, f.t1))); if (wgt <= 0) continue;
+          let hx = 0, hy = 0; for (let j = 0; j < 6; j++) { const h = head(t - (f.lag ?? .4) * j / 5); hx += h[0] / 6; hy += h[1] / 6; }
+          x = lerp(x, hx + (f.dx || 0), wgt);
+          y = lerp(y, f.y ?? hy + (f.dy || 0), wgt);   // f.y:纵向钉住不跟
+          if (f.z > 0) z = Math.exp(lerp(Math.log(z), Math.log(f.z), wgt));
+        }
+        return { x: x + drift * Math.sin(t * .37), y: y + drift * .6 * Math.sin(t * .53 + 1), z };
+      };
+      const proj = (c, x, y) => [(x - c.x) * c.z + 960, (y - c.y) * c.z + 540];
+      const V = { x0: -260, x1: 2180, y0: -260, y1: 1340 };
+      const segIn = (a, b) => !((a[0] < V.x0 && b[0] < V.x0) || (a[0] > V.x1 && b[0] > V.x1) || (a[1] < V.y0 && b[1] < V.y0) || (a[1] > V.y1 && b[1] > V.y1));   // 包围盒与视口相交(穿过画面的长线段也画)
+      const gid = 'vc-lp' + (++LPN);
+      // 某一截已画出的部分,投影到画面:[[点, 是否提笔], ...]
+      const drawnPts = (c, p, L) => {
+        const { lo, pt } = locate(p, L), out = [];
+        for (let i = 0; i <= lo; i++) out.push([proj(c, ...p.P[i]), p.brk[i]]);
+        if (L > 0 && L < p.len) out.push([proj(c, ...pt), false]);
+        return out;
+      };
+      function render(t) {
+        const c = cam(t), groups = new Map(), hi = headIdx(t), byPiece = [];
+        pieces.forEach((p, idx) => {
+          if (t < p.t0) return;
+          const L = drawn(p, t), op = p.fade ? 1 - seg(t, p.fade[0], p.fade[0] + (p.fade[1] ?? .8)) : 1; if (op <= 0) return;
+          const pts = L > 0 ? drawnPts(c, p, L) : [[proj(c, ...p.P[0]), false]]; byPiece[idx] = { pts, op };   // 刚起笔(L=0)也登记:白光要从它往回接上一截
+          if (L <= 0) return;
+          let d = '', last = null;
+          for (let i = 1; i < pts.length; i++) {
+            const [a] = pts[i - 1], [b, brk] = pts[i];
+            if (brk || !segIn(a, b)) continue;
+            if (last !== i - 1) d += `M${f1(a[0])},${f1(a[1])}`;
+            d += `L${f1(b[0])},${f1(b[1])}`; last = i;
+          }
+          const key = f2(op); if (d) groups.set(key, (groups.get(key) || '') + d);
+        });
+        const ln = (d, sw, c2, a, f) => `<path d="${d}" fill="none" stroke="${c2}" stroke-width="${f1(sw)}" stroke-linecap="round" stroke-linejoin="round" opacity="${a}"${f ? ` filter="url(#vc-bloom${f === 's' ? '-s' : f === 'l' ? '-l' : ''})"` : ''}/>`;
+        let out = '';   // 四层:远辉(大模糊、很淡)→ 近辉 → 金色线身 → 暖白芯(参考片的线是「白芯金边」)
+        for (const [op, d] of groups) out += `<g opacity="${op}">${ln(d, W * 9, col, .22, 'l')}${ln(d, W * 4, col, .5, 'b')}${ln(d, W * 2, col, .7, 's')}${ln(d, W, col, 1)}${ln(d, W * .5, '#FFF6E2', .8)}</g>`;
+        // 笔头后面一截发白:从笔头沿已画的线往回量 HOT 画面像素(跨过首尾相接的几截,遇到提笔就停),分 5 截越往回越淡
+        const hk = o.headOut ? 1 - seg(t, o.headOut[0], o.headOut[0] + (o.headOut[1] ?? .6)) : 1;
+        if (hi >= 0 && hk > 0 && byPiece[hi]) {
+          const chunks = new Map(); let acc = 0;   // 键 = 第几截|那一截所在段的透明度(各段淡出各算各的)
+          for (let j = hi; j >= 0 && acc < HOT; j--) {
+            const bp = byPiece[j]; if (!bp) break; const pts = bp.pts; let stop = false;
+            for (let i = pts.length - 1; i > 0 && acc < HOT; i--) {
+              if (pts[i][1]) { stop = true; break; }
+              let a = pts[i][0], b = pts[i - 1][0]; const dd = Math.hypot(a[0] - b[0], a[1] - b[1]);
+              if (acc + dd > HOT) { const k = (HOT - acc) / dd; b = [lerp(a[0], b[0], k), lerp(a[1], b[1], k)]; }   // 末一小段按长度截断
+              if (segIn(a, b)) { const key = Math.min(4, Math.floor(acc / HOT * 5)) + '|' + f2(bp.op); chunks.set(key, (chunks.get(key) || '') + `M${f1(a[0])},${f1(a[1])}L${f1(b[0])},${f1(b[1])}`); }
+              acc += dd;
+            }
+            if (stop || !pieces[j].contig) break;
+          }
+          const fadeOp = byPiece[hi].op;
+          out += `<g opacity="${f3(hk)}">` + [...chunks].map(([key, d]) => { const [j, op] = key.split('|').map(Number); return `<g opacity="${f2(op)}">${ln(d, W * (2.2 - j * .3), col, f2(.5 - j * .09), 's')}${ln(d, W * (1.1 - j * .12), '#FFFFFF', f2(.95 - j * .17))}</g>`; }).join('') + '</g>';
+          // 笔头:光晕 + 横向镜头光 + 白芯;走动时最亮,停住时轻轻呼吸。按整个光芒的包围盒(横向 ±360)判断在不在画面里
+          const h = proj(c, ...head(t)), k = hk * fadeOp * (moving(t) ? 1 : .82 + .1 * Math.sin(t * 4.1));
+          if (k > 0 && h[0] > -360 && h[0] < 2280 && h[1] > -130 && h[1] < 1210) out += `<defs><radialGradient id="${gid}h"><stop offset="0" stop-color="${col}" stop-opacity=".6"/><stop offset=".3" stop-color="${col}" stop-opacity=".16"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></radialGradient>
+            <linearGradient id="${gid}s"><stop offset="0" stop-color="#FFF3DC" stop-opacity="0"/><stop offset=".5" stop-color="#FFF8EE" stop-opacity="1"/><stop offset="1" stop-color="#FFF3DC" stop-opacity="0"/></linearGradient></defs>
+            <g data-over="光笔" opacity="${f3(k)}"><circle cx="${f1(h[0])}" cy="${f1(h[1])}" r="120" fill="url(#${gid}h)"/>
+            <rect x="${f1(h[0] - 210)}" y="${f1(h[1] - 8)}" width="420" height="16" fill="url(#${gid}s)" opacity=".16" filter="url(#vc-bloom-s)"/>
+            <rect x="${f1(h[0] - 360)}" y="${f1(h[1] - 1.1)}" width="720" height="2.2" fill="url(#${gid}s)" opacity=".7"/>
+            <rect x="${f1(h[0] - 1)}" y="${f1(h[1] - 34)}" width="2" height="68" fill="url(#${gid}s)" opacity=".25"/>
+            <circle cx="${f1(h[0])}" cy="${f1(h[1])}" r="${f1(W * 4.5)}" fill="${col}" opacity=".85" filter="url(#vc-bloom-s)"/><circle cx="${f1(h[0])}" cy="${f1(h[1])}" r="${f1(W * 1.9)}" fill="#FFFFFF"/></g>`;
+        }
+        return `<g data-over="光线">${out}</g>`;
+      }
+      // 星空视差:远处细星跟镜头走得慢,近处几颗虚化彩色光斑走得快(参考片的景深感)
+      function stars(t, so = {}) {
+        const c = cam(t), TW = 2400, TH = 1500, wrap = (v, m) => ((v % m) + m) % m;
+        let s = '';
+        const nf = so.n ?? 220;
+        for (let i = 0; i < nf; i++) {
+          const par = .1 + h2(i, 4, 91) * .15, x = wrap(h2(i, 5, 91) * TW - c.x * par * c.z, TW) - 240, y = wrap(h2(i, 6, 91) * TH - c.y * par * c.z, TH) - 210;
+          const big = h2(i, 7, 91) > .95, r = big ? 1.5 + h2(i, 8, 91) : .5 + h2(i, 8, 91) * .8, tw = .7 + .3 * Math.sin(t * (.8 + h2(i, 9, 91) * 1.5) + i);
+          s += `<circle cx="${f1(x)}" cy="${f1(y)}" r="${f2(r)}" fill="${S.c.star || '#fff'}" opacity="${f2((big ? .7 : .12 + h2(i, 10, 91) * .35) * tw)}"/>`;
+        }
+        const cols = so.bokeh || [S.c.glow || '#F2C27A', S.c.cool || '#86B6E6', S.c.red || '#E8646E', '#FFFFFF'], nb = so.nb ?? 18;
+        s += `<defs>${cols.map((cc, j) => `<radialGradient id="${gid}b${j}"><stop offset="0" stop-color="${cc}" stop-opacity=".9"/><stop offset=".45" stop-color="${cc}" stop-opacity=".35"/><stop offset="1" stop-color="${cc}" stop-opacity="0"/></radialGradient>`).join('')}</defs>`;
+        for (let i = 0; i < nb; i++) {
+          const par = .35 + h2(i, 4, 93) * .3, x = wrap(h2(i, 5, 93) * TW - c.x * par * c.z, TW) - 240, y = wrap(h2(i, 6, 93) * TH - c.y * par * c.z, TH) - 210, r = 5 + h2(i, 7, 93) * 12;
+          s += `<circle cx="${f1(x)}" cy="${f1(y)}" r="${f1(r)}" fill="url(#${gid}b${i % cols.length})" opacity="${f2((.12 + h2(i, 8, 93) * .22) * (so.k ?? 1))}"/>`;
+        }
+        return `<g data-over="星空">${s}</g>`;
+      }
+      return { render, cam, head, stars, S: (x, y, t) => proj(cam(t), x, y), at: (i, k) => { const p = pieces[segAt[i]]; return pointAt(p, p.len * clamp(k)); }, time: i => [pieces[segAt[i]].t0, pieces[segAt[i]].t1] };
+    }
+
     // ---------- 观众动手:让观众先猜 / 先选 / 先读,再揭晓(设计见 design/components.md「观众动手」) ----------
     // 共同约定:t0 = 出场;揭晓时刻由调用方按配音时间轴给;揭晓前给观众留够想的时间(倒数 countdown)。
     // 倒数:一圈细环 n 秒走完,中间数字 n…1;走完收掉。o:{n:3, r:46, label(环下面一行小字, R10)}
@@ -1125,6 +1299,7 @@
         <filter id="vc-soft-s" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="2.2"/></filter>
         <filter id="vc-bloom" filterUnits="userSpaceOnUse" x="-400" y="-400" width="2720" height="1880"><feGaussianBlur stdDeviation="9"/></filter>
         <filter id="vc-bloom-s" filterUnits="userSpaceOnUse" x="-400" y="-400" width="2720" height="1880"><feGaussianBlur stdDeviation="3"/></filter>
+        <filter id="vc-bloom-l" filterUnits="userSpaceOnUse" x="-400" y="-400" width="2720" height="1880"><feGaussianBlur stdDeviation="24"/></filter>
         <filter id="vc-neon" filterUnits="userSpaceOnUse" x="-400" y="-400" width="2720" height="1880"><feGaussianBlur in="SourceGraphic" stdDeviation="12" result="b1"/><feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="b2"/><feMerge><feMergeNode in="b1"/><feMergeNode in="b1"/><feMergeNode in="b2"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
     }
     // 底子:画风的「桌面 / 屏幕 / 纸」(场景可以盖掉它,演示页用)
@@ -1216,7 +1391,7 @@
       panel: ck((x, y, w, h, title = '', dark = false) => frame(x, y, w, h, title, S.carriers.panel || S.carriers.window, dark)),   // 信息面板;画风可单独给 panel 造型
       tone, ink, transition, subtitle, txDur: k => TX_DUR[k], sketch: ck(sketch), hatch: ck(hatch), marker, mascot: ck(mascot),
       text: ck(text), textFit: ck(textFit), mark: ck(mark), stamp: ck(stamp), counter: ck(counter), bubble: ck(bubble), chat: ck(chat), terminal: ck(terminal), chapterBar, panGroup, defs, backdrop,
-      orb, glow, particles, countdown: ck(countdown), choice: ck(choice), numberLine: ck(numberLine), blank: ck(blank), scramble: ck(scramble), mask: ck(mask),   // 光点、飘尘;观众动手五件套 + 倒数
+      orb, glow, particles, lightpen, countdown: ck(countdown), choice: ck(choice), numberLine: ck(numberLine), blank: ck(blank), scramble: ck(scramble), mask: ck(mask),   // 光点、飘尘;观众动手五件套 + 倒数
     };
   };
 })();
