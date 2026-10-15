@@ -1,5 +1,15 @@
 # Changelog / 更新说明
 
+## 2026-10-16
+
+### Fixes / 修复
+- **`data-over` no longer hides things from the object check** (`engine/tools/check-objects.mjs`): `data-over` means "this graphic may sit on text", but the object check skipped such graphics entirely, so an arrow touching a number and a stamp printed past the edge of its folder both passed. Now a free-standing `data-over` graphic (arrow, line, stamp) that overlaps an object or touches text is reported — except a mark that runs across ≥ 60% of a line of text (strike-through, highlighter); text inside a `data-over` group (a stamp's words) is checked like any other text; and a stamp or label nested in an object must lie entirely on it. Marks meant to sit on a sheet (a tick on a card, strikes on a calendar) go inside that sheet's `data-obj`.
+  **`data-over` 不再让东西逃过素材检查**:`data-over` 的意思是「这个图形可以压在字上」,素材检查却把它整个跳过,于是箭头擦着数字、章盖出文件夹的边都能过。现在单独摆着的 `data-over` 图形(箭头、线、印章)压到素材或碰到字都报(横穿一串字 ≥ 60% 的划掉、荧光笔除外);`data-over` 组里的字(章上的字)照常查;嵌在素材里的印章 / 标签整个要落在素材上。本来就该画在纸上的标记(卡片上的勾、日历上的划线)嵌进那张纸的 `data-obj`。
+- **Thin lines can be hit**: shapes are pre-filtered by their bounding box before the exact test, but a horizontal line's box has zero height, so lines were never "hit". The box is now widened by the stroke width.
+  **细线也能被测到**:精确判定前先用外框粗筛,水平线的外框高度是 0,永远「碰不到」;现在按笔画宽度放宽外框。
+- **Hand review covers looks, not just correctness** (`acceptance.md`): figures drawn in code must hold together (a head attached to its body, sensible proportions) and keep clear of the paper's edge; the checks cannot judge this.
+  **人眼看图要看好不好看**(`acceptance.md`):自己画的人形、示意图部件要连上、比例对、离纸边留空白 —— 检查判断不了。
+
 ## 2026-10-15
 
 ### New / 新增

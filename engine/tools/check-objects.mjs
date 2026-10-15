@@ -12,6 +12,8 @@
 //   ② 素材互压:两件不嵌套的素材,在两者外框相交处按网格采样,真形状(isPointInFill / isPointInStroke;字按字框)同时盖住的面积 > --min-area 平方像素。
 //   ③ 提前出现:带 data-say 的东西第一次可见的时刻,早于配音念到那几个字的时刻 --early 秒以上;画面上看得见的素材 / 字,
 //      自己和祖先都没有 data-say 也没有 data-scene ⇒「没挂台词」(说不清它该什么时候出来,就是会提前出来的那种)。
+//   ⑤ 标记图形(data-over)不是免检:单独摆着的箭头 / 线 / 印章压到素材或压到字要报(横穿字中线 ≥ 60% 的划掉、荧光笔除外);
+//      嵌在素材里、自己带字的标记(印章、标签)整个要落在素材上。data-over 只表示「可以压在字上」,印章、箭头这类独立的东西别标它。
 //   ④ 字出纸边:写在某件素材里的字,字框四边要整个落在这件素材上;不属于任何素材的字,不许骑在素材边上(一半在纸上一半在桌上)。
 //   页面 console.warn(如「AT 没找到」)也算问题。
 //   出现一帧就报。有问题退出码 1。念到的时刻从 window.TL(引擎 subs 生成的时间轴)里找:含这几个字的分句,按字的位置线性插值。
@@ -63,6 +65,8 @@ for (const t of times) {
     const vis = el => { let o = 1; for (let e = el; e && e.nodeType === 1; e = e.parentElement) { const cs = getComputedStyle(e); if (cs.display === 'none' || cs.visibility === 'hidden') return 0; o *= +cs.opacity; const a = e.getAttribute && e.getAttribute('opacity'); if (a != null) o *= +a; } return o; };
     const DRAW = 'path,rect,circle,ellipse,polygon,polyline,line,text,image';
     const skip = el => el.closest('defs,clipPath,pattern,mask,filter,[data-over]');
+    // 字只跳过定义区;data-over 的意思是「这个图形可以压在字上」,不是「它里面的字不用查」(印章、标签里的字照查;决策者 2026-10-15 看到印章盖出纸边)
+    const skipT = el => el.closest('defs,clipPath,pattern,mask,filter');
     const objs = [...document.querySelectorAll('[data-obj]')].filter(o => vis(o) >= .05);
     const info = objs.map(o => {
       const shapes = [...o.querySelectorAll(DRAW)].filter(el => !skip(el) && el.closest('[data-obj]') === o && vis(el) >= .05).map(el => {
@@ -85,8 +89,10 @@ for (const t of times) {
     // ② 互压
     const hit = (s, x, y) => {
       if (s.txt) { const h = (s.r.bottom - s.r.top) * .15; return x >= s.r.left && x <= s.r.right && y >= s.r.top + h && y <= s.r.bottom - h; }
-      if (x < s.r.left - 1 || x > s.r.right + 1 || y < s.r.top - 1 || y > s.r.bottom + 1) return false;
-      const m = s.el.getScreenCTM(); if (!m) return false; const q = new DOMPoint(x, y).matrixTransform(m.inverse());
+      // 外框粗筛要按笔画宽度放宽:一条水平线的外框高度是 0,不放宽就永远「碰不到」(箭头擦过数字就是这样漏掉的)
+      const m = s.el.getScreenCTM(); if (!m) return false;
+      if (s.pad == null) s.pad = 1 + (s.stroke ? parseFloat(getComputedStyle(s.el).strokeWidth) * Math.hypot(m.a, m.b) / 2 : 0);
+      if (x < s.r.left - s.pad || x > s.r.right + s.pad || y < s.r.top - s.pad || y > s.r.bottom + s.pad) return false; const q = new DOMPoint(x, y).matrixTransform(m.inverse());
       if (s.el.tagName === 'image') return true;
       return (s.fill && s.el.isPointInFill(q)) || (s.stroke && s.el.isPointInStroke(q));
     };
@@ -105,7 +111,7 @@ for (const t of times) {
     // ④ 字出纸边:字在某件素材里(写在这张纸上)⇒ 字框四条边上的采样点必须全落在这件素材的形状里;
     //    字不在任何素材里 ⇒ 不许一部分落在某件素材上、一部分落在外面(骑在纸边上)。字框按字自己的坐标系取(旋转的纸上也准)
     {
-      const texts = [...document.querySelectorAll('text')].filter(el => el.textContent.trim() && !skip(el) && !el.closest('[data-chrome]') && vis(el) >= .05);
+      const texts = [...document.querySelectorAll('text')].filter(el => el.textContent.trim() && !skipT(el) && !el.closest('[data-chrome]') && vis(el) >= .05);
       for (const el of texts) {
         const bb = el.getBBox(), m = el.getScreenCTM(); if (!m || bb.width < 1) continue;
         const ix = Math.min(3, bb.width * .1), it = bb.height * .24, ib = bb.height * .2, pts = [];
@@ -128,8 +134,57 @@ for (const t of times) {
         }
       }
     }
+    // ⑤ 标记图形(data-over)不是免检:
+    //   a. 不属于任何素材、单独摆着的标记(箭头、线、印章……)压到素材(> 门槛面积)或压到字 ⇒ 报。
+    //      横穿一串字中线 ≥ 60% 的(划掉、荧光笔)算故意压字,不报;故意叠在某件素材上的标记(纸上的勾、日历上的划线)嵌进那件素材的 data-obj 里。
+    //   b. 嵌在素材里、自己带字的标记(印章、标签):整个外框(按它自己的坐标系)要落在这件素材的形状里 —— 章不许盖出纸边。
+    {
+      const GEOM = /^(path|rect|circle|ellipse|polygon|polyline|line)$/;
+      const drawn = el => { const cs = getComputedStyle(el); return GEOM.test(el.tagName) && ((cs.fill !== 'none' && cs.fill !== 'transparent') || (cs.stroke !== 'none' && parseFloat(cs.strokeWidth) > 0)); };
+      const tops = [...document.querySelectorAll('[data-over]')].filter(m => !m.parentElement.closest('[data-over]') && !m.closest('defs,clipPath,pattern,mask,filter,[data-chrome]') && vis(m) >= .05);
+      const textsAll = [...document.querySelectorAll('text')].filter(el => el.textContent.trim() && !skipT(el) && !el.closest('[data-chrome]') && vis(el) >= .05);
+      const ptsOf = (el, inset = true) => { const bb = el.getBBox(), m = el.getScreenCTM(); if (!m || bb.width < 1) return null; const ix = inset ? Math.min(3, bb.width * .1) : 0, it = inset ? bb.height * .24 : 0, ib = inset ? bb.height * .2 : 0; const x0 = bb.x + ix, x1 = bb.x + bb.width - ix, y0 = bb.y + it, y1 = bb.y + bb.height - ib, ym = (y0 + y1) / 2; const edge = [], mid = []; for (let i = 0; i <= 4; i++) { const x = x0 + (x1 - x0) * i / 4; edge.push([x, y0], [x, y1]); mid.push([x, ym]); } for (let i = 1; i <= 3; i++) { const y = y0 + (y1 - y0) * i / 4; edge.push([x0, y], [x1, y]); } const T = ([x, y]) => { const q = new DOMPoint(x, y).matrixTransform(m); return [q.x, q.y]; }; return { edge: edge.map(T), mid: mid.map(T) }; };
+      for (const mk of tops) {
+        const r = mk.getBoundingClientRect(); if (r.width < 1 || r.width >= W * .9 || r.right <= 0 || r.left >= W || r.bottom <= 0 || r.top >= H) continue;
+        const name = mk.getAttribute('data-over') || '标记';
+        const ms = [mk, ...mk.querySelectorAll(DRAW)].filter(el => drawn(el) && vis(el) >= .05).map(el => ({ el, r: el.getBoundingClientRect(), txt: false, fill: getComputedStyle(el).fill !== 'none', stroke: getComputedStyle(el).stroke !== 'none' && parseFloat(getComputedStyle(el).strokeWidth) > 0 }));
+        if (!ms.length) continue;
+        const own = mk.closest('[data-obj]');
+        if (own) {
+          // b. 嵌在素材里、带字的标记:整个要落在素材上
+          if (!mk.querySelector('text')) continue;
+          const mine = info.filter(x => own.contains(x.o) || x.o === own), surf = mine.flatMap(x => x.shapes.filter(s => !s.txt && !mk.contains(s.el)));
+          const p = ptsOf(mk, false); if (!p || !surf.length) continue;
+          const nOut = p.edge.filter(([x, y]) => !surf.some(s => hit(s, x, y))).length;
+          if (nOut) out.bad.push({ k: `「${name}」出了「${own.getAttribute('data-obj')}」的纸边(${nOut}/${p.edge.length} 点在外)`, box: [r.left, r.top, r.right, r.bottom] });
+          continue;
+        }
+        // a1. 单独的标记压到素材
+        for (const x of info) {
+          if (x.box.r < r.left || x.box.l > r.right || x.box.b < r.top || x.box.t > r.bottom) continue;
+          const l = Math.max(r.left, x.box.l), rr = Math.min(r.right, x.box.r), t = Math.max(r.top, x.box.t), bt = Math.min(r.bottom, x.box.b);
+          const st = Math.max(3, Math.sqrt((rr - l) * (bt - t) / 900)); let n = 0;
+          for (let y = t + st / 2; y < bt; y += st) for (let xx = l + st / 2; xx < rr; xx += st) if (ms.some(s => hit(s, xx, y)) && x.shapes.some(s => !s.txt && hit(s, xx, y))) n++;
+          if (n * st * st > MIN_AREA) out.bad.push({ k: `「${name}」压到了「${x.name}」(${Math.round(n * st * st)} 平方像素;故意叠的就嵌进那件素材的 data-obj)`, box: [l, t, rr, bt] });
+        }
+        // a2. 单独的标记压到字:字框里按约 3px 的密网格采样(稀疏采样会漏掉只擦过字边的箭头尖);
+        //     被压到的列 ≥ 60% = 横穿整串字(划掉、荧光笔),算故意;否则只是碰上了 ⇒ 报
+        for (const el of textsAll) {
+          if (mk.contains(el)) continue;
+          const tr = el.getBoundingClientRect(); if (tr.right < r.left || tr.left > r.right || tr.bottom < r.top || tr.top > r.bottom) continue;
+          const bb = el.getBBox(), m = el.getScreenCTM(); if (!m || bb.width < 1) continue;
+          const y0 = bb.y + bb.height * .24, y1 = bb.y + bb.height * .8, cols = Math.max(8, Math.round(bb.width / 3)), rows = Math.max(4, Math.round((y1 - y0) / 3));
+          let n = 0; const hitCols = new Set();
+          for (let i = 0; i <= cols; i++) for (let j = 0; j <= rows; j++) {
+            const q = new DOMPoint(bb.x + bb.width * i / cols, y0 + (y1 - y0) * j / rows).matrixTransform(m);
+            if (ms.some(s => hit(s, q.x, q.y))) { n++; hitCols.add(i); }
+          }
+          if (n && hitCols.size < (cols + 1) * .6) out.bad.push({ k: `「${name}」压到字「${el.textContent.trim().slice(0, 12)}」(${n} 个采样点)`, box: [tr.left, tr.top, tr.right, tr.bottom] });
+        }
+      }
+    }
     // ③ 看得见的东西:挂的台词 / 布景
-    const seenEls = [...objs, ...[...document.querySelectorAll('text')].filter(el => el.textContent.trim() && !skip(el) && vis(el) >= .05)];
+    const seenEls = [...objs, ...[...document.querySelectorAll('text')].filter(el => el.textContent.trim() && !skipT(el) && vis(el) >= .05)];
     for (const el of seenEls) {
       const rr = el.getBoundingClientRect(); if (!(rr.width > 0 && rr.right > 0 && rr.left < W && rr.bottom > 0 && rr.top < H)) continue;
       if (el.closest('[data-chrome]')) continue;   // 字幕、章节条
