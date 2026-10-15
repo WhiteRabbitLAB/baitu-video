@@ -12,6 +12,9 @@
        建议  window.CHECK = { frame:[x,y,w,h], margin }   声明了验收就逐帧扫正片的出画、叠字、字和素材互压(画面占满全屏就写 frame:[0,0,1920,1080])
        建议  window.inTransition(t)  转场时刻返回 true(新旧两镜头交错,扫描跳过)
        故意压在字上的图形(划线、荧光笔、装饰点)加 data-over="原因",检查不算它
+       建议  素材标记(验收第 15 项,第 17 期起):每件东西包一层 <g data-obj="名字">(纸连同纸上的字;放在它上面的东西嵌在里面,一摞纸包成一件);
+             看得见的元素挂 <g data-say="它讲的那几个字">(要等配音念到才许出现),开场就在的布景标 data-scene;阴影加 data-over;
+             字幕和章节条包在 <g data-chrome> 里。按念到的字定时要在整句里找(片段可以跨逗号),找不到就 console.warn —— 验收会把它算作不合格
      URL 参数:?render(渲染器打开时总带着)&lang=en(第二种语言)&cover=16x9-a &vert
      数据:data-{{EP}}.js 由 `subs {{EP}}` 生成(window.TL 时间轴、window.SUBS 字幕);fonts-{{EP}}.css 由 `fonts {{EP}}` 生成。 -->
 <link rel="stylesheet" href="fonts-{{EP}}.css">

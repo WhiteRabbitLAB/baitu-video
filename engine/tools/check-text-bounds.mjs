@@ -59,6 +59,9 @@ for (const t of times) {
       const txt = el.textContent.trim(); if (!txt) return;
       const r = el.getBoundingClientRect(); if (r.width < 1 || r.height < 1) return;
       if (vis(el) < .05) return;
+      // 整串字都在画布外 = 看不见(镜头移走后留在世界里的东西),不算出画;
+      // 第 17 期页面为躲这条把画外的账本直接删掉,镜头回来时素材「蹦」出来 —— 检查不该逼页面这么做
+      if (r.right <= 0 || r.left >= W || r.bottom <= 0 || r.top >= H) return;
       const z = zone(r, el); if (z === 'hidden') return;
       const over = z === 'frame' ? [r.left < F[0] && 'left', r.top < F[1] && 'top', r.right > F[0] + F[2] && 'right', r.bottom > F[1] + F[3] && 'bottom'].filter(Boolean).map(s => '出框' + s)
         : [r.left < M && 'left', r.top < M && 'top', r.right > W - M && 'right', r.bottom > H - M && 'bottom'].filter(Boolean);

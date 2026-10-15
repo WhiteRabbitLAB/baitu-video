@@ -12,7 +12,12 @@ export function splitZh(p) {
     if (END_ZH.test(part) && part.match(END_ZH)[0] === part) { out.push(buf); buf = ''; }
   }
   if (buf) out.push(buf);
-  return out;
+  // 句末标点后面紧跟的右引号 / 右括号归上一句(「……？」不能把「」」切到下一句开头;第 17 期实测)
+  for (let i = 1; i < out.length; i++) {
+    const m = out[i].match(/^[」』”’）)]+/);
+    if (m) { out[i - 1] += m[0]; out[i] = out[i].slice(m[0].length); }
+  }
+  return out.filter(Boolean);
 }
 export const splitEn = p => p.split(/(?<=[.?!]["”]?)\s+(?=["“A-Z0-9])/).map(s => s.trim()).filter(Boolean);
 

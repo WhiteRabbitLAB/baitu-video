@@ -191,6 +191,17 @@ export async function accept(o) {
       if (!f.tables) item(14, '事实表', 'FAIL', `${path.relative(PROJECT, ff)} 里没找到带「出处」「状态」两列的表格`, '');
       else item(14, '事实表', !f.ok ? 'FAIL' : f.todo.length ? 'LOOK' : 'PASS', `${f.body.length} 条(${f.tables} 张表);待核 ${f.todo.length} 条,缺出处 ${f.nosrc.length} 条,标「不说」${f.cut.length} 条${f.todo.length ? ';待核的逐条确认没进稿(进了稿就去查实)' : ''}`, [`文件:${path.relative(PROJECT, ff)}`, ...f.todo.map(r => `待核:${r.join(' | ')}`), ...f.nosrc.map(r => `缺出处:${r.join(' | ')}`)].join('\n')); }
   }
+  // 15 素材:素材出画、素材互压、字出纸边 / 骑在纸边上、提前出现(讲到之前就在画面上)、锚点丢失(第 17 期起;决策者 2026-10-15:「这种问题不应该出现的」)
+  //   页面给素材标 data-obj、给画面元素标 data-say(讲哪句)/ data-scene(布景)才查得了;没标 ⇒ LOOK,人逐站看
+  {
+    const src = fs.readFileSync(E.page, 'utf8'), rel = path.relative(PROJECT, E.page);
+    if (!/data-obj/.test(src)) item(15, '素材', 'LOOK', '页面没标素材(data-obj / data-say),素材互压、出画、提前出现没查;人逐站看一遍', '');
+    else {
+      const r = spawnSync('node', [path.join(ENGINE, 'tools/check-objects.mjs'), `${rel}?render${suf ? '&lang=' + lang : ''}`, String(E.size?.[0] ?? 1920), String(E.size?.[1] ?? 1080), '--scan', `0-${(tl.duration - .05).toFixed(2)}:0.1`], { cwd: PROJECT, encoding: 'utf8', maxBuffer: 64 << 20 });
+      const last = (r.stdout || '').trim().split('\n').pop() || '';
+      item(15, '素材', r.status === 0 ? 'PASS' : r.status === 1 ? 'FAIL' : 'BROKEN', r.status === 0 || r.status === 1 ? last : `检查没跑完(退出码 ${r.status}):${last || (r.stderr || '').trim().split('\n').pop()}`, r.stdout + r.stderr);
+    }
+  }
   rows.sort((a, b) => a.n - b.n);
   fs.writeFileSync(path.join(A, 'summary.md'), `# ${ep}${suf} 验收\n\n| # | 项 | 结果 | 摘要 |\n|---|---|---|---|\n` + rows.map(r => `| ${r.n} | ${r.name} | ${r.status} | ${r.summary.replace(/\|/g, '/')} |`).join('\n') + '\n\nPASS = 过;FAIL = 不过;LOOK = 要人看一眼;INFO = 只记录;BROKEN = 探针自己失效,结果不算数。\n');
   return rows;

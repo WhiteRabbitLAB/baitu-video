@@ -1,5 +1,19 @@
 # Changelog / 更新说明
 
+## 2026-10-15
+
+### New / 新增
+- **Render stops on a missing asset** (`engine/lib/render.mjs`): an `<image>` whose file is gone does not raise an error — the page just draws an empty frame. After a footage-frame cache was deleted and a video re-rendered, every live-action shot came out as a blank card and all acceptance checks still passed. The renderer now watches failed requests and stops at the first frame that references a missing file, naming the file. Positive control: hiding one shot's frames stops the render; restoring them renders normally.
+  **缺素材就停**(`engine/lib/render.mjs`):`<image>` 的文件不在时页面不报错,只画出空框。实测删了实拍抽帧缓存再渲染,整片实拍镜头全成白框,验收照样全过。现在渲染器盯着加载失败的请求,第一帧缺图就停下并报出是哪个文件。阳性对照:藏起一个镜头的帧,渲染停下;放回去正常渲染。
+- **Object check** (`engine/tools/check-objects.mjs`, acceptance item 15): the text checker only ever looked at text, so a film could pass every check while a sticky note sat on two folders, a cup covered a card, a line of type ran off its paper, and numbers sat on screen seconds before the narration reached them. Pages now mark each physical thing with `data-obj` (a sheet together with what is written on it; things resting on it nest inside) and each visible element with `data-say="the words it illustrates"` or `data-scene` (set dressing that is there from the start). Every 0.1 s, outside camera moves and drops, the check reports: objects cut by the frame edge; two objects overlapping (real shapes, > 100 px²); text running off its own sheet, or loose text straddling a sheet's edge; anything visible more than 0.3 s before the narration says its words, or visible with no `data-say` / `data-scene` at all; and any page `console.warn`. Positive control: a deliberately broken copy (sticky on folders, text off a card, a line shown early, text across a sheet edge, a bad anchor) must trip all five.
+  **素材检查**(`engine/tools/check-objects.mjs`,验收第 15 项):原来的检查只看字,便签压着文件夹、杯子压着卡片、字跑出纸边、数字比配音早几秒摆在画面上,都能全部通过。现在页面给每件东西标 `data-obj`(一张纸连同纸上的字;放在上面的东西嵌在里面),给看得见的元素标 `data-say="它讲的那几个字"` 或 `data-scene`(开场就在的布景)。逐 0.1 秒扫(镜头移动、东西落下时跳过):素材出画;两件素材互压(按真形状,> 100 平方像素);字出了自己那张纸、或不属于任何纸的字骑在纸边上;第一次看得见比配音念到早 0.3 秒以上,或者既没挂台词也没标布景;页面 `console.warn`。阳性对照:一份故意改坏的副本(便签压文件夹、字出纸边、提前出现、字骑纸边、错锚点)五类都必须报出来。
+
+### Fixes / 修复
+- **Timing anchors can span a comma**: pages find "when is this said" by searching the timeline, but the search ran clause by clause, so a phrase like 「第一，尽量」 that crosses a comma was never found — the page fell back to "never", and four advice notes in episode 17 never appeared. Search the whole sentence, then interpolate inside the clause where the phrase starts; `check-objects` turns the page's "anchor not found" warning into a failure.
+  **定时锚点可以跨逗号**:页面按「念到哪几个字」定时,原来逐个分句找,「第一，尽量」这种跨逗号的片段永远找不到,页面退回「永不出现」——第 17 期四张建议便签整片没出来。改为在整句里找、再落到片段起点所在的分句里插值;`check-objects` 把页面的「AT 没找到」警告算作不合格。
+- **Closing quotes no longer start the next sentence** (`engine/lib/script.mjs`): a line like 「……不瘦？」 used to split after the question mark, so the closing 」 opened the next subtitle. Closing quotes and brackets right after a sentence end now stay with that sentence. Audio is unaffected (each paragraph is synthesised in one call); re-run `narrate` (cached) and `subs` to refresh the timeline and subtitles.
+  **右引号不再落到下一句开头**(`engine/lib/script.mjs`):「……不瘦？」原先在问号处切开,右引号「」」成了下一条字幕的开头;现在句末标点后紧跟的右引号 / 右括号归上一句。配音不受影响(每段一次合成);重跑 `narrate`(走缓存)和 `subs` 即可刷新时间轴与字幕。
+
 ## 2026-10-14
 
 ### New / 新增

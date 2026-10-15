@@ -43,6 +43,7 @@ export async function render(o) {
   t0 = Date.now();
   await Promise.all(segs.map(async ([a, b], k) => {
     const p = await open();
+    const missing = []; p.on('requestfailed', r => missing.push(r.url()));   // 素材文件缺了页面不报错、只画出空白框(2026-10-15 实测:删了实拍抽帧缓存再渲染,整片实拍变白框、验收全过),这里直接停
     const seg = path.join(TMP, `seg${k}.mp4`), man = [];
     const ff = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-c:v', 'png', '-i', '-',
       '-c:v', 'libx264', '-preset', 'medium', '-crf', '16', '-pix_fmt', 'yuv420p', '-r', String(FPS), seg], { stdio: ['pipe', 'inherit', 'inherit'] });
@@ -50,6 +51,7 @@ export async function render(o) {
     const closed = new Promise((res, rej) => ff.on('close', c => c === 0 ? res() : rej(new Error('ffmpeg exit ' + c))));
     for (let i = a; i < b; i++) {
       await p.evaluate(t => window.render(t), TIMES[i]);
+      if (missing.length) throw new Error(`t=${TIMES[i].toFixed(2)}s 有素材没加载出来(文件不在?先补齐再渲染):${decodeURI(missing[0])}`);
       const png = await p.screenshot({ type: 'png' });
       if (!ff.stdin.write(png)) await new Promise(r => ff.stdin.once('drain', r));
       man.push(i);
