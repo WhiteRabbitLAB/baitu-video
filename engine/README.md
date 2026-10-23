@@ -37,9 +37,9 @@ English: [README.en.md](README.en.md)
 |---|---|---|
 | `doctor` | 自检 | ✅ |
 | `new <期>` | 新建一期:稿子模板、`subtitles.json`、起步页面 | ✅ |
-| `narrate <期>` | 配音 + 时间轴:按 voice.md 选服务,每段整段合成;接口给时间戳就直接用,不给就 whisper 对齐。产物 `narration.wav`、`timeline.json`(第二种语言带 `.en` 后缀) | ✅ |
+| `narrate <期>` | 配音 + 时间轴:按 voice.md 选服务,每段整段合成;接口给时间戳就直接用,不给就 whisper 对齐。产物 `narration.wav`、`timeline.json`(第二种语言带 `.en` 后缀);每期设定 `<brief>/narration.json`(段间停顿、`gapAfter`、`say` 读法替换:只改送给配音接口的文字,字幕照原稿) | ✅ |
 | `subs <期>` | 字幕 `.srt` + 页面数据文件(`window.TL`、`window.SUBS`);每期设定 `<brief>/subtitles.json`(数字转换表、要保留中文的说法、人工断点) | ✅ |
-| `render <期>` | 逐帧导出画面 + 音效;`--ranges 0-5,20-30` 只出样片 `proto.mp4`(带配音) | ✅ |
+| `render <期>` | 逐帧导出画面 + 音效;`--ranges 0-5,20-30` 只出样片 `proto.mp4`(带配音);正片默认 1920×1080,只出竖版的期在 `<brief>/page.json` 写 `{ "size": [1080, 1920] }`(render / shot / accept 都按它开页面) | ✅ |
 | `mix <期>` | 混音(配音 -16、音效 -24、可选背景音乐)+ 合成 `<期>.mp4` | ✅ |
 | `cover <期>` | 封面(`--sizes 16x9,3x4`,`--variants a,b`) | ✅ |
 | `vertical <期>` | 竖版;每期设定 `<brief>/vertical.json`(从主片截哪几段) | ✅ |

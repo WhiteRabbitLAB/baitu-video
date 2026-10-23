@@ -53,6 +53,7 @@ Your channel's own rules live in the channel profile (`profiles/<channel>/`).
 ## 7. Sample → full video
 - The sample covers the first 1–2 paragraphs, with narration, for the decision-maker; only make the full video after they say go.
 - The page decides the frame by time alone (`render(t)`), so frame-by-frame rendering is deterministic; thumbnails and the vertical cut are other modes of the same page, not separate drawings.
+- **Finish the on-screen text review (the "human check" acceptance item) before rendering the full video**: the review may ask for narration changes (re-voice → the whole timeline shifts → full re-render). 2026-10-16, a travel episode: halfway through the render the review found that "he wrote the plaque over the temple gate" did not hold up, and the render had to be stopped and restarted.
 
 ## 8. Export and mix
 - Render frame by frame → encode; check the frame count.

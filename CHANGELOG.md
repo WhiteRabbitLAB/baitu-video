@@ -1,5 +1,39 @@
 # Changelog / 更新说明
 
+## 2026-10-23
+
+### Fixes / 修复
+- **Short subtitle with no pause after it** (`engine/lib/subs.mjs`): a one-clause sentence such as "The authors wrote:" that runs straight into the next sentence came out at 0.78 s and failed the 0.83 s minimum, because the existing fix only borrows the pause *after* a cue. Such a cue now borrows from the pause before it, taken from the tail of the previous cue: it starts no earlier than 0.05 s after the previous sentence ends, and the previous cue stays at least 0.83 s. Only a failing cue and the one before it change. Checked on episode 22: only that boundary moved, from 151.318 s to 151.268 s.
+  **后面没有停顿的短字幕**(`engine/lib/subs.mjs`):「作者的原话是:」这种一句话、紧接着下一句说的,字幕只有 0.78 秒,不够 0.83 秒;原来的补救只会往后借停顿。现在往前借上一条字幕尾巴里的停顿:最早到上一句说完后 0.05 秒,上一条也不许因此短于 0.83 秒。只动原本不合格的那条和它前一条;第 22 期实测只有这一处交界从 151.318 秒挪到 151.268 秒。
+
+## 2026-10-22
+
+### Changes / 改动
+- **Bandwidth-saving footage screening** (`design/live-footage.md`, new `engine/tools/pxcache.py` + `engine/tools/pxledger.py`): screening used to sample frames from remote 4K originals with ffmpeg, which opened ~11,000 outbound connections in an hour. Now: platform preview images first (~15 KB each), each clip id fetched once and cached across episodes, 640-wide copy only when previews aren't enough, 1920 only for clips actually used, never the 4K original; at most 2 transfers, one retry, a per-batch budget counted from received bytes. `pxcache.py` is the only network exit and refuses to hand a remote URL to ffmpeg; `pxledger.py` prints an episode's totals.
+  **实拍素材省流筛选**:以前的筛选让 ffmpeg 直接对远程 4K 原片抽帧,一小时约 1.1 万次外网连接。现在先看平台预览图(约 15KB 一张),同一编号只下一次、跨期缓存,预览图不够看才下 640 宽,确定采用才下 1920,不下 4K 原片;最多 2 路并发、失败重试一次、每批按实收字节记账设预算。`pxcache.py` 是唯一网络出口、拒绝把远程地址交给 ffmpeg;`pxledger.py` 出一期的总账。
+- **Fetch only what the render uses** (`pxcache.prefix()`, `design/live-footage.md` items 6–7): download the 1280 rendition (720 for vertical) instead of 1920 when frames are extracted at 1280×720, and, since Pexels mp4s are fragmented, fetch only the fragments covering the seconds a shot uses (HTTP Range; incomplete tail trimmed; resumable). Measured: one clip needed 5 s → 7.5 MB instead of 27 MB (1280) / 48.8 MB (1920).
+  **只下渲染用得到的**:帧按 1280×720 抽时下 1280 档(竖片 720)而不是 1920;Pexels 的 mp4 是分片格式,只按镜头用到的秒数下前面几段(HTTP Range,裁掉不完整尾段,能续传)。实测一条:要 5 秒,下 7.5MB,而整条 1280 档 27MB、1920 档 48.8MB。
+- **Harbours outside the OSM coastline** (`design/live-footage.md`): OSM's coastline can cut straight across a harbour mouth, leaving the harbour as inland water; build the water from the `natural=water` relations too, or the harbour draws as land.
+  **港湾不在 OSM 海岸线里**:海岸线可能在港口两个岬角之间直接横过去,港湾算内陆水体;要把 `natural=water` 关系也拼进水面,否则港湾画成陆地。
+
+## 2026-10-21
+
+### New / 新增
+- **Wooden mannequin** (`engine/vc/mannequin.js`, from the episode 21 full video): jointed wooden figure with poses (sit-up, standing front / side, seated, run, leg press, tennis), an optional see-through fat layer whose thickness is set per body region, an effort glow and a blue "scan" mode; props racket and dumbbell. No real people, no faces.
+  **木头关节人偶**(`engine/vc/mannequin.js`,第 21 期整片抽出):仰卧起坐、正面 / 侧面站、坐姿、跑步、蹬腿、网球等姿势,可选半透明脂肪层(按部位调厚薄)、发力热光、蓝色扫描透视;道具球拍、哑铃。不画真人、不画脸。
+
+### Changes / 改动
+- **Vertical-only main video** (`engine/lib/page.mjs`, render / shot / accept / check-echo): an episode that ships only vertical sets `{ "size": [1080, 1920] }` in `<brief>/page.json`; every command opens the page at that size instead of assuming 1920×1080.
+  **只出竖版的正片**:每期在 `<brief>/page.json` 写 `{ "size": [1080, 1920] }`,render / shot / accept / check-echo 都按它开页面,不再写死横版 1920×1080。
+- **Pronunciation respellings** (`narration.json` → `say`): pairs like `["X", "X with a space"]` change only the text sent to the voice API; subtitles and the timeline keep the script. When this changes the unit count, alignment now falls back to content matching (longest common subsequence) instead of pairing timestamps in order, which shifted everything after the respelling.
+  **读法替换**(`narration.json` 的 `say`):只改送给配音接口的文字,字幕和时间轴照原稿;替换改了字数时,对齐改按内容做最长公共子序列,不再按顺序逐个对(那样替换点之后整段错位)。
+- **Sentence-final short subtitle line** (`engine/lib/subs.mjs`): a last line shorter than 0.83 s borrows the pause after it, up to the start of the next sentence.
+  **句尾短行**:句子最后一行不够 0.83 秒时往后借停顿,最多借到下一句开始。
+- **Screen-text review before the full render** (`pipeline.md`): the review can change the narration, which re-times the whole video, so finish it before rendering.
+  **画面文字复核放在整片渲染之前**:复核可能改口播,时间轴随之全变,所以先复核再渲染。
+- **Live-footage pitfalls** (`design/live-footage.md`): building the sea polygon from OSM coastlines; `-v error` hides scene-cut hits (a false zero, so run a positive control first); a Commons file name is not its content (look at a contact sheet first). The English guide also gains the Pexels-redirect and vector-chart notes it was missing.
+  **实拍素材的坑**:OSM 海岸线拼海面的做法;剪辑点检测加 `-v error` 会压掉命中、得到假 0(先跑阳性对照);Commons 文件名不等于内容(先拼总图看)。英文版补上之前漏译的 Pexels 跳转、矢量海图两条。
+
 ## 2026-10-16
 
 ### Fixes / 修复

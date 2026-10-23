@@ -9,6 +9,7 @@
 | `demo.html` | 演示页:每个组件一行,可切换画风、中英文、时间轴 |
 | `receipt.js` | 小票部件:热敏小票画风的附加模块(第 13 期整片抽出),`const rc = VC.receipt(kit, {onPrint, onFeed})`;组件见下表「小票」三行 |
 | `broadcast.js` | 转播部件:体育转播画风的附加模块(第 14 期整片抽出),`const bc = VC.broadcast(kit, {onCue, onText, ledY})`;组件见下表「转播」三行 |
+| `mannequin.js` | 木头关节人偶(第 21 期整片抽出):`const M = VC.mannequin`;姿势 `situp` / `standSide` / `standFront` / `seated` / `run` / `legPress` / `tennis`,画 `M.figure(J, {s, fat, heat, scan})`(脂肪层厚薄按部位、发力热光、扫描透视);道具 `racket` / `dumbbell`;每帧 `M.begin()`,`<defs>` 里放 `M.DEFS`。不画真人、不画脸,脂肪层只是示意 |
 | `quiz.html` | 「观众动手」组件一屏六格(二选一 + 倒数、数轴猜数、填空、乱序字、遮挡、光点):`?style=<id>&t=秒`(默认 99 = 全部揭晓;`t=2.2` 看揭晓前) |
 | `thumbs.html` / `thumbs.mjs` | 画风缩略图:同一场景只换画风;`node engine/vc/thumbs.mjs` → `.claude/skills/baitu-video/styles/thumbs/` |
 | `transitions.html` / `measure-tx.mjs` | 转场演示(morph、zoom-through、slide-push、blur-push)与量转场(带线性淡化阳性对照):`node engine/vc/measure-tx.mjs paper-skeuo` |

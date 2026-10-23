@@ -37,9 +37,9 @@ The renderer opens `file://…/<ep>.html?render`; a second language adds `&lang=
 |---|---|---|
 | `doctor` | Self-check | ✅ |
 | `new <ep>` | New episode: script template, `subtitles.json`, starter page | ✅ |
-| `narrate <ep>` | Narration + timeline: provider from voice.md, one request per paragraph; uses API timestamps when given, otherwise aligns with whisper. Outputs `narration.wav`, `timeline.json` (second language gets a `.en` suffix) | ✅ |
+| `narrate <ep>` | Narration + timeline: provider from voice.md, one request per paragraph; uses API timestamps when given, otherwise aligns with whisper. Outputs `narration.wav`, `timeline.json` (second language gets a `.en` suffix); per-episode settings in `<brief>/narration.json` (pauses, `gapAfter`, `say` respellings that change only the text sent to the voice API — subtitles keep the script) | ✅ |
 | `subs <ep>` | Subtitles `.srt` + page data file (`window.TL`, `window.SUBS`); per-episode settings in `<brief>/subtitles.json` | ✅ |
-| `render <ep>` | Frame-by-frame video + sound effects; `--ranges 0-5,20-30` renders only a sample `proto.mp4` (with narration) | ✅ |
+| `render <ep>` | Frame-by-frame video + sound effects; `--ranges 0-5,20-30` renders only a sample `proto.mp4` (with narration); the main video defaults to 1920×1080 — a vertical-only episode puts `{ "size": [1080, 1920] }` in `<brief>/page.json` (render / shot / accept all open the page at that size) | ✅ |
 | `mix <ep>` | Mix (narration -16, SFX -24, optional music) and mux `<ep>.mp4` | ✅ |
 | `cover <ep>` | Thumbnails (`--sizes 16x9,3x4`, `--variants a,b`) | ✅ |
 | `vertical <ep>` | Vertical cut; per-episode `<brief>/vertical.json` (which spans of the main video) | ✅ |

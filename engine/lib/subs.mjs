@@ -64,9 +64,19 @@ function zhCues(tl, cfg, MAX, convLog) {
       const next = lines[k + 1], nextSentStart = S[si + 1]?.start ?? s.end + 1.5;
       let end = next ? next.start : Math.min(nextSentStart, s.end + 0.4);
       if (!next && nextSentStart - end < 0.35) end = nextSentStart;
+      if (!next && end - (k ? l.start : s.start) < MIN_CUE) end = Math.max(end, Math.min(nextSentStart, (k ? l.start : s.start) + MIN_CUE));   // 句尾短行(如「一千日元」)不够 0.83 秒:往后借停顿,最多借到下一句开始(2026-10-20)
       cues.push({ id: s.id, para: s.para, start: +(k ? l.start : s.start).toFixed(3), end: +end.toFixed(3), text: l.text.trim() });
     });
   });
+  // 整句很短、下一句紧接着说(如「作者的原话是:」),往后没有停顿可借:往前借上一条字幕尾巴里的停顿,
+  // 最多借到上一句说完后 0.05 秒,上一条也不许因此短于 0.83 秒(2026-10-23 第 22 期)
+  const byId = new Map(S.map(x => [x.id, x]));
+  for (let i = 1; i < cues.length; i++) {
+    const c = cues[i], p = cues[i - 1];
+    if (c.end - c.start >= MIN_CUE || Math.abs(p.end - c.start) > 1e-3 || p.id === c.id) continue;
+    const ns = Math.max(c.end - MIN_CUE, (byId.get(p.id)?.end ?? p.end) + .05, p.start + MIN_CUE);
+    if (ns < c.start) { p.end = +ns.toFixed(3); c.start = +ns.toFixed(3); }
+  }
   return cues;
 }
 

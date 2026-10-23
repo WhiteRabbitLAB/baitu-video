@@ -155,7 +155,7 @@ export async function accept(o) {
     const run = (q, w, h, ts = []) => { const main = q === ''; const r = spawnSync('node', [chk, `${rel}?render${suf ? '&lang=' + lang : ''}${q ? '&' + q : ''}`, w, h, ...ts], { cwd: PROJECT, encoding: 'utf8', maxBuffer: 64 << 20 }); outs.push({ q: main ? '正片逐帧' : q, ok: r.status === 0, must: main || +h > +w, text: r.stdout + r.stderr }); };
     for (const f of fs.readdirSync(OUT).filter(f => /^cover-(\w+)-(\w+)\.png$/.test(f))) { const [, size, v] = f.match(/^cover-(\w+)-(\w+)\.png$/); const [w, h] = { '16x9': [1920, 1080], '3x4': [1080, 1440], '9x16': [1080, 1920], '1x1': [1080, 1080], '4x3': [1440, 1080] }[size] || []; if (w) run(`cover=${size}-${v}`, w, h); }
     // 正片:页面声明了 window.CHECK(画面框等),就逐 0.1 秒扫整片的出画 / 叠字 / 字和素材互压(第 11 期起;owner 2026-10-09:压字的低级问题不许反复出现)
-    if (/window\.CHECK\s*=/.test(fs.readFileSync(E.page, 'utf8'))) run('', 1920, 1080, ['--scan', `0-${(tl.duration - .05).toFixed(2)}:0.1`]);
+    if (/window\.CHECK\s*=/.test(fs.readFileSync(E.page, 'utf8'))) run('', E.size[0], E.size[1], ['--scan', `0-${(tl.duration - .05).toFixed(2)}:0.1`]);
     const vcfg = path.join(brief, `vertical${suf}.json`);
     if (fs.existsSync(vcfg)) { const ts = []; for (let t = 0; t < tl.duration; t += 5) ts.push(t.toFixed(1)); run('vert', 1080, 1920, ts); }
     const st = !outs.length ? 'INFO' : outs.some(x => x.must && !x.ok) ? 'FAIL' : outs.some(x => !x.ok) ? 'LOOK' : 'PASS';
@@ -178,7 +178,7 @@ export async function accept(o) {
   }
   // 13 画面复述字幕:画面上的字把正在念的那句原样再写一遍(只提醒)
   {
-    const rel = path.relative(PROJECT, E.page), r = spawnSync('node', [path.join(ENGINE, 'tools/check-echo.mjs'), `${rel}?render${suf ? '&lang=' + lang : ''}`, String(tl.duration), '--lang', lang, '--json'], { cwd: PROJECT, encoding: 'utf8', maxBuffer: 64 << 20 });
+    const rel = path.relative(PROJECT, E.page), r = spawnSync('node', [path.join(ENGINE, 'tools/check-echo.mjs'), `${rel}?render${suf ? '&lang=' + lang : ''}`, String(tl.duration), '--lang', lang, '--size', E.size.join('x'), '--json'], { cwd: PROJECT, encoding: 'utf8', maxBuffer: 64 << 20 });
     let j = null; try { j = JSON.parse(r.stdout.trim().split('\n').pop()); } catch {}
     if (!j || j.broken || r.status !== 0) item(13, '画面复述', 'BROKEN', !j ? '检查没跑起来' : j.broken ? `探针读不到字幕(${j.control}),结果不算数` : `检查进程报错退出(${r.status}),多半是页面报错(PAGEERROR),结果不算数`, r.stdout + r.stderr);
     else item(13, '画面复述', j.hits >= j.seconds * .1 && j.hits > 0 ? 'LOOK' : 'PASS', `${j.seconds} 秒有字幕,${j.hits} 秒画面在原样抄字幕(连续 ≥ ${lang === 'en' ? '7 个词' : '10 字'})${j.hits >= j.seconds * .1 && j.hits > 0 ? ';画面该画旁白说不清的东西,别再写一遍字幕' : ''}`, `阳性对照:${j.control}\n` + j.examples.map(h => `t=${h.t}s 画面「${h.echo}」 ← 字幕「${h.cue}」`).join('\n'));

@@ -5,7 +5,9 @@
 //   { "sectionAfter": [3, 7], "sectionGap": 1.2,   第 3、7 段之后是大段落分界,停顿 1.2s(其余段间用 pauses.para)
 //     "verbatimParas": [1, 5],                      这几段改用「逐字朗读」提示(正文像指令时,Gemini 等会当指令执行、不念出来)
 //     "gapAfter": { "4": 5.5 },                     第 4 段之后单独停 5.5s(给画面留出不配音的时间,如逐张看图、放原声);优先于 sectionAfter
-//     "voice": { "speed": 1.2 } }                   本期覆盖 voice.md 的配音参数
+//     "voice": { "speed": 1.2 },                    本期覆盖 voice.md 的配音参数
+//     "say": [["埃菲尔铁塔", "埃菲尔 铁塔"]] }       读法替换:只改送给配音接口的文字(字幕、时间轴照原稿)。中文稿读入时会去掉所有空格,
+//                                                   要靠空格让模型断词就写在这里(2026-10-20 豆包把「埃菲尔铁塔」连读成「埃菲尔特塔」,加空格后读对)
 import fs from 'node:fs';
 import path from 'node:path';
 import { PROJECT } from './paths.mjs';
@@ -41,7 +43,7 @@ export async function narrate({ ep, channel, lang, out, paras: only }) {
   const joinText = ss => ss.map(s => s.text).join(lang === 'zh' ? '' : ' ');
 
   async function synthPara(p, sents) {
-    const text = joinText(sents);
+    const text = (NC.say || []).reduce((t, [from, to]) => t.split(from).join(to), joinText(sents));
     const vp = (NC.verbatimParas || []).includes(p) ? { ...v, style: v.styleVerbatim || VERBATIM } : v;
     const split = async why => {
       let best = -1, bestD = 1e9, acc = 0;
@@ -78,14 +80,18 @@ export async function narrate({ ep, channel, lang, out, paras: only }) {
     });
     const target = sents.flatMap(s => units(s.text, lang));
     let times;
-    if (useTokens && pieces.every(pc => pc.tokens?.length)) {   // 按顺序逐个对(旧做法)
-      times = target.map((u, i) => heard[i] ? { a: heard[i].a, b: heard[i].b, ok: heard[i].u === u } : { a: NaN, b: NaN, ok: false });
-      if (heard.length !== target.length) notes.push(`第 ${p} 段:接口时间戳单位数 ${heard.length} ≠ 原文 ${target.length}`);
-    } else times = alignLcs(target, heard, paraStart, n / SR);
+    // 接口时间戳和原文单位数一样多时按顺序逐个对;不一样多(读法替换改了字数,如 HARUKA → 哈鲁卡)时按内容做最长公共子序列对齐,
+    // 否则替换点之后整段错位(2026-10-20 一期旅行片:第 11、21 段错位 3—4 个单位)
+    const seq = useTokens && pieces.every(pc => pc.tokens?.length) && heard.length === target.length;
+    if (seq) times = target.map((u, i) => ({ a: heard[i].a, b: heard[i].b, ok: heard[i].u === u }));
+    else {
+      if (useTokens && heard.length !== target.length) notes.push(`第 ${p} 段:接口时间戳单位数 ${heard.length} ≠ 原文 ${target.length},改按内容对齐`);
+      times = alignLcs(target, heard, paraStart, n / SR);
+    }
     let k = 0;
     for (const s of sents) {
       const us = units(s.text, lang), got = times.slice(k, k + us.length);
-      const match = useTokens ? heard.slice(k, k + us.length).map(h => h.u).join('|') === us.join('|') : got.every(g => g.ok);
+      const match = seq ? heard.slice(k, k + us.length).map(h => h.u).join('|') === us.join('|') : got.every(g => g.ok);
       const parts = []; let ci = 0;
       for (const c of clauses(s.text, lang)) {
         const m = units(c, lang).length; if (!m) continue;
@@ -93,7 +99,7 @@ export async function narrate({ ep, channel, lang, out, paras: only }) {
         parts.push({ text: c, start: +seg[0].a.toFixed(3), end: +seg.at(-1).b.toFixed(3) });
       }
       const row = { id: s.id, para: p, idx: s.idx, text: s.text, start: +(got[0]?.a ?? NaN).toFixed(3), end: +(got.at(-1)?.b ?? NaN).toFixed(3), match };
-      if (!match) row[useTokens ? 'got' : 'missing'] = useTokens ? heard.slice(k, k + us.length).map(h => h.u).join(lang === 'zh' ? '' : ' ') : us.filter((_, i) => !got[i].ok).join(lang === 'zh' ? '' : ' ');
+      if (!match) row[seq ? 'got' : 'missing'] = seq ? heard.slice(k, k + us.length).map(h => h.u).join(lang === 'zh' ? '' : ' ') : us.filter((_, i) => !got[i].ok).join(lang === 'zh' ? '' : ' ');
       if (lang !== 'zh') {   // 英文字幕按原文的词(含标点)断行,要每个词的起止
         let wi = 0;
         row.tokens = s.text.split(/\s+/).filter(Boolean).map(t => { const m = units(t, lang).length, g = got.slice(wi, wi + m); wi += m; return g.length ? { t, a: +g[0].a.toFixed(3), b: +g.at(-1).b.toFixed(3) } : { t, a: null, b: null }; });

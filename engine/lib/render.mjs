@@ -14,7 +14,7 @@ export async function render(o) {
   const E = episode(o), { OUT, TMP, suf } = E;
   const stale = await staleFontChars(o);
   if (stale?.length) throw new Error(`页面或稿子加了 ${stale.length} 个字体子集里没有的字(${stale.slice(0, 12).join('')}…),它们会悄悄回退成别的字体。先重跑 fonts ${o.ep}`);
-  const W = o.width || 1920, H = o.height || 1080, WORKERS = o.workers || 6;
+  const W = o.width || E.size[0], H = o.height || E.size[1], WORKERS = o.workers || 6;
   fs.mkdirSync(TMP, { recursive: true }); fs.mkdirSync(OUT, { recursive: true });
   const tl = JSON.parse(fs.readFileSync(path.join(OUT, `timeline${suf}.json`), 'utf8'));
   const ranges = o.ranges ? o.ranges.split(',').map(r => r.split('-').map(Number)) : null;
